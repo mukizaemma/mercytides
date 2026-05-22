@@ -114,7 +114,27 @@
             return;
         }
 
-        new WOW({ mobile: true }).init();
+        new WOW({
+            mobile: true,
+            offset: 80,
+            live: true,
+        }).init();
+    }
+
+    function initScrollReveal() {
+        if (typeof window.MercyTidesScrollReveal === 'undefined') {
+            return;
+        }
+
+        window.MercyTidesScrollReveal.init(document);
+    }
+
+    function initPageHeaderParallax() {
+        if (typeof window.MercyTidesPageHeaderParallax === 'undefined') {
+            return;
+        }
+
+        window.MercyTidesPageHeaderParallax.init(document);
     }
 
     function initNiceSelect() {
@@ -158,7 +178,14 @@
         destroySwipersInMain();
         initPageSwipers();
         initWow();
+        initScrollReveal();
+        initPageHeaderParallax();
         initNiceSelect();
         initPureCounter();
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        initScrollReveal();
+        initPageHeaderParallax();
     });
 })();

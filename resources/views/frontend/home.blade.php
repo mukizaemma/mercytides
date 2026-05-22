@@ -12,9 +12,10 @@
     <div class="tp-about-4__area tp-about-4__space p-relative fix grey-bg about-home-section">
         <div class="container">
             <div class="row">
-                <div class="col-12 wow tpfadeUp" data-wow-duration=".9s" data-wow-delay=".2s">
+                <div class="col-12 wow tpfadeUp reveal-on-scroll" data-wow-duration=".9s" data-wow-delay=".2s">
                     <div class="about-home-intro">
-                        <h4 class="tp-section-title about-home-title">About Mercy Tides</h4>
+                        {{-- <span class="about-home-eyebrow">Who we are</span> --}}
+                        <h4 class="tp-section-title about-home-title">About Mercy Tides Foundation</h4>
                         @php
                             $aboutDescRaw = $about->description ?? '';
                             $aboutDescPlain = strip_tags(html_entity_decode($aboutDescRaw));
@@ -37,7 +38,7 @@
     <section class="home-problem-solution-section grey-bg pb-70">
         <div class="container">
             <div class="row g-4">
-                <div class="col-lg-6 wow tpfadeUp" data-wow-duration=".9s" data-wow-delay=".15s">
+                <div class="col-lg-6 wow tpfadeUp reveal-on-scroll" data-wow-duration=".9s" data-wow-delay=".15s">
                     <article class="about-home-pillar h-100">
                         <div class="about-home-pillar__head">
                             <span class="about-home-pillar__icon" aria-hidden="true"><i class="fas fa-triangle-exclamation"></i></span>
@@ -48,7 +49,7 @@
                         </p>
                     </article>
                 </div>
-                <div class="col-lg-6 wow tpfadeUp" data-wow-duration=".9s" data-wow-delay=".25s">
+                <div class="col-lg-6 wow tpfadeUp reveal-on-scroll" data-wow-duration=".9s" data-wow-delay=".25s">
                     <article class="about-home-pillar h-100">
                         <div class="about-home-pillar__head">
                             <span class="about-home-pillar__icon" aria-hidden="true"><i class="fas fa-lightbulb-on"></i></span>
@@ -69,6 +70,8 @@
     <!-- service-area-end -->
 
     @include('frontend.includes.home-impact-metrics')
+
+    @include('frontend.includes.home-partner-cta')
 
     @include('frontend.includes.home-mission-core-values')
 

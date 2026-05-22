@@ -148,16 +148,19 @@
                                 <div class="tab-pane fade" id="colors-pane" role="tabpanel" aria-labelledby="colors-tab">
                                     <div class="row g-3">
                                         <div class="col-lg-3">
-                                            <label class="form-label d-block">Primary color</label>
-                                            <input type="color" class="form-control form-control-color" name="primary_color" value="{{ $data->primary_color ?? '#fad200' }}">
+                                            <label class="form-label d-block">Accent (yellow)</label>
+                                            <input type="color" class="form-control form-control-color" name="primary_color" value="{{ $data->primary_color ?? '#FFC107' }}">
+                                            <small class="text-muted">Buttons, highlights — logo stars &amp; face</small>
                                         </div>
                                         <div class="col-lg-3">
-                                            <label class="form-label d-block">Secondary color</label>
-                                            <input type="color" class="form-control form-control-color" name="secondary_color" value="{{ $data->secondary_color ?? '#2c2c2c' }}">
+                                            <label class="form-label d-block">Brand (green)</label>
+                                            <input type="color" class="form-control form-control-color" name="secondary_color" value="{{ $data->secondary_color ?? '#2E7D32' }}">
+                                            <small class="text-muted">Headings, nav — “Mercy Tides” text</small>
                                         </div>
                                         <div class="col-lg-3">
-                                            <label class="form-label d-block">Neutral color</label>
-                                            <input type="color" class="form-control form-control-color" name="neutral_color" value="{{ $data->neutral_color ?? '#b0b0b0' }}">
+                                            <label class="form-label d-block">Secondary (blue)</label>
+                                            <input type="color" class="form-control form-control-color" name="neutral_color" value="{{ $data->neutral_color ?? '#0288D1' }}">
+                                            <small class="text-muted">Links, borders — “Foundation” text</small>
                                         </div>
                                         <div class="col-lg-3">
                                             <label class="form-label">Google font family</label>

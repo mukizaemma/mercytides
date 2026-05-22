@@ -8,7 +8,7 @@
 	///////////////////////////////////////////////////
 	// 02. SubMenu Dropdown Toggle
 	if ($('.tp-main-menu nav > ul > li.has-dropdown > a').length) {
-		$('.tp-main-menu nav > ul > li.has-dropdown > a').append('<i class="fal fa-angle-down"></i>');
+		$('.tp-main-menu nav > ul > li.has-dropdown > a').append('<i class="fal fa-plus nav-dropdown-icon" aria-hidden="true"></i>');
 	}
 
 	$('.tp-service-3__item').on('mouseenter', function () {
@@ -87,7 +87,8 @@
 
 	if ($('.tp-header-height').length > 0) {
 		var headerHeight = document.querySelector(".tp-header-height");      
-		var setHeaderHeight = headerHeight.offsetHeight;	
+		var setHeaderHeight = headerHeight.offsetHeight;
+		document.documentElement.style.setProperty('--site-header-offset', setHeaderHeight + 'px');
 		$(".tp-header-height").each(function () {
 			$(this).css({
 				'height' : setHeaderHeight + 'px'
@@ -759,7 +760,7 @@
 			let self = $(this);
 			let arrowBtn = document.createElement("BUTTON");
 			arrowBtn.classList.add("dropdown-toggle-btn");
-			arrowBtn.innerHTML = "<i class='fal fa-angle-right'></i>";
+			arrowBtn.innerHTML = "<i class='fal fa-plus nav-dropdown-icon nav-dropdown-icon--mobile' aria-hidden='true'></i>";
 	
 			self.append(function () {
 			  return arrowBtn;

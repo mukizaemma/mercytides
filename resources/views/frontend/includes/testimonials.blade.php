@@ -1,46 +1,35 @@
     <div class="tp-blog-2__area tp-blog-2__spaces">
         <div class="container">
             <div class="row">
-                <div class="col-xl-12">
+                <div class="col-xl-12 wow tpfadeUp reveal-on-scroll" data-wow-duration=".9s" data-wow-delay=".1s">
                     <div class="tp-blog-2__section-title pb-50 text-center">
+                        <span class="about-home-eyebrow d-block mb-2">Stories of hope</span>
                         <h4 class="tp-section-title">Testimonials</h4>
                     </div>
                 </div>
             </div>
             <div class="row">
                 @foreach ($testimonials as $rs)
-                <div class="col-xl-4 col-lg-4 col-md-6 mb-30 wow tpfadeUp" data-wow-duration=".9s"
+                <div class="col-xl-4 col-lg-4 col-md-6 mb-30 wow tpfadeUp reveal-on-scroll" data-wow-duration=".9s"
                 data-wow-delay=".3s">
-                    <div class="tp-blog-2__item">
-                        <a href="{{ route('testimony',['id'=>$rs->id]) }}">
-                            <div class="tp-blog-2__thumb p-relative">
-                                <img src="{{ asset('storage/' . $rs->image) }}" alt="" style="height:250px; object-fit: cover;">
-                            </div>
+                    <article class="testimonial-card">
+                        <a href="{{ route('testimony',['id'=>$rs->id]) }}" class="testimonial-card__thumb d-block">
+                            <img src="{{ asset('storage/' . $rs->image) }}" alt="{{ $rs->names }}">
                         </a>
-                        <div class="tp-blog-2__content">
-                            <div class="tp-blog-2__tag">
-                                <span>{{ $rs->names }}</span>
-                            </div>
-
-                            <div class="tp-about-3__text">
-                                @php
-                                $testPlain = strip_tags(html_entity_decode($rs->testimony ?? ''));
-                                $words = Str::limit($testPlain, 100, '...');
-                                @endphp
-
-                                <p style="font-size: 20px; font-weight: 700; text-align: justify">{{ $words }}</p>
-
-                                @if(strlen($testPlain) > 100)
-                                <a href="{{ route('testimony',['id'=>$rs->id]) }}">
-                                    <div class="tp-blog-2__link text-center">
-                                        <span>Read More<i class="flaticon-arrow-right"></i><span>
-                                    </span></span></div>
+                        <div class="testimonial-card__body">
+                            <span class="testimonial-card__name">{{ $rs->names }}</span>
+                            @php
+                            $testPlain = strip_tags(html_entity_decode($rs->testimony ?? ''));
+                            $words = Str::limit($testPlain, 120, '…');
+                            @endphp
+                            <p class="testimonial-card__quote">{{ $words }}</p>
+                            @if(strlen($testPlain) > 120)
+                                <a href="{{ route('testimony',['id'=>$rs->id]) }}" class="testimonial-card__link">
+                                    Read full story <i class="fas fa-arrow-right" aria-hidden="true"></i>
                                 </a>
-                                @endif
-                            </div>
-
+                            @endif
                         </div>
-                    </div>
+                    </article>
                 </div>
                 @endforeach
 

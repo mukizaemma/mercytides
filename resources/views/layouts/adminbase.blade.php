@@ -3,9 +3,9 @@
     <head>
         @php
             $themeSetting = $setting ?? \App\Models\Setting::firstOrEmpty();
-            $primary = $themeSetting->primary_color ?? '#fad200';
-            $secondary = $themeSetting->secondary_color ?? '#2c2c2c';
-            $neutral = $themeSetting->neutral_color ?? '#b0b0b0';
+            $primary = $themeSetting->primary_color ?? '#FFC107';
+            $secondary = $themeSetting->secondary_color ?? '#2E7D32';
+            $neutral = $themeSetting->neutral_color ?? '#0288D1';
             $fontFamily = $themeSetting->font_family ?? 'Poppins';
             $googleFontParam = str_replace(' ', '+', $fontFamily);
         @endphp
@@ -32,6 +32,10 @@
                 --brand-primary: {{ $primary }};
                 --brand-secondary: {{ $secondary }};
                 --brand-neutral: {{ $neutral }};
+                --brand-yellow: {{ $primary }};
+                --brand-green: {{ $secondary }};
+                --brand-blue: {{ $neutral }};
+                --brand-dark: #0f1f14;
             }
 
             body {
@@ -109,7 +113,7 @@
                         icon: 'success',
                         title: 'Saved',
                         text: successMessage,
-                        confirmButtonColor: getComputedStyle(document.documentElement).getPropertyValue('--brand-primary') || '#fad200',
+                        confirmButtonColor: getComputedStyle(document.documentElement).getPropertyValue('--brand-primary') || '#FFC107',
                     });
                 } else if (errorMessage && pendingFeedback && sessionStorage.getItem(errorKey) !== 'shown') {
                     sessionStorage.setItem(errorKey, 'shown');

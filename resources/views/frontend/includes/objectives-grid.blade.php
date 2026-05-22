@@ -8,7 +8,7 @@
 <section class="{{ $sectionClass }}">
     <div class="container">
         <div class="row justify-content-center mb-4 mb-lg-5">
-            <div class="col-12 col-lg-10 text-center">
+            <div class="col-12 col-lg-10 text-center wow tpfadeUp reveal-on-scroll" data-wow-duration=".9s" data-wow-delay=".1s">
                 <span class="mt-objectives__eyebrow">What we do</span>
                 <h4 class="tp-section-title mb-3">Our main objectives</h4>
                 @if(!empty($caption))
@@ -24,7 +24,7 @@
                     $delay = number_format(0.1 + ($idx * 0.08), 2, '.', '');
                 @endphp
                 <div class="col-sm-6 col-lg-4">
-                    <article class="mt-objective-card h-100 wow tpfadeUp" data-wow-duration=".9s" data-wow-delay="{{ $delay }}s">
+                    <article class="mt-objective-card h-100 wow tpfadeUp reveal-on-scroll" data-wow-duration=".9s" data-wow-delay="{{ $delay }}s">
                         <span class="mt-objective-card__watermark" aria-hidden="true">{{ $number }}</span>
                         <div class="mt-objective-card__top">
                             <span class="mt-objective-card__icon" aria-hidden="true"><i class="{{ $icon }}"></i></span>

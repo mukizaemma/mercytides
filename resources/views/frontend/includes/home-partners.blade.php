@@ -2,14 +2,15 @@
 <section class="py-70 grey-bg home-partners-section">
     <div class="container">
         <div class="row">
-            <div class="col-12 text-center pb-40">
+            <div class="col-12 text-center pb-40 wow tpfadeUp reveal-on-scroll" data-wow-duration=".9s" data-wow-delay=".1s">
+                <span class="about-home-eyebrow d-block mb-2">Together we grow</span>
                 <h4 class="tp-section-title">Partners &amp; churches</h4>
                 <p class="text-muted mb-0">Walking together to serve mothers and families across Uganda.</p>
             </div>
         </div>
         <div class="row g-4 align-items-center justify-content-center">
             @foreach ($partners as $partner)
-                <div class="col-6 col-md-4 col-lg-3 text-center">
+                <div class="col-6 col-md-4 col-lg-3 text-center wow tpfadeUp reveal-on-scroll" data-wow-duration=".9s" data-wow-delay=".2s">
                     @if(!empty($partner->image))
                         <img src="{{ asset('storage/images/partners/' . $partner->image) }}" alt="{{ $partner->names ?? 'Partner' }}" class="home-partners-section__logo img-fluid" loading="lazy">
                     @else

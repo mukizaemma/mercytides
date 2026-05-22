@@ -29,9 +29,10 @@
     <link rel="stylesheet" href="{{ asset('assets/css/theme-custom.css') }}">
 
     @php
-        $primary = $setting->primary_color ?? '#fad200';
-        $secondary = $setting->secondary_color ?? '#2c2c2c';
-        $neutral = $setting->neutral_color ?? '#b0b0b0';
+        /* Logo palette: yellow accent, green brand, blue foundation */
+        $primary = $setting->primary_color ?? '#FFC107';
+        $secondary = $setting->secondary_color ?? '#2E7D32';
+        $neutral = $setting->neutral_color ?? '#0288D1';
         $fontFamily = $setting->font_family ?? 'Poppins';
         $googleFontParam = str_replace(' ', '+', $fontFamily);
     @endphp
@@ -48,6 +49,10 @@
             --brand-primary: {{ $primary }};
             --brand-secondary: {{ $secondary }};
             --brand-neutral: {{ $neutral }};
+            --brand-yellow: {{ $primary }};
+            --brand-green: {{ $secondary }};
+            --brand-blue: {{ $neutral }};
+            --brand-dark: #0f1f14;
             --tp-theme-1: {{ $secondary }};
             --tp-theme-2: {{ $primary }};
         }
@@ -330,6 +335,8 @@
     <script src="{{ asset('assets/js/isotope-pkgd.js') }}" defer></script>
     <script src="{{ asset('assets/js/imagesloaded-pkgd.js') }}" defer></script>
     <script src="{{ asset('assets/js/ajax-form.js') }}" defer></script>
+    <script src="{{ asset('assets/js/scroll-reveal.js') }}" defer></script>
+    <script src="{{ asset('assets/js/page-header-parallax.js') }}" defer></script>
     <script src="{{ asset('assets/js/main.js') }}" defer></script>
     <script src="{{ asset('assets/js/turbo-init.js') }}" defer></script>
     @if(!empty($recaptchaSiteKey))

@@ -27,7 +27,7 @@
                     <header class="page-standalone-card__head">
                         <span class="page-standalone-card__icon"><i class="flaticon-mission"></i></span>
                         <div>
-                            <p class="page-standalone-card__eyebrow">What we offer</p>
+                            {{-- <p class="page-standalone-card__eyebrow">What we offer</p> --}}
                             <h2 class="page-standalone-card__title mb-0">Program offerings</h2>
                         </div>
                     </header>

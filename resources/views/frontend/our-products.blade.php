@@ -148,15 +148,15 @@
         position: absolute;
         inset: 0 auto 0 0;
         width: 6px;
-        background: linear-gradient(180deg, var(--brand-primary, #fad200), #f2be00);
+        background: linear-gradient(180deg, var(--brand-primary, #3386B5), #58A9C9);
     }
     .products-page-intro__badge {
         display: inline-flex;
         align-items: center;
         gap: 0.35rem;
-        background: rgba(250, 210, 0, 0.14);
-        border: 1px solid rgba(250, 210, 0, 0.35);
-        color: #6b5600;
+        background: rgba(51, 134, 181, 0.14);
+        border: 1px solid rgba(51, 134, 181, 0.35);
+        color: #00205B;
         font-size: 0.78rem;
         font-weight: 700;
         text-transform: uppercase;

@@ -41,7 +41,7 @@
                                 <i class="fas fa-user fa-2x text-dark"></i>
                             </div>
                             <h4 class="h5 mb-1">{{ $leader['names'] }}</h4>
-                            <span class="d-block fw-semibold mb-2" style="color:var(--brand-primary,#fad200);">{{ $leader['position'] }}</span>
+                            <span class="d-block fw-semibold mb-2" style="color:var(--brand-primary,#3386B5);">{{ $leader['position'] }}</span>
                             <div class="postbox__text text-start small">{!! $leader['bio'] !!}</div>
                         </article>
                     </div>

@@ -29,10 +29,10 @@
     <link rel="stylesheet" href="{{ asset('assets/css/theme-custom.css') }}">
 
     @php
-        /* Logo palette: yellow accent, green brand, blue foundation */
-        $primary = $setting->primary_color ?? '#FFC107';
-        $secondary = $setting->secondary_color ?? '#2E7D32';
-        $neutral = $setting->neutral_color ?? '#0288D1';
+        /* Logo palette: medium blue accent, navy brand, light blue highlights */
+        $primary = $setting->primary_color ?? '#3386B5';
+        $secondary = $setting->secondary_color ?? '#00205B';
+        $neutral = $setting->neutral_color ?? '#58A9C9';
         $fontFamily = $setting->font_family ?? 'Poppins';
         $googleFontParam = str_replace(' ', '+', $fontFamily);
     @endphp
@@ -52,7 +52,7 @@
             --brand-yellow: {{ $primary }};
             --brand-green: {{ $secondary }};
             --brand-blue: {{ $neutral }};
-            --brand-dark: #0f1f14;
+            --brand-dark: #00205B;
             --tp-theme-1: {{ $secondary }};
             --tp-theme-2: {{ $primary }};
         }

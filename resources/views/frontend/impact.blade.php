@@ -206,7 +206,7 @@
         }
 
         .impact-number-card--item .impact-number-card__value {
-            color: var(--brand-primary, #d8b400);
+            color: var(--brand-primary, #3386B5);
         }
 
         .impact-testimonial-card {

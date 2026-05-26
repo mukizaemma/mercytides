@@ -192,7 +192,7 @@
             width: 0.55rem;
             height: 0.55rem;
             border-radius: 50%;
-            background: var(--brand-primary, #fad200);
+            background: var(--brand-primary, #3386B5);
         }
 
         .factory-feature-card__media {

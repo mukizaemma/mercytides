@@ -566,13 +566,13 @@ public function gallery(){
 
         // Theme options (safe if migration hasn't run yet)
         if (Schema::hasColumn('settings', 'primary_color')) {
-            $data->primary_color = $request->input('primary_color') ?: '#FFC107';
+            $data->primary_color = $request->input('primary_color') ?: '#3386B5';
         }
         if (Schema::hasColumn('settings', 'secondary_color')) {
-            $data->secondary_color = $request->input('secondary_color') ?: '#2E7D32';
+            $data->secondary_color = $request->input('secondary_color') ?: '#00205B';
         }
         if (Schema::hasColumn('settings', 'neutral_color')) {
-            $data->neutral_color = $request->input('neutral_color') ?: '#0288D1';
+            $data->neutral_color = $request->input('neutral_color') ?: '#58A9C9';
         }
         if (Schema::hasColumn('settings', 'font_family')) {
             $data->font_family = $request->input('font_family') ?: 'Poppins';

@@ -84,6 +84,20 @@
         <script src="https://cdn.jsdelivr.net/npm/@hotwired/turbo@8.0.4/dist/turbo.es2017-umd.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script src="{{ asset('assets/admin/js/scripts.js') }}"></script>
+        @php
+            $imageUploadConfig = [
+                'maxBytes' => (int) config('image.max_bytes'),
+                'maxWidth' => (int) config('image.max_width'),
+                'maxHeight' => (int) config('image.max_height'),
+                'initialQuality' => ((int) config('image.initial_quality')) / 100,
+                'minQuality' => ((int) config('image.min_quality')) / 100,
+                'presets' => config('image.presets'),
+            ];
+        @endphp
+        <script>
+            window.MercyTidesImageUpload = @json($imageUploadConfig);
+        </script>
+        <script src="{{ asset('assets/admin/js/image-upload-preview.js') }}"></script>
         <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" crossorigin="anonymous"></script>
         <script src="{{ asset('assets/admin/js/datatables-simple-demo.js') }}"></script>
 

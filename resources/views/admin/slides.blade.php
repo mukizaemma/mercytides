@@ -81,7 +81,7 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Hero image <span class="text-danger">*</span></label>
-                        <input type="file" class="form-control" name="image" required accept="image/*">
+                        <input type="file" class="form-control" name="image" required accept="image/*" data-image-preset="hero">
                         <small class="text-muted">Landscape photo of mothers/children works best (wide format).</small>
                     </div>
                     <button type="submit" class="btn btn-primary">Save slide</button>

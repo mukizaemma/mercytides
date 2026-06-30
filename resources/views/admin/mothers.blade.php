@@ -94,8 +94,8 @@
                     @csrf
                     <div class="mb-3">
                         <label class="form-label">Portrait photo <span class="text-danger">*</span></label>
-                        <input type="file" class="form-control" name="image" required accept="image/*">
-                        <small class="text-muted">Vertical portrait photos work best for the gallery.</small>
+                        <input type="file" class="form-control" name="image" required accept="image/*" data-image-preset="portrait">
+                        <small class="text-muted">Vertical portrait photos work best for the gallery. You’ll see the estimated size after selecting a file.</small>
                     </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
@@ -135,7 +135,7 @@
                     @csrf
                     <div class="mb-3">
                         <label class="form-label">Replace portrait (optional)</label>
-                        <input type="file" class="form-control" name="image" accept="image/*">
+                        <input type="file" class="form-control" name="image" accept="image/*" data-image-preset="portrait">
                         <img src="{{ \App\Models\Mother::publicImageUrl($mother->image) }}" alt="" class="mt-2 rounded border" width="120" style="aspect-ratio:3/4;object-fit:cover;">
                     </div>
                     <div class="row">

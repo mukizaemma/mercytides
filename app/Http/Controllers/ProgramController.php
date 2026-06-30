@@ -34,7 +34,7 @@ class ProgramController extends Controller
         $program->title = $request->input('title');
         $program->description = $request->input('description');
         $program->slug = $this->uniqueSlug($request->input('title'));
-        $program->image = $request->file('image')->store('images/programs', 'public');
+        $program->image = $request->file('image')->storeOptimized('images/programs', 'public');
         if (Schema::hasColumn('programs', 'added_by')) {
             $program->added_by = Auth::id() ?? Auth::guard('admin')->id();
         }
@@ -42,7 +42,7 @@ class ProgramController extends Controller
 
         if (Schema::hasTable('programimages')) {
             foreach ($request->file('gallery_images', []) as $galleryImage) {
-                $path = $galleryImage->store('images/programs/gallery', 'public');
+                $path = $galleryImage->storeOptimized('images/programs/gallery', 'public');
                 Programimage::create([
                     'image' => $path,
                     'program_id' => $program->id,
@@ -95,7 +95,7 @@ class ProgramController extends Controller
             if (!empty($data->image) && Storage::disk('public')->exists($data->image)) {
                 Storage::disk('public')->delete($data->image);
             }
-            $data->image = $request->file('image')->store('images/programs', 'public');
+            $data->image = $request->file('image')->storeOptimized('images/programs', 'public');
         }
 
         $data->save();
@@ -166,7 +166,7 @@ class ProgramController extends Controller
         }
 
         foreach ($files as $image) {
-            $path = $image->store('images/programs/gallery', 'public');
+            $path = $image->storeOptimized('images/programs/gallery', 'public');
 
             Programimage::create([
                 'image' => $path,

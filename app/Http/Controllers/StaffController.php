@@ -51,10 +51,9 @@ class StaffController extends Controller
         // Uploading image
         if ($request->hasFile('image')) {
             $file = $request->file('image');
-            $fileName = time() . '_' . $file->getClientOriginalName();
-            $file->storeAs('public/images/staff', $fileName);
-
-            $data->image = $fileName;
+            $fileName = time().'_'.$file->getClientOriginalName();
+            $this->storeOptimizedImageAs($file, 'images/staff', $fileName, 'public', ['preset' => 'portrait']);
+            $data->image = '/'.$fileName;
         } else {
             dd('Image not received');
         }
@@ -117,15 +116,15 @@ class StaffController extends Controller
         }
 
         if ($request->hasFile('image') && request('image') != '') {
-            $dir = 'public/images/staff';
-
-            if (File::exists($dir)) {
-                unlink($dir);
-            }
-            $path = $request->file('image')->store($dir);
-            $fileName = str_replace($dir, '', $path);
-
-            $data->image = $fileName;
+            $fileName = time().'_'.$request->file('image')->getClientOriginalName();
+            $this->storeOptimizedImageAs(
+                $request->file('image'),
+                'images/staff',
+                $fileName,
+                'public',
+                ['preset' => 'portrait']
+            );
+            $data->image = '/'.$fileName;
         }
 
         $data->update();

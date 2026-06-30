@@ -64,7 +64,7 @@ class NewsController extends Controller
 
         $fileName = '';
         if($request->hasFile('image')){
-            $fileName = $request->file('image')->store('images/news', 'public');
+            $fileName = $request->file('image')->storeOptimized('images/news', 'public');
         }
 
         $blog = new News();
@@ -82,7 +82,7 @@ class NewsController extends Controller
 
         if($request->hasFile('gallery')){
             foreach($request->file('gallery') as $gallery){
-                $path = $gallery->store('images/news/gallery', 'public');
+                $path = $gallery->storeOptimized('images/news/gallery', 'public');
                 $blog->blogimages()->create([
                     'gallery' => $path,
                     'news_id' => $blog->id,
@@ -121,13 +121,13 @@ class NewsController extends Controller
                 Storage::disk('public')->delete($blog->image);
             }
             // Store the new image
-            $blog->image = $request->file('image')->store('images/news', 'public');
+            $blog->image = $request->file('image')->storeOptimized('images/news', 'public');
         }
 
         // Append gallery images (don't erase existing)
         if ($request->hasFile('gallery')) {
             foreach($request->file('gallery') as $gallery){
-                $path = $gallery->store('images/news/gallery', 'public');
+                $path = $gallery->storeOptimized('images/news/gallery', 'public');
                 $blog->blogimages()->create([
                     'gallery' => $path,
                     'news_id' => $blog->id,

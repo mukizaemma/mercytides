@@ -38,7 +38,7 @@ class MothersController extends Controller
         }
 
         if ($request->hasFile('image')) {
-            $mother->image = $request->file('image')->store('images/mothers', 'public');
+            $mother->image = $request->file('image')->storeOptimized('images/mothers', 'public', ['preset' => 'portrait']);
         }
 
         $mother->save();
@@ -66,7 +66,7 @@ class MothersController extends Controller
             if (! empty($mother->image) && Storage::disk('public')->exists($mother->image)) {
                 Storage::disk('public')->delete($mother->image);
             }
-            $mother->image = $request->file('image')->store('images/mothers', 'public');
+            $mother->image = $request->file('image')->storeOptimized('images/mothers', 'public', ['preset' => 'portrait']);
         }
 
         $mother->save();

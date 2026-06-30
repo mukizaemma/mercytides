@@ -131,8 +131,8 @@ public function saveBackg(Request $request)
             Storage::disk('public')->delete('images/' . $data->image);
         }
 
-        $filename = 'bg_' . time() . '_' . Str::random(5) . '.' . $request->file('image')->getClientOriginalExtension();
-        $request->file('image')->storeAs('images', $filename, 'public');
+        $filename = 'bg_'.time().'_'.Str::random(5).'.jpg';
+        $this->storeOptimizedImageAs($request->file('image'), 'images', $filename, 'public', ['preset' => 'hero']);
         $data->image = $filename;
     }
 
@@ -142,8 +142,8 @@ public function saveBackg(Request $request)
             Storage::disk('public')->delete('images/' . $data->image1);
         }
 
-        $filename1 = 'img1_' . time() . '_' . Str::random(5) . '.' . $request->file('image1')->getClientOriginalExtension();
-        $request->file('image1')->storeAs('images', $filename1, 'public');
+        $filename1 = 'img1_'.time().'_'.Str::random(5).'.jpg';
+        $this->storeOptimizedImageAs($request->file('image1'), 'images', $filename1, 'public');
         $data->image1 = $filename1;
     }
 
@@ -153,8 +153,8 @@ public function saveBackg(Request $request)
             Storage::disk('public')->delete('images/' . $data->image2);
         }
 
-        $filename2 = 'img2_' . time() . '_' . Str::random(5) . '.' . $request->file('image2')->getClientOriginalExtension();
-        $request->file('image2')->storeAs('images', $filename2, 'public');
+        $filename2 = 'img2_'.time().'_'.Str::random(5).'.jpg';
+        $this->storeOptimizedImageAs($request->file('image2'), 'images', $filename2, 'public');
         $data->image2 = $filename2;
     }
 
@@ -164,8 +164,8 @@ public function saveBackg(Request $request)
             Storage::disk('public')->delete('images/' . $data->core_values_background);
         }
 
-        $cvFilename = 'cv_bg_' . time() . '_' . Str::random(5) . '.' . $request->file('core_values_background')->getClientOriginalExtension();
-        $request->file('core_values_background')->storeAs('images', $cvFilename, 'public');
+        $cvFilename = 'cv_bg_'.time().'_'.Str::random(5).'.jpg';
+        $this->storeOptimizedImageAs($request->file('core_values_background'), 'images', $cvFilename, 'public', ['preset' => 'hero']);
         $data->core_values_background = $cvFilename;
     }
 
@@ -175,8 +175,8 @@ public function saveBackg(Request $request)
             Storage::disk('public')->delete('images/' . $data->model_image);
         }
 
-        $modelFilename = 'model_' . time() . '_' . Str::random(5) . '.' . $request->file('model_image')->getClientOriginalExtension();
-        $request->file('model_image')->storeAs('images', $modelFilename, 'public');
+        $modelFilename = 'model_'.time().'_'.Str::random(5).'.jpg';
+        $this->storeOptimizedImageAs($request->file('model_image'), 'images', $modelFilename, 'public');
         $data->model_image = $modelFilename;
     }
 
@@ -184,8 +184,8 @@ public function saveBackg(Request $request)
         if ($data->factory_services_image && Storage::disk('public')->exists('images/' . $data->factory_services_image)) {
             Storage::disk('public')->delete('images/' . $data->factory_services_image);
         }
-        $filename = 'factory_services_' . time() . '_' . Str::random(5) . '.' . $request->file('factory_services_image')->getClientOriginalExtension();
-        $request->file('factory_services_image')->storeAs('images', $filename, 'public');
+        $filename = 'factory_services_'.time().'_'.Str::random(5).'.jpg';
+        $this->storeOptimizedImageAs($request->file('factory_services_image'), 'images', $filename, 'public');
         $data->factory_services_image = $filename;
     }
 
@@ -193,8 +193,8 @@ public function saveBackg(Request $request)
         if ($data->factory_community_impact_image && Storage::disk('public')->exists('images/' . $data->factory_community_impact_image)) {
             Storage::disk('public')->delete('images/' . $data->factory_community_impact_image);
         }
-        $filename = 'factory_impact_' . time() . '_' . Str::random(5) . '.' . $request->file('factory_community_impact_image')->getClientOriginalExtension();
-        $request->file('factory_community_impact_image')->storeAs('images', $filename, 'public');
+        $filename = 'factory_impact_'.time().'_'.Str::random(5).'.jpg';
+        $this->storeOptimizedImageAs($request->file('factory_community_impact_image'), 'images', $filename, 'public');
         $data->factory_community_impact_image = $filename;
     }
 
@@ -202,8 +202,8 @@ public function saveBackg(Request $request)
         if ($data->factory_training_facilities_image && Storage::disk('public')->exists('images/' . $data->factory_training_facilities_image)) {
             Storage::disk('public')->delete('images/' . $data->factory_training_facilities_image);
         }
-        $filename = 'factory_training_' . time() . '_' . Str::random(5) . '.' . $request->file('factory_training_facilities_image')->getClientOriginalExtension();
-        $request->file('factory_training_facilities_image')->storeAs('images', $filename, 'public');
+        $filename = 'factory_training_'.time().'_'.Str::random(5).'.jpg';
+        $this->storeOptimizedImageAs($request->file('factory_training_facilities_image'), 'images', $filename, 'public');
         $data->factory_training_facilities_image = $filename;
     }
 

@@ -52,7 +52,7 @@ class GalleryController extends Controller
 
         // Uploading image
         if ($request->hasFile('image')) {
-            $data->image = $request->file('image')->store('images/gallery', 'public');
+            $data->image = $request->file('image')->storeOptimized('images/gallery', 'public');
         }
 
         $stored = $data->save();
@@ -109,7 +109,7 @@ class GalleryController extends Controller
             if (!empty($data->image) && Storage::disk('public')->exists($data->image)) {
                 Storage::disk('public')->delete($data->image);
             }
-            $data->image = $request->file('image')->store('images/gallery', 'public');
+            $data->image = $request->file('image')->storeOptimized('images/gallery', 'public');
         }
 
         $data->save();

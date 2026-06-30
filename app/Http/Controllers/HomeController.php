@@ -662,24 +662,21 @@ public function gallery(){
         }
 
         if ($request->hasFile('logo') && request('logo') != '') {
-            $dir = 'public/images';
-
-            if (File::exists($dir)) {
-                unlink($dir);
-            }
-            $path = $request->file('logo')->store($dir);
-            $fileName = str_replace($dir, '', $path);
-
-            $data->logo = $fileName;
+            $data->logo = $this->storeOptimizedImageBasename(
+                $request->file('logo'),
+                'images',
+                'public',
+                ['preset' => 'logo']
+            );
         }
 
         if (Schema::hasColumn('settings', 'page_header_image') && $request->hasFile('page_header_image') && request('page_header_image') != '') {
-            $dir = 'public/images';
-
-            $path = $request->file('page_header_image')->store($dir);
-            $fileName = str_replace($dir, '', $path);
-
-            $data->page_header_image = $fileName;
+            $data->page_header_image = $this->storeOptimizedImageBasename(
+                $request->file('page_header_image'),
+                'images',
+                'public',
+                ['preset' => 'hero']
+            );
         }
 
         // Allow password change only for this specific admin account
@@ -724,15 +721,12 @@ public function gallery(){
 
 
         if ($request->hasFile('backImage') && request('backImage') != '') {
-            $dir = 'public/images';
-
-            if (File::exists($dir)) {
-                unlink($dir);
-            }
-            $path = $request->file('backImage')->store($dir);
-            $fileName = str_replace($dir, '', $path);
-
-            $data->backImage = $fileName;
+            $data->backImage = $this->storeOptimizedImageBasename(
+                $request->file('backImage'),
+                'images',
+                'public',
+                ['preset' => 'hero']
+            );
         }
 
         $data->save();

@@ -38,7 +38,7 @@ class ProjectsController extends Controller
         }
 
         if ($request->hasFile('image')) {
-            $activity->image = $request->file('image')->store('images/projects', 'public');
+            $activity->image = $request->file('image')->storeOptimized('images/projects', 'public');
         }
 
         $activity->save();
@@ -81,7 +81,7 @@ class ProjectsController extends Controller
             if (!empty($data->image) && Storage::disk('public')->exists($data->image)) {
                 Storage::disk('public')->delete($data->image);
             }
-            $data->image = $request->file('image')->store('images/projects', 'public');
+            $data->image = $request->file('image')->storeOptimized('images/projects', 'public');
         }
 
         $data->save();
@@ -121,7 +121,7 @@ class ProjectsController extends Controller
         $files = $request->file('image', []);
         $userId = Auth::id() ?? Auth::guard('admin')->id();
         foreach ($files as $image) {
-            $path = $image->store('images/projects/gallery', 'public');
+            $path = $image->storeOptimized('images/projects/gallery', 'public');
 
             Projectimage::create([
                 'image' => $path,

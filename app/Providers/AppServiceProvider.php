@@ -9,6 +9,8 @@ use App\Models\Program;
 use App\Models\Service;
 use App\Models\Setting;
 use App\Services\FormSubmissionService;
+use App\Services\ImageUploadService;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
@@ -18,12 +20,20 @@ class AppServiceProvider extends ServiceProvider
 
     public function register()
     {
-        //
+        $this->app->singleton(ImageUploadService::class);
     }
 
 
     public function boot()
     {
+        UploadedFile::macro('storeOptimized', function (string $directory, string $disk = 'public', array $options = []) {
+            return app(ImageUploadService::class)->store($this, $directory, $disk, $options);
+        });
+
+        UploadedFile::macro('storeOptimizedAs', function (string $directory, string $filename, string $disk = 'public', array $options = []) {
+            return app(ImageUploadService::class)->storeAs($this, $directory, $filename, $disk, $options);
+        });
+
         View::share(
             'setting',
             Schema::hasTable('settings')

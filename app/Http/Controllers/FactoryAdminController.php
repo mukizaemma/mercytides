@@ -130,8 +130,8 @@ class FactoryAdminController extends Controller
             Storage::disk('public')->delete('images/' . $existing);
         }
 
-        $filename = $prefix . time() . '_' . Str::random(5) . '.' . $request->file($field)->getClientOriginalExtension();
-        $request->file($field)->storeAs('images', $filename, 'public');
+        $filename = $prefix.time().'_'.Str::random(5).'.jpg';
+        $this->storeOptimizedImageAs($request->file($field), 'images', $filename, 'public');
         $bg->{$field} = $filename;
     }
 }

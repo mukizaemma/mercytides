@@ -51,10 +51,11 @@ class ImpactsController extends Controller
 
         $fileName = '';
         if($request->hasFile('image')){
-            $file = $request->file('image');
-
-            $path = $file->store('public/images/impacts');
-            $fileName = basename($path);
+            $fileName = $this->storeOptimizedImageBasename(
+                $request->file('image'),
+                'images/impacts',
+                'public'
+            );
         }
 
         // Generate the slug
@@ -121,9 +122,11 @@ class ImpactsController extends Controller
                 File::delete($imagePath);
             }
 
-            $file = $request->file('image');
-            $path = $file->store('public/images/impacts');
-            $fileName = basename($path);
+            $fileName = $this->storeOptimizedImageBasename(
+                $request->file('image'),
+                'images/impacts',
+                'public'
+            );
         } else {
             $fileName = $impact->image;
         }

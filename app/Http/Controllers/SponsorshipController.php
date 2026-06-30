@@ -46,12 +46,13 @@ class SponsorshipController extends Controller
         $data->contact = $request->contact;
         $data->address = $request->address ?? $request->contact;
 
-        // Uploading image
         if ($request->hasFile('image')) {
-            $dir = 'public/images/sponsorship';
-            $path = $request->file('image')->store($dir);
-            $fileName = str_replace($dir, '', $path);
-            $data->image = $fileName;
+            $data->image = $this->storeOptimizedImageBasename(
+                $request->file('image'),
+                'images/sponsorship',
+                'public',
+                ['preset' => 'portrait']
+            );
         }
 
         $stored = $data->save();
@@ -108,15 +109,12 @@ class SponsorshipController extends Controller
         }
 
         if ($request->hasFile('image') && request('image') != '') {
-            $dir = 'public/images/sponsorship';
-
-            if (File::exists($dir)) {
-                unlink($dir);
-            }
-            $path = $request->file('image')->store($dir);
-            $fileName = str_replace($dir, '', $path);
-
-            $data->image = $fileName;
+            $data->image = $this->storeOptimizedImageBasename(
+                $request->file('image'),
+                'images/sponsorship',
+                'public',
+                ['preset' => 'portrait']
+            );
         }
 
         $data->update();

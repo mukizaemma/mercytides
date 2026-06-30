@@ -40,7 +40,7 @@ class SlidesController extends Controller
         $data->subheading = "Mercy Tides";
     
         if ($request->hasFile('image')) {
-            $data->image = $request->file('image')->store('images/slides', 'public');
+            $data->image = $request->file('image')->storeOptimized('images/slides', 'public', ['preset' => 'hero']);
         }
     
         $stored = $data->save();
@@ -72,7 +72,7 @@ class SlidesController extends Controller
             if (!empty($data->image) && Storage::disk('public')->exists($data->image)) {
                 Storage::disk('public')->delete($data->image);
             }
-            $data->image = $request->file('image')->store('images/slides', 'public');
+            $data->image = $request->file('image')->storeOptimized('images/slides', 'public', ['preset' => 'hero']);
         }
 
         $data->save();

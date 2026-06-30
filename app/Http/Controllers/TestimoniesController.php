@@ -54,7 +54,7 @@ class TestimoniesController extends Controller
 
         // Uploading image
         if ($request->hasFile('image')) {
-            $data->image = $request->file('image')->store('images/testimonies', 'public');
+            $data->image = $request->file('image')->storeOptimized('images/testimonies', 'public', ['preset' => 'portrait']);
         }
 
         $stored = $data->save();
@@ -116,7 +116,7 @@ class TestimoniesController extends Controller
             if (!empty($data->image) && Storage::disk('public')->exists($data->image)) {
                 Storage::disk('public')->delete($data->image);
             }
-            $data->image = $request->file('image')->store('images/testimonies', 'public');
+            $data->image = $request->file('image')->storeOptimized('images/testimonies', 'public', ['preset' => 'portrait']);
         }
 
         $data->save();

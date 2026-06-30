@@ -58,7 +58,7 @@ class CatalogProductController extends Controller
         $product->is_active = $request->has('is_active');
 
         if ($request->hasFile('image')) {
-            $product->image = $request->file('image')->store('images/products', 'public');
+            $product->image = $request->file('image')->storeOptimized('images/products', 'public');
         }
 
         $product->save();
@@ -114,7 +114,7 @@ class CatalogProductController extends Controller
             if (! empty($product->image) && Storage::disk('public')->exists($product->image)) {
                 Storage::disk('public')->delete($product->image);
             }
-            $product->image = $request->file('image')->store('images/products', 'public');
+            $product->image = $request->file('image')->storeOptimized('images/products', 'public');
         }
 
         $product->save();
@@ -168,7 +168,7 @@ class CatalogProductController extends Controller
             if (! $file) {
                 continue;
             }
-            $path = $file->store('images/products/gallery', 'public');
+            $path = $file->storeOptimized('images/products/gallery', 'public');
             $maxSort++;
             ProductImage::create([
                 'product_id' => $product->id,

@@ -23,9 +23,11 @@ public function store(Request $request)
 {
     $fileName = null;
     if ($request->hasFile('image')) {
-        $file = $request->file('image');
-        $path = $file->store('public/images/campaigns');
-        $fileName = basename($path);
+        $fileName = $this->storeOptimizedImageBasename(
+            $request->file('image'),
+            'images/campaigns',
+            'public'
+        );
     }
 
     $slug = Str::slug($request->input('title'));
@@ -68,17 +70,21 @@ public function update(Request $request, $id)
     $post = Campain::findOrFail($id);
 
     if ($request->hasFile('image')) {
-        $file = $request->file('image');
-        $path = $file->store('public/images/campains');
-        $fileName = basename($path);
+        $fileName = $this->storeOptimizedImageBasename(
+            $request->file('image'),
+            'images/campains',
+            'public'
+        );
         Storage::delete('public/images/campains/' . $post->image);
         $post->image = $fileName;
     }
 
     if ($request->hasFile('youtubeimg')) {
-        $file = $request->file('youtubeimg');
-        $path = $file->store('public/images/campains');
-        $fileName = basename($path);
+        $fileName = $this->storeOptimizedImageBasename(
+            $request->file('youtubeimg'),
+            'images/campains',
+            'public'
+        );
         Storage::delete('public/images/campains/' . $post->youtubeimg);
         $post->youtubeimg = $fileName;
     }

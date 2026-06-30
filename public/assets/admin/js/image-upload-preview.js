@@ -156,7 +156,7 @@
             panel.innerHTML =
                 '<div class="image-upload-preview__card">' +
                     '<div class="image-upload-preview__thumb-wrap">' +
-                        '<img class="image-upload-preview__thumb" alt="">' +
+                        '<img class="image-upload-preview__thumb" alt="" width="48" height="64">' +
                     '</div>' +
                     '<div class="image-upload-preview__body">' +
                         '<div class="image-upload-preview__badge-wrap"></div>' +

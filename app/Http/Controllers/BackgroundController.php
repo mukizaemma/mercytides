@@ -31,6 +31,7 @@ public function saveBackg(Request $request)
     $request->validate([
         'description' => 'nullable|string',
         'donations' => 'nullable|string',
+        'get_involved_intro' => 'nullable|string',
         'approach_content' => 'nullable|string',
         'model_content' => 'nullable|string',
         'problem_statement' => 'nullable|string',
@@ -66,6 +67,9 @@ public function saveBackg(Request $request)
     }
     if ($request->has('donations')) {
         $data->donations = $request->input('donations');
+    }
+    if (Schema::hasColumn('backgrounds', 'get_involved_intro') && $request->has('get_involved_intro')) {
+        $data->get_involved_intro = $request->input('get_involved_intro');
     }
     if (Schema::hasColumn('backgrounds', 'approach_content') && $request->has('approach_content')) {
         $data->approach_content = $request->input('approach_content');

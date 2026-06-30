@@ -158,21 +158,13 @@
                                             @empty
                                                 <li><span class="px-3 d-inline-block text-muted small">No programs yet</span></li>
                                             @endforelse
+                                            <li class="submenu-divider" role="separator"></li>
+                                            <li><a href="{{ route('sponsorship.hub') }}">Sponsorship</a></li>
                                         </ul>
                                     </li>
                                     <li><a href="{{ route('impactPage') }}">Impact</a></li>
-                                    <li class="has-dropdown">
-                                        <a href="{{ route('getInvolved') }}">Get Involved</a>
-                                        <ul class="submenu tp-submenu">
-                                            <li><a href="{{ route('donate') }}">Donate</a></li>
-                                            <li><a href="{{ route('sponsorMother') }}">Sponsor a Mother</a></li>
-                                            <li><a href="{{ route('volunteer') }}">Volunteer</a></li>
-                                            <li><a href="{{ route('getInvolved') }}">Become a Partner</a></li>
-                                        </ul>
-                                    </li>
                                     <li><a href="{{ route('upcomingEvents') }}">Events</a></li>
-                                    <li><a href="{{ route('posts') }}">Resources</a></li>
-                                    <li><a href="{{ route('contacts') }}">Contact</a></li>
+                                    <li><a href="{{ route('contacts') }}">Contact us</a></li>
                                 </ul>
                             </nav>
                         </div>
@@ -188,7 +180,7 @@
                                     </li>                                     --}}
                                     <li>
                                         <div class="tp-header-3__btn d-none d-md-block">
-                                            <a class="tp-btn" href="{{ route('donate') }}">Donate</a>
+                                            <a class="tp-btn" href="{{ route('getInvolved') }}">Get Involved</a>
                                         </div>
                                     </li>  
                                     <li>
@@ -260,8 +252,8 @@
                             <li><a href="{{ route('backgroundDetails') }}">About us</a></li>
                             <li><a href="{{ route('showPrograms') }}">Programs</a></li>
                             <li><a href="{{ route('impactPage') }}">Impact</a></li>
-                            <li><a href="{{ route('donate') }}">Donate</a></li>
-                            <li><a href="{{ route('sponsorMother') }}">Sponsor a mother</a></li>
+                            <li><a href="{{ route('sponsorship.hub') }}">Sponsorship</a></li>
+                            <li><a href="{{ route('getInvolved') }}">Get involved</a></li>
                             <li><a href="{{ route('contacts') }}">Contact</a></li>
                         </ul>
                     </div>
@@ -278,12 +270,12 @@
 
                         <div class="site-footer__cta-below-programs pt-3 mt-3">
                             <div class="site-footer__cta-group">
-                                <a href="{{ route('applyForSupport') }}" class="site-footer__btn site-footer__btn--order">
-                                    <i class="fas fa-hands-helping" aria-hidden="true"></i>
-                                    Apply for support
+                                <a href="{{ route('sponsorship.hub') }}" class="site-footer__btn site-footer__btn--order">
+                                    <i class="fas fa-heart" aria-hidden="true"></i>
+                                    Sponsorship
                                 </a>
                                 <a href="{{ route('getInvolved') }}" class="site-footer__btn site-footer__btn--ghost">
-                                    Partner with us
+                                    Get Involved
                                 </a>
                             </div>
                         </div>
@@ -301,9 +293,9 @@
                         <span class="site-footer__credit">Site by <a href="https://iremetech.com" target="_blank" rel="noopener noreferrer">Ireme Technologies</a></span>
                     </div>
                     <div class="col-12 col-md-auto text-center text-md-end">
-                        <a href="{{ route('donate') }}" class="site-footer__mini-link">Donate</a>
+                        <a href="{{ route('sponsorship.hub') }}" class="site-footer__mini-link">Sponsorship</a>
                         <span class="site-footer__copy-sep">·</span>
-                        <a href="{{ route('applyForSupport') }}" class="site-footer__mini-link">Apply for support</a>
+                        <a href="{{ route('getInvolved') }}" class="site-footer__mini-link">Get involved</a>
                     </div>
                 </div>
             </div>

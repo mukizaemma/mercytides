@@ -22,8 +22,8 @@
             <x-admin.nav-link :href="route('blog.index')" icon="fa-newspaper" :active="request()->routeIs('blog.*')">
                 News &amp; blog
             </x-admin.nav-link>
-            <x-admin.nav-link :href="route('mothers.index')" icon="fa-user-circle" :active="request()->routeIs(['mothers.index', 'saveMother', 'updateMother', 'destroyMother'])">
-                Young mothers
+            <x-admin.nav-link :href="route('sponsorship.index')" icon="fa-heart" :active="request()->routeIs(['sponsorship.index', 'saveSponsorship', 'updateSponsorship', 'destroySponsorship'])">
+                Sponsorship profiles
             </x-admin.nav-link>
             <x-admin.nav-link :href="route('getTestimonials')" icon="fa-quote-right" :active="request()->routeIs(['getTestimonials', 'saveTestimony', 'updateTestimony'])">
                 Testimonials
@@ -44,9 +44,6 @@
             <p class="admin-nav-section-title mb-0 mt-3">People &amp; giving</p>
             <x-admin.nav-link :href="route('AllMembers')" icon="fa-user-friends" :active="request()->routeIs('AllMembers')">
                 Applications / members
-            </x-admin.nav-link>
-            <x-admin.nav-link :href="route('sponsorship.index')" icon="fa-heart" :active="request()->routeIs(['sponsorship.index', 'saveSponsorship', 'updateSponsorship'])">
-                Sponsor profiles
             </x-admin.nav-link>
             <x-admin.nav-link :href="route('campainCrud')" icon="fa-bullhorn" :active="request()->routeIs('campainCrud')">
                 Campaigns

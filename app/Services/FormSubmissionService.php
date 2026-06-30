@@ -26,6 +26,8 @@ class FormSubmissionService
         'volunteer' => 'Volunteer application',
         'support_application' => 'Apply for support',
         'partnership' => 'Partnership inquiry',
+        'get_involved' => 'Get involved',
+        'sponsor_inquiry' => 'Sponsorship inquiry',
         'order_request' => 'Order request',
     ];
 
@@ -187,6 +189,28 @@ class FormSubmissionService
                 'message' => ['nullable', 'string', 'max:20000'],
                 'source_page' => ['nullable', 'string', 'max:64'],
             ],
+            'get_involved' => [
+                'full_name' => ['required', 'string', 'max:255'],
+                'phone' => ['required', 'string', 'max:64'],
+                'email' => ['required', 'email', 'max:255'],
+                'country' => ['required', 'string', 'max:120'],
+                'ways' => ['required', 'array', 'min:1'],
+                'ways.*' => ['string', Rule::in(array_keys($this->getInvolvedWayLabels()))],
+                'donation_amount' => ['nullable', 'numeric', 'min:1'],
+                'volunteer_experience' => ['nullable', 'string', 'max:5000'],
+                'partnership_details' => ['nullable', 'string', 'max:5000'],
+                'message' => ['nullable', 'string', 'max:2000'],
+            ],
+            'sponsor_inquiry' => [
+                'full_name' => ['required', 'string', 'max:255'],
+                'phone' => ['required', 'string', 'max:64'],
+                'email' => ['required', 'email', 'max:255'],
+                'country' => ['required', 'string', 'max:120'],
+                'sponsorship_id' => ['required', 'integer', 'exists:sponsorships,id'],
+                'donation_preference' => ['required', 'string', Rule::in(array_keys(\App\Support\MercyTidesContent::sponsorshipDonationPreferences()))],
+                'donation_amount' => ['nullable', 'numeric', 'min:1'],
+                'message' => ['nullable', 'string', 'max:2000'],
+            ],
             'order_request' => [
                 'full_name' => ['required', 'string', 'max:255'],
                 'phone' => ['required', 'string', 'max:64'],
@@ -221,6 +245,34 @@ class FormSubmissionService
             }
         }
 
+        if ($formType === 'get_involved') {
+            $ways = (array) ($validated['ways'] ?? []);
+            if (in_array('donation', $ways, true) && empty($validated['donation_amount'])) {
+                throw ValidationException::withMessages([
+                    'donation_amount' => 'Please enter the amount you would like to give in USD.',
+                ]);
+            }
+            if (in_array('volunteer', $ways, true) && trim((string) ($validated['volunteer_experience'] ?? '')) === '') {
+                throw ValidationException::withMessages([
+                    'volunteer_experience' => 'Please describe your areas of interest and experience.',
+                ]);
+            }
+            if (in_array('partner', $ways, true) && trim((string) ($validated['partnership_details'] ?? '')) === '') {
+                throw ValidationException::withMessages([
+                    'partnership_details' => 'Please describe the partnership you are looking for and the impact you hope to make.',
+                ]);
+            }
+        }
+
+        if ($formType === 'sponsor_inquiry') {
+            $preference = (string) ($validated['donation_preference'] ?? '');
+            if (in_array($preference, ['monthly', 'one_time'], true) && empty($validated['donation_amount'])) {
+                throw ValidationException::withMessages([
+                    'donation_amount' => 'Please enter the amount you would like to give in USD.',
+                ]);
+            }
+        }
+
         $this->rejectSuspiciousText($validated, $formType);
 
         return $validated;
@@ -237,6 +289,8 @@ class FormSubmissionService
             'volunteer' => ['names', 'aboutYou', 'career', 'howToServe'],
             'support_application' => ['names', 'challenge', 'child_info'],
             'partnership' => ['organization', 'full_name', 'message'],
+            'get_involved' => ['full_name', 'volunteer_experience', 'partnership_details', 'message'],
+            'sponsor_inquiry' => ['full_name', 'message'],
             'order_request' => ['full_name', 'product_description'],
             default => [],
         };
@@ -257,7 +311,7 @@ class FormSubmissionService
     protected function extractName(string $formType, array $payload): ?string
     {
         return match ($formType) {
-            'partnership', 'order_request' => $payload['full_name'] ?? null,
+            'partnership', 'order_request', 'get_involved', 'sponsor_inquiry' => $payload['full_name'] ?? null,
             default => $payload['names'] ?? null,
         };
     }
@@ -370,6 +424,53 @@ class FormSubmissionService
                 }
                 break;
 
+            case 'get_involved':
+                $lines[] = 'Name: ' . ($payload['full_name'] ?? '');
+                $lines[] = 'Phone: ' . ($payload['phone'] ?? '');
+                $lines[] = 'Email: ' . ($payload['email'] ?? '');
+                $lines[] = 'Country: ' . ($payload['country'] ?? '');
+                $ways = $this->formatGetInvolvedWays((array) ($payload['ways'] ?? []));
+                if ($ways !== '') {
+                    $lines[] = 'Ways to get involved: ' . $ways;
+                }
+                if (! empty($payload['donation_amount'])) {
+                    $lines[] = 'Donation amount (USD): ' . $payload['donation_amount'];
+                }
+                if (! empty($payload['volunteer_experience'])) {
+                    $lines[] = 'Volunteer interests & experience: ' . $payload['volunteer_experience'];
+                }
+                if (! empty($payload['partnership_details'])) {
+                    $lines[] = 'Partnership details: ' . $payload['partnership_details'];
+                }
+                if (! empty($payload['message'])) {
+                    $lines[] = 'Additional notes: ' . $payload['message'];
+                }
+                break;
+
+            case 'sponsor_inquiry':
+                $profile = Sponsorship::query()->find($payload['sponsorship_id'] ?? null);
+                $lines[] = 'Name: ' . ($payload['full_name'] ?? '');
+                $lines[] = 'Phone: ' . ($payload['phone'] ?? '');
+                $lines[] = 'Email: ' . ($payload['email'] ?? '');
+                $lines[] = 'Country: ' . ($payload['country'] ?? '');
+                if ($profile) {
+                    $lines[] = 'Sponsorship profile: ' . $profile->displayName();
+                    $lines[] = 'Category: ' . $profile->typeLabel();
+                    if (! empty($profile->monthly_need)) {
+                        $lines[] = 'Suggested monthly need (USD): ' . $profile->monthly_need;
+                    }
+                }
+                $preferences = \App\Support\MercyTidesContent::sponsorshipDonationPreferences();
+                $prefKey = (string) ($payload['donation_preference'] ?? '');
+                $lines[] = 'How they want to give: ' . ($preferences[$prefKey] ?? $prefKey);
+                if (! empty($payload['donation_amount'])) {
+                    $lines[] = 'Amount (USD): ' . $payload['donation_amount'];
+                }
+                if (! empty($payload['message'])) {
+                    $lines[] = 'Message: ' . $payload['message'];
+                }
+                break;
+
             case 'order_request':
                 $lines[] = 'Name: ' . ($payload['full_name'] ?? '');
                 $lines[] = 'Phone: ' . ($payload['phone'] ?? '');
@@ -425,18 +526,31 @@ class FormSubmissionService
     /**
      * @return array<string, string>
      */
+    protected function getInvolvedWayLabels(): array
+    {
+        return \App\Support\MercyTidesContent::getInvolvedWays();
+    }
+
+    /**
+     * @param  list<string>  $keys
+     */
+    protected function formatGetInvolvedWays(array $keys): string
+    {
+        $labels = $this->getInvolvedWayLabels();
+        $parts = [];
+        foreach ($keys as $key) {
+            $parts[] = $labels[$key] ?? $key;
+        }
+
+        return implode(', ', $parts);
+    }
+
+    /**
+     * @return array<string, string>
+     */
     protected function partnershipInterestLabels(): array
     {
-        return [
-            'training' => 'Skills development & training',
-            'equipment' => 'Equipment or materials',
-            'fundraising' => 'Fundraising or sponsorship',
-            'volunteering' => 'Volunteering',
-            'sales_ambassador' => 'Sales & ambassador programmes',
-            'wholesale' => 'Wholesale / bulk orders',
-            'corporate' => 'Corporate or institutional partnership',
-            'other' => 'Other',
-        ];
+        return \App\Support\MercyTidesContent::partnershipInterestLabels();
     }
 
     /**

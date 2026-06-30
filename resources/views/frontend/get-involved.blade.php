@@ -1,163 +1,93 @@
 @extends('layouts.frontbase')
 
-@section('title', 'Get involved')
+@section('title', 'Get Involved')
+
+@php
+    use App\Support\MercyTidesContent;
+    use Illuminate\Support\Str;
+
+    $ways = MercyTidesContent::getInvolvedWays();
+    $selectedWays = (array) old('ways', []);
+    $preselect = request('way');
+    if ($preselect && array_key_exists($preselect, $ways) && $selectedWays === []) {
+        $selectedWays = [$preselect];
+    }
+
+    $introFull = $introHtml ?? MercyTidesContent::getInvolvedWhy();
+    $introPlain = strip_tags(html_entity_decode($introFull));
+    preg_match('/<p\b[^>]*>.*?<\/p>/is', $introFull, $introMatch);
+    $introTeaserHtml = $introMatch[0] ?? '<p>' . e(Str::limit($introPlain, 280, '…')) . '</p>';
+    $hasMoreIntro = strlen($introPlain) > strlen(strip_tags(html_entity_decode($introTeaserHtml))) + 40;
+@endphp
 
 @section('content')
 
 @include('frontend.includes.page-header', [
-    'title' => 'Get involved',
-    'caption' => 'Partner with Abahizi Manufacturing - a social enterprise combining skills development, capacity building, and revenue generation for communities across Rwanda.',
+    'title' => 'Get Involved',
+    'caption' => 'Stand with young mothers in Uganda — through giving, volunteering, partnership, or a personal visit.',
 ])
 
-<section class="py-5 grey-bg">
+<section class="get-involved-page pt-90 pb-90 grey-bg">
     <div class="container">
-        @php
-            $waNumber = preg_replace('/\D+/', '', $setting->phone ?? $setting->phone1 ?? '');
-        @endphp
-        <div class="row g-4 mb-4 mb-lg-5">
-            <div class="col-md-4">
-                <div class="card border-0 shadow-sm h-100 get-involved-highlight">
-                    <div class="card-body p-4">
-                        <h4 class="h5 mb-3">Skills &amp; training</h4>
-                        <p class="text-muted mb-0 small">Co-design workshops, artisan training, and workplace learning that strengthen livelihoods.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card border-0 shadow-sm h-100 get-involved-highlight">
-                    <div class="card-body p-4">
-                        <h4 class="h5 mb-3">Equipment &amp; resources</h4>
-                        <p class="text-muted mb-0 small">Donate tools, materials, or infrastructure that help scale ethical production.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card border-0 shadow-sm h-100 get-involved-highlight">
-                    <div class="card-body p-4">
-                        <h4 class="h5 mb-3">Fundraising &amp; sponsorship</h4>
-                        <p class="text-muted mb-0 small">Support programmes that combine impact with sustainable business growth.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card border-0 shadow-sm h-100 get-involved-highlight">
-                    <div class="card-body p-4">
-                        <h4 class="h5 mb-3">Volunteering</h4>
-                        <p class="text-muted mb-0 small">Share time and expertise in mentoring, logistics, design, or communications.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card border-0 shadow-sm h-100 get-involved-highlight">
-                    <div class="card-body p-4">
-                        <h4 class="h5 mb-3">Sales &amp; ambassadors</h4>
-                        <p class="text-muted mb-0 small">Represent Made in Rwanda products in your network, store, or institution.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card border-0 shadow-sm h-100 get-involved-highlight">
-                    <div class="card-body p-4">
-                        <h4 class="h5 mb-3">Wholesale &amp; corporate</h4>
-                        <p class="text-muted mb-0 small">Bulk orders, corporate gifting, and long-term supply partnerships welcome.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <div class="row justify-content-center mb-4 mb-lg-5">
             <div class="col-lg-10">
-                <div class="card border-0 shadow-sm request-order-cta__card">
-                    <div class="card-body p-4 d-flex flex-column flex-md-row align-items-center justify-content-between gap-3">
-                        <p class="mb-0 text-center text-md-start">Reach us quickly through email or WhatsApp for faster collaboration support.</p>
-                        <div class="d-flex flex-wrap justify-content-center gap-2">
-                            @if(!empty($setting->email))
-                                <a href="mailto:{{ $setting->email }}" class="btn btn-outline-secondary">
-                                    <i class="far fa-envelope me-1"></i> {{ $setting->email }}
-                                </a>
-                            @endif
-                            @if($waNumber !== '')
-                                <a href="https://wa.me/{{ $waNumber }}" target="_blank" rel="noopener noreferrer" class="btn btn-success" aria-label="Chat on WhatsApp">
-                                    <i class="fab fa-whatsapp me-1"></i> WhatsApp
-                                </a>
-                            @endif
-                        </div>
+                <div class="get-involved-page__intro card border-0 shadow-sm">
+                    <div class="card-body p-4 p-lg-5">
+                        <span class="about-home-eyebrow d-block mb-2">Why get involved</span>
+                        <h2 class="h3 mb-3">Your partnership changes lives</h2>
+                        <div class="get-involved-page__intro-teaser postbox__text">{!! $introTeaserHtml !!}</div>
+                        @if($hasMoreIntro)
+                            <div class="collapse get-involved-page__intro-more" id="getInvolvedIntroMore">
+                                <div class="postbox__text get-involved-page__intro-text mt-3">{!! $introFull !!}</div>
+                            </div>
+                            <button type="button"
+                                    class="btn btn-link get-involved-page__read-more px-0 mt-2"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#getInvolvedIntroMore"
+                                    aria-expanded="false"
+                                    aria-controls="getInvolvedIntroMore">
+                                Read full story <i class="fas fa-chevron-down ms-1" aria-hidden="true"></i>
+                            </button>
+                        @else
+                            <div class="postbox__text get-involved-page__intro-text mt-2">{!! $introFull !!}</div>
+                        @endif
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="row justify-content-center">
-            <div class="col-lg-8">
-                @if(session('success'))
-                    <div class="alert alert-success">{{ session('success') }}</div>
-                @endif
-                @if ($errors->any())
-                    <div class="alert alert-danger">
-                        <ul class="mb-0 ps-3">
-                            @foreach ($errors->all() as $err)
-                                <li>{{ $err }}</li>
-                            @endforeach
-                        </ul>
+        @if(($impactStats ?? collect())->isNotEmpty())
+            <div class="row g-3 g-md-4 mb-4 mb-lg-5 justify-content-center get-involved-stats">
+                @foreach($impactStats as $stat)
+                    <div class="col-sm-4 col-lg-3">
+                        <div class="get-involved-stat text-center h-100">
+                            <p class="get-involved-stat__value mb-1">{{ $stat['value'] }}</p>
+                            <p class="get-involved-stat__label mb-0">{{ $stat['label'] }}</p>
+                        </div>
                     </div>
-                @endif
+                @endforeach
+            </div>
+        @endif
 
-                <div class="card border-0 shadow-sm site-form-card">
+        <div class="text-center mb-4 mb-lg-5">
+            <a href="#get-involved-form" class="tp-btn get-involved-scroll-cta js-smooth-scroll">
+                Start your request <i class="fas fa-arrow-down ms-2" aria-hidden="true"></i>
+            </a>
+        </div>
+
+        <div class="row justify-content-center" id="get-involved-form">
+            <div class="col-lg-10 col-xl-9">
+                <div class="card border-0 shadow-sm site-form-card get-involved-page__form-card">
                     <div class="card-body p-4 p-lg-5">
-                        <h2 class="h4 mb-3">Tell us how you would like to collaborate</h2>
-                        <p class="text-muted mb-4">Select any areas that fit. We will reply by email or phone to explore next steps.</p>
+                        <h2 class="h4 mb-2">Tell us how you would like to get involved</h2>
+                        <p class="text-muted mb-4">Choose one option below, complete your details, then send via WhatsApp or email.</p>
 
-                        <form class="row g-3 site-partner-form js-public-form" data-form-type="partnership" method="post" action="#" novalidate autocomplete="off">
-                            <input type="hidden" name="source_page" value="get_involved">
-                            <div class="col-12">
-                                <label class="form-label">Organisation (optional)</label>
-                                <input type="text" name="organization" class="form-control" value="{{ old('organization') }}" placeholder="Company, NGO, school, church…">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Full name <span class="text-danger">*</span></label>
-                                <input type="text" name="full_name" class="form-control" required value="{{ old('full_name') }}" autocomplete="name">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Phone <span class="text-danger">*</span></label>
-                                <input type="text" name="phone" class="form-control" required value="{{ old('phone') }}" autocomplete="tel">
-                            </div>
-                            <div class="col-12">
-                                <label class="form-label">Email <span class="text-danger">*</span></label>
-                                <input type="email" name="email" class="form-control" required value="{{ old('email') }}" autocomplete="email">
-                            </div>
-                            <div class="col-12">
-                                <label class="form-label mb-2">Areas of interest <span class="text-muted small">(select any)</span></label>
-                                <div class="row g-2 get-involved-checks">
-                                    @php
-                                        $opts = [
-                                            'training' => 'Skills development & training',
-                                            'equipment' => 'Equipment or materials',
-                                            'fundraising' => 'Fundraising or sponsorship',
-                                            'volunteering' => 'Volunteering',
-                                            'sales_ambassador' => 'Sales & ambassador programmes',
-                                            'wholesale' => 'Wholesale / bulk orders',
-                                            'corporate' => 'Corporate or institutional partnership',
-                                            'other' => 'Other',
-                                        ];
-                                        $oldInterests = old('interests', []);
-                                    @endphp
-                                    @foreach($opts as $val => $label)
-                                        <div class="col-md-6">
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" name="interests[]" value="{{ $val }}" id="int_{{ $val }}" {{ in_array($val, (array) $oldInterests, true) ? 'checked' : '' }}>
-                                                <label class="form-check-label" for="int_{{ $val }}">{{ $label }}</label>
-                                            </div>
-                                        </div>
-                                    @endforeach
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <label class="form-label">Message</label>
-                                <textarea name="message" class="form-control" rows="5" placeholder="Goals, timeline, how you heard about us…">{{ old('message') }}</textarea>
-                                <small class="text-muted d-block mt-2">Tip: include goals, timeline, and the type of partnership you need.</small>
-                            </div>
-                            @include('frontend.includes.public-form-delivery', ['formType' => 'partnership'])
-                        </form>
+                        @include('frontend.includes.get-involved-form', [
+                            'singleSelect' => true,
+                            'formPrefix' => 'gi',
+                            'countriesListId' => 'get-involved-countries',
+                            'selectedWays' => $selectedWays,
+                        ])
                     </div>
                 </div>
             </div>
@@ -166,3 +96,7 @@
 </section>
 
 @endsection
+
+@push('scripts')
+    <script src="{{ asset('assets/js/get-involved-form.js') }}" defer></script>
+@endpush

@@ -29,6 +29,8 @@ class FormSubmission extends Model
             'volunteer' => 'Volunteer application',
             'support_application' => 'Apply for support',
             'partnership' => 'Partnership inquiry',
+            'get_involved' => 'Get involved',
+            'sponsor_inquiry' => 'Sponsorship inquiry',
             'order_request' => 'Order request',
         ];
     }

@@ -27,13 +27,13 @@
                             <span class="badge {{ ($mother->status ?? '') === 'Not Sponsored' ? 'bg-warning text-dark' : 'bg-success' }} mb-3 align-self-start">
                                 {{ $mother->status ?? 'Available' }}
                             </span>
-                            <a href="{{ route('donate') }}?sponsor={{ $mother->id }}" class="tp-btn align-self-start">Sponsor {{ explode(' ', $mother->names)[0] ?? 'her' }}</a>
+                            <a href="{{ route('getInvolved') }}?way=donation#get-involved-form" class="tp-btn align-self-start">Get involved for {{ explode(' ', $mother->names)[0] ?? 'her' }}</a>
                         </div>
                     </article>
                 </div>
             @empty
                 <div class="col-12">
-                    <div class="alert alert-info mb-0">Sponsorship profiles will appear here once published by the admin team. You can still <a href="{{ route('donate') }}">donate to the general fund</a>.</div>
+                    <div class="alert alert-info mb-0">Sponsorship profiles will appear here once published by the admin team. You can still <a href="{{ route('getInvolved') }}?way=donation#get-involved-form">get involved through giving</a>.</div>
                 </div>
             @endforelse
         </div>

@@ -2,136 +2,132 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Sponsorship;
+use App\Support\MercyTidesContent;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 
 class SponsorshipController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+    public function index(Request $request)
     {
-        $children = Sponsorship::latest()->get();
-        return view('admin.sponsorship',['children'=>$children]);
+        $typeFilter = $request->input('type');
+        $query = Sponsorship::query()->latest();
+
+        if ($typeFilter && array_key_exists($typeFilter, MercyTidesContent::sponsorshipTypes())) {
+            $query->ofType($typeFilter);
+        }
+
+        return view('admin.sponsorship', [
+            'profiles' => $query->get(),
+            'types' => MercyTidesContent::sponsorshipTypes(),
+            'typeFilter' => $typeFilter,
+        ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
-        $data = new Sponsorship();
-        $data->names = $request->names;
-        $data->age = $request->age;
-        $data->sex = $request->sex;
-        $data->status = $request->input('status', 'Not Sponsored');
-        $data->testimany = $request->testimany;
-        $data->phone = $request->phone;
-        $data->contact = $request->contact;
-        $data->address = $request->address ?? $request->contact;
+        $validated = $this->validateProfile($request, true);
+
+        $profile = new Sponsorship();
+        $this->fillProfile($profile, $validated, $request);
 
         if ($request->hasFile('image')) {
-            $data->image = $this->storeOptimizedImageBasename(
-                $request->file('image'),
-                'images/sponsorship',
-                'public',
-                ['preset' => 'portrait']
-            );
+            $profile->image = $request->file('image')->storeOptimized('images/sponsorship', 'public', ['preset' => 'portrait']);
         }
 
-        $stored = $data->save();
-
-        if($stored){
-            return redirect()->route('sponsorship.index')->with('success', 'Sponsor profile has been added successfully.');
+        if (Schema::hasColumn('sponsorships', 'added_by')) {
+            $profile->added_by = Auth::id() ?? Auth::guard('admin')->id();
         }
 
-        return redirect()->back()->with('error','Failed to add new Child');
+        $profile->save();
+
+        return redirect()->route('sponsorship.index', ['type' => $profile->type])
+            ->with('success', 'Sponsorship profile has been added successfully.');
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        $data = Sponsorship::find($id);
-        return view('admin.sponsorshipUpdate',['data'=>$data]);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, $id)
     {
-        $data = Sponsorship::find($id);
-        $data->names = $request->input('names');
-        $data->age = $request->input('age');
-        $data->sex = $request->input('sex');
-        $data->testimany = $request->input('testimany');
-        $data->phone = $request->input('phone');
-        $data->address = $request->input('address');
+        $profile = Sponsorship::findOrFail($id);
+        $validated = $this->validateProfile($request, false);
 
-        if(!$data){
-            return back()->with('Error','Child Not Found');
+        $this->fillProfile($profile, $validated, $request);
+
+        if ($request->hasFile('image')) {
+            if (! empty($profile->image) && Storage::disk('public')->exists($profile->image)) {
+                Storage::disk('public')->delete($profile->image);
+            }
+            $profile->image = $request->file('image')->storeOptimized('images/sponsorship', 'public', ['preset' => 'portrait']);
         }
 
-        if ($request->hasFile('image') && request('image') != '') {
-            $data->image = $this->storeOptimizedImageBasename(
-                $request->file('image'),
-                'images/sponsorship',
-                'public',
-                ['preset' => 'portrait']
-            );
-        }
+        $profile->save();
 
-        $data->update();
+        return redirect()->route('sponsorship.index', ['type' => $profile->type])
+            ->with('success', 'Sponsorship profile has been updated.');
+    }
 
-        return redirect('children')->with('success','Child has been updated');
+    public function destroy($id)
+    {
+        $profile = Sponsorship::findOrFail($id);
+        $profile->delete();
+
+        return redirect()->back()->with('success', 'Sponsorship profile has been deleted.');
     }
 
     /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return array<string, mixed>
      */
-    public function destroy($id)
+    protected function validateProfile(Request $request, bool $creating): array
     {
-        $data = Sponsorship::find($id);
-        $data->delete($id);
-        return redirect()->back()->with('success', 'Item has been deleted');
+        $types = array_keys(MercyTidesContent::sponsorshipTypes());
+
+        return $request->validate([
+            'type' => ['required', 'string', Rule::in($types)],
+            'names' => ['required', 'string', 'max:255'],
+            'slug' => ['nullable', 'string', 'max:255'],
+            'age' => ['nullable', 'string', 'max:50'],
+            'sex' => ['nullable', 'string', 'max:32'],
+            'status' => ['required', 'string', 'max:64'],
+            'publish_status' => ['required', 'string', 'max:64'],
+            'phone' => ['nullable', 'string', 'max:64'],
+            'contact' => ['nullable', 'string', 'max:255'],
+            'address' => ['nullable', 'string', 'max:255'],
+            'testimany' => ['nullable', 'string'],
+            'challenges' => ['nullable', 'string'],
+            'vision' => ['nullable', 'string'],
+            'video_url' => ['nullable', 'string', 'max:500'],
+            'monthly_need' => ['nullable', 'string', 'max:64'],
+            'image' => array_filter([
+                $creating ? 'required' : 'nullable',
+                'image',
+                'mimes:jpeg,png,jpg,gif,webp',
+                'max:8192',
+            ]),
+        ]);
+    }
+
+    /**
+     * @param  array<string, mixed>  $validated
+     */
+    protected function fillProfile(Sponsorship $profile, array $validated, Request $request): void
+    {
+        $profile->type = $validated['type'];
+        $profile->names = $validated['names'];
+        $profile->slug = $validated['slug'] ?? null;
+        $profile->age = $validated['age'] ?? null;
+        $profile->sex = $validated['sex'] ?? null;
+        $profile->status = $validated['status'];
+        $profile->publish_status = $validated['publish_status'];
+        $profile->phone = $validated['phone'] ?? null;
+        $profile->contact = $validated['contact'] ?? null;
+        $profile->address = $validated['address'] ?? ($validated['contact'] ?? null);
+        $profile->testimany = $validated['testimany'] ?? null;
+        $profile->challenges = $validated['challenges'] ?? null;
+        $profile->vision = $validated['vision'] ?? null;
+        $profile->video_url = $validated['video_url'] ?? null;
+        $profile->monthly_need = $validated['monthly_need'] ?? null;
     }
 }

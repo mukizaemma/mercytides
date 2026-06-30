@@ -1,180 +1,153 @@
 @extends('layouts.frontbase')
 
+@section('title', 'Contact')
+
+@php
+    $location = trim((string) ($contact->address ?? ''));
+    if ($location === '') {
+        $location = 'Uganda';
+    }
+    $whatsappDigits = preg_replace('/\D+/', '', (string) ($contact->phone ?? $contact->phone1 ?? ''));
+@endphp
+
 @section('content')
 
+@include('frontend.includes.page-header', [
+    'title' => 'Contact',
+    'caption' => 'Reach our team in Uganda — by phone, email, WhatsApp, or the form below.',
+])
 
-        <!-- contact-area-start -->
-        <section class="contact-page-shell pt-40">
-            <div class="container">
-                <div class="row g-3 contact-page-shell__stats">
-                    <div class="col-md-4">
-                        <article class="contact-stat-card h-100">
-                            <span class="contact-stat-card__icon"><i class="flaticon-phone"></i></span>
-                            <div>
-                                <h3 class="contact-stat-card__title">Phone</h3>
-                                <a class="contact-stat-card__value" href="tel:{{ $contact->phone ?? '' }}">{{ $contact->phone ?? '' }}</a>
-                                @if(!empty($contact->phone2))
-                                    <a class="contact-stat-card__value" href="tel:{{ $contact->phone2 }}">{{ $contact->phone2 }}</a>
-                                @endif
-                            </div>
-                        </article>
+<section class="contact-page pt-90 pb-90 grey-bg">
+    <div class="container">
+        <div class="row g-3 g-md-4 mb-4 mb-lg-5 contact-page__stats">
+            <div class="col-md-4">
+                <article class="contact-stat-card h-100">
+                    <span class="contact-stat-card__icon" aria-hidden="true"><i class="fas fa-phone"></i></span>
+                    <div>
+                        <h2 class="contact-stat-card__title">Phone</h2>
+                        @if(!empty($contact->phone))
+                            <a class="contact-stat-card__value" href="tel:{{ $contact->phone }}">{{ $contact->phone }}</a>
+                        @endif
+                        @if(!empty($contact->phone2))
+                            <a class="contact-stat-card__value" href="tel:{{ $contact->phone2 }}">{{ $contact->phone2 }}</a>
+                        @endif
+                        @if($whatsappDigits !== '')
+                            <a class="contact-stat-card__whatsapp" href="https://wa.me/{{ $whatsappDigits }}" target="_blank" rel="noopener noreferrer">
+                                <i class="fab fa-whatsapp me-1" aria-hidden="true"></i> Chat on WhatsApp
+                            </a>
+                        @endif
                     </div>
-                    <div class="col-md-4">
-                        <article class="contact-stat-card h-100">
-                            <span class="contact-stat-card__icon"><i class="flaticon-email"></i></span>
-                            <div>
-                                <h3 class="contact-stat-card__title">Email</h3>
-                                <a class="contact-stat-card__value" href="mailto:{{ $contact->email ?? '' }}">{{ $contact->email ?? '' }}</a>
-                            </div>
-                        </article>
+                </article>
+            </div>
+            <div class="col-md-4">
+                <article class="contact-stat-card h-100">
+                    <span class="contact-stat-card__icon" aria-hidden="true"><i class="fas fa-envelope"></i></span>
+                    <div>
+                        <h2 class="contact-stat-card__title">Email</h2>
+                        @if(!empty($contact->email))
+                            <a class="contact-stat-card__value" href="mailto:{{ $contact->email }}">{{ $contact->email }}</a>
+                        @endif
                     </div>
-                    <div class="col-md-4">
-                        <article class="contact-stat-card h-100">
-                            <span class="contact-stat-card__icon"><i class="flaticon-location"></i></span>
-                            <div>
-                                <h3 class="contact-stat-card__title">Location</h3>
-                                <p class="contact-stat-card__value mb-0">{{ $contact->address ?? '' }}, Uganda</p>
+                </article>
+            </div>
+            <div class="col-md-4">
+                <article class="contact-stat-card h-100">
+                    <span class="contact-stat-card__icon" aria-hidden="true"><i class="fas fa-map-marker-alt"></i></span>
+                    <div>
+                        <h2 class="contact-stat-card__title">Location</h2>
+                        <p class="contact-stat-card__value mb-0">{{ $location }}</p>
+                    </div>
+                </article>
+            </div>
+        </div>
+
+        @if(!empty($setting->facebook) || !empty($setting->instagram) || !empty($setting->youtube))
+            <div class="contact-page__social text-center mb-4 mb-lg-5">
+                <span class="contact-page__social-label">Follow Mercy Tides</span>
+                <div class="contact-page__social-links">
+                    @if(!empty($setting->facebook))
+                        <a href="{{ $setting->facebook }}" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    @endif
+                    @if(!empty($setting->instagram))
+                        <a href="{{ $setting->instagram }}" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    @endif
+                    @if(!empty($setting->youtube))
+                        <a href="{{ $setting->youtube }}" target="_blank" rel="noopener noreferrer" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                    @endif
+                </div>
+            </div>
+        @endif
+
+        <div class="row g-4 g-xl-5 align-items-stretch" id="contact-form">
+            <div class="col-lg-6">
+                <div class="card border-0 shadow-sm site-form-card contact-page__form-card h-100">
+                    <div class="card-body p-4 p-lg-5">
+                        <span class="about-home-eyebrow d-block mb-2">Get involved</span>
+                        <h2 class="h4 mb-2">Tell us how you would like to get involved</h2>
+                        <p class="text-muted mb-4">Choose one option below, complete your details, then send via WhatsApp or email.</p>
+
+                        @if(session('success'))
+                            <div class="alert alert-success">{{ session('success') }}</div>
+                        @endif
+                        @if ($errors->any())
+                            <div class="alert alert-danger">
+                                <ul class="mb-0 ps-3">
+                                    @foreach ($errors->all() as $err)
+                                        <li>{{ $err }}</li>
+                                    @endforeach
+                                </ul>
                             </div>
-                        </article>
+                        @endif
+
+                        @include('frontend.includes.get-involved-form', [
+                            'singleSelect' => true,
+                            'compactLayout' => true,
+                            'formPrefix' => 'contact',
+                            'countriesListId' => 'contact-countries',
+                        ])
                     </div>
                 </div>
             </div>
-        </section>
-        <!-- contact-area-end -->
 
+            <div class="col-lg-6">
+                <div class="contact-map-wrap h-100">
+                    @php
+                        $mapEmbedRaw = trim((string) ($setting->google_map_embed_code ?? ''));
+                        $mapSrc = '';
+                        $mapIframeHtml = '';
 
-        <!-- form-map-area-start -->
-        <div class="tp-contact-form__area tp-contact-form__space contact-layout-wrap">
-            <div class="container">
-                <div class="row g-4 align-items-start">
-                    <div class="col-xl-6 col-lg-6 wow tpfadeLeft" data-wow-duration=".9s"
-                    data-wow-delay=".3s">
-                        <div class="tp-contact-form__left-box">
-                            <span class="tp-contact-form__subtitle">CONTACT FORM</span>
-                            <p>If it's easier for you, fill out the form to let us know how you would like to partner with us</p>
-                            <div class="tp-contact-form__social-box">
-                            @if(!empty($setting->facebook))
-                                <a href="{{ $setting->facebook }}" target="_blank"><i class="fab fa-facebook-f"></i></a>
-                            @endif
-                            @if(!empty($setting->instagram))
-                                <a href="{{ $setting->instagram }}" target="_blank"><i class="fab fa-instagram"></i></a>
-                            @endif
-                            @if(!empty($setting->youtube))
-                                <a href="{{ $setting->youtube }}" target="_blank"><i class="fab fa-youtube"></i></a>
-                            @endif
-                            </div>
-                        </div>
-                        <div class="tp-contact-form__form-box mt-4 contact-form-wrap">
-                            @if(session('success'))
-                                <div class="alert alert-success">{{ session('success') }}</div>
-                            @endif
-                            @if ($errors->any())
-                                <div class="alert alert-danger">
-                                    <ul class="mb-0 ps-3">
-                                        @foreach ($errors->all() as $err)
-                                            <li>{{ $err }}</li>
-                                        @endforeach
-                                    </ul>
-                                </div>
-                            @endif
+                        if ($mapEmbedRaw !== '') {
+                            if (stripos($mapEmbedRaw, '<iframe') !== false) {
+                                $mapIframeHtml = $mapEmbedRaw;
+                            } else {
+                                $mapSrc = $mapEmbedRaw;
+                            }
+                        }
 
-                            <div class="card border-0 shadow-sm site-form-card">
-                                <div class="card-body p-4 p-lg-4">
-                                    <h2 class="h4 mb-3">Tell us how you would like to collaborate</h2>
-                                    <p class="text-muted mb-4">Select any areas that fit. We will reply by email or phone to explore next steps.</p>
+                        $defaultMapSrc = 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3987.434670504606!2d30.1565774!3d-1.9806325999999996!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x19dca75ea871adfd%3A0x807deb18c1a0592f!2sImpact%20Life%20Mission!5e0!3m2!1sen!2srw!4v1755602240867!5m2!1sen!2srw';
+                        $resolvedMapSrc = $mapSrc !== '' ? $mapSrc : $defaultMapSrc;
+                    @endphp
 
-                                    <form class="row g-3 site-partner-form js-public-form" data-form-type="partnership" method="post" action="#" novalidate autocomplete="off">
-                                        <input type="hidden" name="source_page" value="contact">
-
-                                        <div class="col-12">
-                                            <label class="form-label">Organisation (optional)</label>
-                                            <input type="text" name="organization" class="form-control" value="{{ old('organization') }}" placeholder="Company, NGO, school, church…">
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label class="form-label">Full name <span class="text-danger">*</span></label>
-                                            <input type="text" name="full_name" class="form-control" required value="{{ old('full_name') }}" autocomplete="name">
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label class="form-label">Phone <span class="text-danger">*</span></label>
-                                            <input type="text" name="phone" class="form-control" required value="{{ old('phone') }}" autocomplete="tel">
-                                        </div>
-                                        <div class="col-12">
-                                            <label class="form-label">Email <span class="text-danger">*</span></label>
-                                            <input type="email" name="email" class="form-control" required value="{{ old('email') }}" autocomplete="email">
-                                        </div>
-                                        <div class="col-12">
-                                            <label class="form-label mb-2">Areas of interest <span class="text-muted small">(select any)</span></label>
-                                            <div class="row g-2 get-involved-checks">
-                                                @php
-                                                    $opts = [
-                                                        'training' => 'Skills development & training',
-                                                        'equipment' => 'Equipment or materials',
-                                                        'fundraising' => 'Fundraising or sponsorship',
-                                                        'volunteering' => 'Volunteering',
-                                                        'sales_ambassador' => 'Sales & ambassador programmes',
-                                                        'wholesale' => 'Wholesale / bulk orders',
-                                                        'corporate' => 'Corporate or institutional partnership',
-                                                        'other' => 'Other',
-                                                    ];
-                                                    $oldInterests = old('interests', []);
-                                                @endphp
-                                                @foreach($opts as $val => $label)
-                                                    <div class="col-md-6">
-                                                        <div class="form-check">
-                                                            <input class="form-check-input" type="checkbox" name="interests[]" value="{{ $val }}" id="contact_int_{{ $val }}" {{ in_array($val, (array) $oldInterests, true) ? 'checked' : '' }}>
-                                                            <label class="form-check-label" for="contact_int_{{ $val }}">{{ $label }}</label>
-                                                        </div>
-                                                    </div>
-                                                @endforeach
-                                            </div>
-                                        </div>
-                                        <div class="col-12">
-                                            <label class="form-label">Message</label>
-                                            <textarea name="message" class="form-control" rows="5" placeholder="Goals, timeline, how you heard about us…">{{ old('message') }}</textarea>
-                                            <small class="text-muted d-block mt-2">Tip: include goals, timeline, and the type of partnership you need.</small>
-                                        </div>
-                                        @include('frontend.includes.public-form-delivery', ['formType' => 'contact'])
-                                    </form>
-                                </div>
-                            </div>
-
-                        </div>
+                    <div class="contact-map-wrap__header">
+                        <h2 class="h5 mb-1">Find us in Uganda</h2>
+                        <p class="text-muted small mb-0">Visit by appointment — message us to coordinate a time.</p>
                     </div>
-                    <div class="col-xl-6 col-lg-6 wow tpfadeRight" data-wow-duration=".9s"
-                    data-wow-delay=".7s">
-                        <div class="tp-location__info-box h-100 contact-map-wrap">
-                            @php
-                                $mapEmbedRaw = trim((string) ($setting->google_map_embed_code ?? ''));
-                                $mapSrc = '';
-                                $mapIframeHtml = '';
 
-                                if ($mapEmbedRaw !== '') {
-                                    if (stripos($mapEmbedRaw, '<iframe') !== false) {
-                                        $mapIframeHtml = $mapEmbedRaw;
-                                    } else {
-                                        $mapSrc = $mapEmbedRaw;
-                                    }
-                                }
-
-                                $defaultMapSrc = 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3987.434670504606!2d30.1565774!3d-1.9806325999999996!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x19dca75ea871adfd%3A0x807deb18c1a0592f!2sImpact%20Life%20Mission!5e0!3m2!1sen!2srw!4v1755602240867!5m2!1sen!2srw';
-                                $resolvedMapSrc = $mapSrc !== '' ? $mapSrc : $defaultMapSrc;
-                            @endphp
-
-                            @if($mapIframeHtml !== '')
-                                <div class="contact-map-wrap__frame">
-                                    {!! $mapIframeHtml !!}
-                                </div>
-                            @else
-                                <iframe src="{{ $resolvedMapSrc }}" width="100%" height="100%" class="contact-map-wrap__iframe" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-                            @endif
+                    @if($mapIframeHtml !== '')
+                        <div class="contact-map-wrap__frame">
+                            {!! $mapIframeHtml !!}
                         </div>
-                    </div>
+                    @else
+                        <iframe src="{{ $resolvedMapSrc }}" width="100%" height="100%" class="contact-map-wrap__iframe" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Mercy Tides Foundation location map"></iframe>
+                    @endif
                 </div>
             </div>
         </div>
-        <!-- form-map-area-end -->
-
-
-    @include('frontend.includes.backImage')
+    </div>
+</section>
 
 @endsection
+
+@push('scripts')
+    <script src="{{ asset('assets/js/get-involved-form.js') }}" defer></script>
+@endpush

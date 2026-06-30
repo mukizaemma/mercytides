@@ -1595,6 +1595,199 @@ header.tp-header-height {
     background: rgba(51, 134, 181, 0.08);
 }
 
+.get-involved-page__intro {
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.get-involved-page__read-more {
+    font-weight: 600;
+    color: var(--brand-primary, #3386B5);
+    text-decoration: none;
+}
+
+.get-involved-page__read-more:hover {
+    color: var(--brand-dark, #00205b);
+}
+
+.get-involved-page__intro-text,
+.get-involved-page__intro-text p,
+.get-involved-page__intro-teaser,
+.get-involved-page__intro-teaser p {
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: #3a3a3a;
+}
+
+.get-involved-stat {
+    background: #fff;
+    border: 1px solid rgba(51, 134, 181, 0.12);
+    border-radius: 14px;
+    padding: 1.15rem 1rem;
+    box-shadow: 0 8px 24px rgba(15, 31, 20, 0.05);
+}
+
+.get-involved-stat__value {
+    font-size: clamp(1.35rem, 3vw, 1.75rem);
+    font-weight: 800;
+    color: var(--brand-primary, #3386B5);
+    line-height: 1.2;
+}
+
+.get-involved-stat__label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #5f6368;
+    letter-spacing: 0.02em;
+}
+
+.get-involved-scroll-cta {
+    min-width: 220px;
+}
+
+.get-involved-way-card {
+    background: #fff;
+    border: 2px solid rgba(51, 134, 181, 0.14);
+    border-radius: 14px;
+    padding: 1.15rem 1rem 1.15rem 1rem;
+    box-shadow: 0 8px 22px rgba(15, 31, 20, 0.05);
+    height: 100%;
+    display: block;
+    position: relative;
+    cursor: pointer;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease, background 0.2s ease;
+}
+
+.get-involved-way-card--selectable:hover {
+    border-color: rgba(51, 134, 181, 0.45);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(15, 31, 20, 0.08);
+}
+
+.get-involved-way-card--selectable.is-selected,
+.get-involved-way-card--selectable:has(.js-get-involved-way:checked) {
+    border-color: var(--brand-primary, #3386B5);
+    background: rgba(51, 134, 181, 0.07);
+    box-shadow: 0 0 0 3px rgba(51, 134, 181, 0.16);
+}
+
+.get-involved-way-card__check {
+    position: absolute;
+    top: 0.65rem;
+    right: 0.65rem;
+    width: 1.35rem;
+    height: 1.35rem;
+    border-radius: 999px;
+    background: var(--brand-primary, #3386B5);
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.65rem;
+    opacity: 0;
+    transform: scale(0.8);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.get-involved-way-card--selectable.is-selected .get-involved-way-card__check,
+.get-involved-way-card--selectable:has(.js-get-involved-way:checked) .get-involved-way-card__check {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.get-involved-way-card__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 999px;
+    background: rgba(51, 134, 181, 0.12);
+    color: var(--brand-primary, #3386B5);
+    margin-bottom: 0.75rem;
+    font-size: 1rem;
+}
+
+.get-involved-way-card__title {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 0.35rem;
+    color: var(--brand-dark, #00205b);
+}
+
+.get-involved-way-card__text {
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: #5f6368;
+}
+
+.get-involved-donation-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.get-involved-donation-chip {
+    border: 2px solid rgba(51, 134, 181, 0.2);
+    background: #fff;
+    color: var(--brand-dark, #00205b);
+    border-radius: 999px;
+    padding: 0.45rem 1rem;
+    font-weight: 700;
+    font-size: 0.92rem;
+    transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+
+.get-involved-donation-chip:hover {
+    border-color: var(--brand-primary, #3386B5);
+}
+
+.get-involved-donation-chip.is-active {
+    border-color: var(--brand-primary, #3386B5);
+    background: var(--brand-primary, #3386B5);
+    color: #fff;
+}
+
+.get-involved-page__form-card {
+    border-radius: 16px;
+}
+
+.get-involved-way-error,
+.js-get-involved-way-error,
+.js-donation-amount-error {
+    color: #b42318;
+    font-size: 0.88rem;
+    margin-top: 0.5rem;
+}
+
+.public-form-delivery__actions--whatsapp-first {
+    width: 100%;
+}
+
+.public-form-delivery__actions--whatsapp-first .public-form-delivery__btn {
+    flex: 1 1 auto;
+}
+
+@media (max-width: 767.98px) {
+    .public-form-delivery__actions--whatsapp-first {
+        flex-direction: column;
+    }
+
+    .public-form-delivery__actions--whatsapp-first .public-form-delivery__btn {
+        width: 100%;
+    }
+
+    .public-form-delivery__actions--whatsapp-first .public-form-delivery__btn[data-channel="whatsapp"] {
+        order: -1;
+    }
+}
+
+@media (min-width: 768px) {
+    .public-form-delivery__actions--whatsapp-first .public-form-delivery__btn[data-channel="whatsapp"] {
+        order: -1;
+    }
+}
+
 .site-hp-field {
     position: absolute !important;
     width: 1px !important;
@@ -1608,74 +1801,309 @@ header.tp-header-height {
 }
 
 /* Contact page layout polish */
-.contact-page-shell__stats {
-    margin-bottom: 1.5rem;
+.contact-page__stats {
+    margin-bottom: 0;
 }
 
 .contact-stat-card {
     display: flex;
-    align-items: center;
-    gap: 0.9rem;
-    padding: 1rem 1.1rem;
-    border-radius: 12px;
-    border: 1px solid rgba(0, 0, 0, 0.08);
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1.25rem 1.35rem;
+    border-radius: 14px;
+    border: 1px solid rgba(51, 134, 181, 0.12);
     background: #fff;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 8px 24px rgba(15, 31, 20, 0.05);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.contact-stat-card:hover {
+    border-color: rgba(51, 134, 181, 0.28);
+    box-shadow: 0 12px 28px rgba(15, 31, 20, 0.08);
+    transform: translateY(-2px);
 }
 
 .contact-stat-card__icon {
+    flex-shrink: 0;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--brand-primary, #3386B5);
+    background: rgba(51, 134, 181, 0.12);
+    font-size: 1rem;
+}
+
+.contact-stat-card__title {
+    margin: 0 0 0.35rem;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #5f6368;
+}
+
+.contact-stat-card__value {
+    display: block;
+    margin: 0;
+    color: var(--brand-dark, #00205b);
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1.5;
+    text-decoration: none;
+}
+
+a.contact-stat-card__value:hover {
+    color: var(--brand-primary, #3386B5);
+}
+
+.contact-stat-card__whatsapp {
+    display: inline-flex;
+    align-items: center;
+    margin-top: 0.5rem;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #128c7e;
+    text-decoration: none;
+}
+
+.contact-stat-card__whatsapp:hover {
+    color: #0d6e63;
+}
+
+.contact-page__social-label {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #5f6368;
+    margin-bottom: 0.65rem;
+}
+
+.contact-page__social-links {
+    display: inline-flex;
+    gap: 0.65rem;
+}
+
+.contact-page__social-links a {
     width: 2.5rem;
     height: 2.5rem;
     border-radius: 999px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    color: #2c2c2c;
-    background: rgba(51, 134, 181, 0.2);
+    background: #fff;
+    border: 1px solid rgba(51, 134, 181, 0.16);
+    color: var(--brand-primary, #3386B5);
+    text-decoration: none;
+    transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
 
-.contact-stat-card__title {
-    margin: 0 0 0.15rem;
-    font-size: 0.92rem;
-    font-weight: 700;
-    color: #2c2c2c;
+.contact-page__social-links a:hover {
+    background: var(--brand-primary, #3386B5);
+    border-color: var(--brand-primary, #3386B5);
+    color: #fff;
 }
 
-.contact-stat-card__value {
-    display: block;
-    margin: 0;
-    color: #4a4a4a;
+.contact-page__form-card {
+    border-radius: 16px;
+}
+
+.contact-interest-card {
+    min-height: 100%;
+}
+
+.contact-interest-card .get-involved-way-card__title {
     font-size: 0.92rem;
     line-height: 1.45;
+    padding-right: 1.5rem;
 }
 
-.contact-layout-wrap .site-form-card {
-    height: 100%;
+.js-contact-form-error {
+    color: #b42318;
+    font-size: 0.88rem;
+    margin-top: 0.5rem;
 }
 
 .contact-map-wrap {
-    height: 100%;
-    min-height: 640px;
-    border-radius: 14px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+    border-radius: 16px;
     overflow: hidden;
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+    background: #fff;
+    border: 1px solid rgba(51, 134, 181, 0.12);
+    box-shadow: 0 12px 30px rgba(15, 31, 20, 0.06);
+}
+
+.contact-map-wrap__header {
+    padding: 1.25rem 1.35rem 0.75rem;
+}
+
+.contact-map-wrap__frame {
+    flex: 1 1 auto;
+    min-height: 0;
 }
 
 .contact-map-wrap__iframe,
 .contact-map-wrap__frame iframe {
     width: 100%;
-    height: 100%;
-    min-height: 640px;
+    flex: 1 1 auto;
+    min-height: 420px;
     border: 0;
     display: block;
 }
 
-@media (max-width: 991.98px) {
-    .contact-map-wrap,
+@media (min-width: 992px) {
     .contact-map-wrap__iframe,
     .contact-map-wrap__frame iframe {
-        min-height: 460px;
+        min-height: 520px;
     }
+}
+
+@media (max-width: 991.98px) {
+    .contact-map-wrap__iframe,
+    .contact-map-wrap__frame iframe {
+        min-height: 360px;
+    }
+}
+
+/* Sponsorship module */
+.sponsorship-type-page__intro,
+.sponsorship-profile-page__form-card {
+    border-radius: 16px;
+}
+
+.sponsorship-type-page__intro-text p:last-child {
+    margin-bottom: 0;
+}
+
+.sponsorship-profile-page__portrait {
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 16px 40px rgba(15, 31, 20, 0.12);
+}
+
+.sponsorship-profile-page__portrait img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    object-fit: cover;
+}
+
+.sponsorship-profile-page__heading {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    color: var(--brand-dark, #00205b);
+}
+
+.sponsorship-profile-page__block + .sponsorship-profile-page__block {
+    margin-top: 1.75rem;
+}
+
+.sponsor-card {
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 10px 28px rgba(15, 31, 20, 0.06);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.sponsor-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 16px 36px rgba(15, 31, 20, 0.1);
+}
+
+.sponsor-card__media {
+    display: block;
+    overflow: hidden;
+}
+
+.sponsor-card__img {
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    display: block;
+}
+
+.sponsor-card__excerpt {
+    color: #5f6368;
+    font-size: 0.92rem;
+    line-height: 1.55;
+}
+
+.sponsor-preference-card {
+    min-height: 100%;
+    padding: 1rem 1.1rem;
+}
+
+.sponsor-preference-card .get-involved-way-card__title {
+    font-size: 0.92rem;
+    padding-right: 1.5rem;
+}
+
+.sponsorship-hub-card {
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    border: 2px solid rgba(51, 134, 181, 0.14);
+    border-radius: 16px;
+    padding: 1.5rem 1.25rem;
+    box-shadow: 0 10px 28px rgba(15, 31, 20, 0.06);
+    color: inherit;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.sponsorship-hub-card:hover {
+    border-color: var(--brand-primary, #3386B5);
+    box-shadow: 0 16px 36px rgba(15, 31, 20, 0.1);
+    transform: translateY(-3px);
+    color: inherit;
+}
+
+.sponsorship-hub-card__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 999px;
+    background: rgba(51, 134, 181, 0.12);
+    color: var(--brand-primary, #3386B5);
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+}
+
+.sponsorship-hub-card__title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--brand-dark, #00205b);
+    margin-bottom: 0.5rem;
+}
+
+.sponsorship-hub-card__text {
+    font-size: 0.9rem;
+    line-height: 1.55;
+    color: #5f6368;
+    flex-grow: 1;
+}
+
+.sponsorship-hub-card__cta {
+    display: inline-block;
+    margin-top: 1rem;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--brand-primary, #3386B5);
+}
+
+.tp-submenu .submenu-divider {
+    height: 1px;
+    margin: 0.35rem 0.75rem;
+    background: rgba(0, 0, 0, 0.08);
+    padding: 0;
+    pointer-events: none;
 }
 
 /* Public handover page */

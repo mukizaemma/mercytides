@@ -27,7 +27,7 @@
                 </div>
                 <div class="d-flex flex-wrap gap-2">
                     <a href="{{ route('getInvolved') }}" class="tp-btn">Become a partner</a>
-                    <a href="{{ route('donate') }}" class="tp-btn home-partner-cta__btn--ghost">Fund a program</a>
+                    <a href="{{ route('getInvolved') }}" class="tp-btn home-partner-cta__btn--ghost">Get involved</a>
                 </div>
             </div>
         </div>

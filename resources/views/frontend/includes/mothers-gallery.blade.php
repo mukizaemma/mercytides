@@ -5,7 +5,7 @@
     $sectionEyebrow = $sectionEyebrow ?? 'Faces of hope';
     $sectionTitle = $sectionTitle ?? 'Young Mothers We Support';
     $sectionLead = $sectionLead ?? 'Each portrait represents a young mother walking toward independence, dignity, and a brighter future for her family.';
-    $viewMoreRoute = $viewMoreRoute ?? route('mothersGallery');
+    $viewMoreRoute = $viewMoreRoute ?? route('sponsorship.youngMother');
 @endphp
 
 @if($galleryMothers->isNotEmpty())
@@ -30,15 +30,18 @@
         <div class="row g-4 mothers-gallery-grid justify-content-center">
             @foreach ($galleryMothers as $mother)
                 @php
-                    $imageUrl = \App\Models\Mother::publicImageUrl($mother->image);
+                    $imageUrl = $mother instanceof \App\Models\Sponsorship
+                        ? \App\Models\Sponsorship::publicImageUrl($mother->image)
+                        : \App\Models\Mother::publicImageUrl($mother->image);
                     $hasDetails = $mother->hasProfileDetails();
-                    $descriptionPlain = strip_tags(html_entity_decode($mother->description ?? ''));
+                    $descriptionPlain = strip_tags(html_entity_decode($mother->testimany ?? $mother->description ?? ''));
+                    $displayName = method_exists($mother, 'displayName') ? $mother->displayName() : ($mother->name ?? 'Young mother');
                 @endphp
                 <div class="col-6 col-md-4 col-lg-3 wow tpfadeUp reveal-on-scroll" data-wow-duration=".9s" data-wow-delay=".15s">
                     <article class="mother-portrait-card h-100">
                         @if($hasDetails)
-                            <a href="{{ $mother->profileRoute() }}" class="mother-portrait-card__media d-block" aria-label="View {{ $mother->displayName() }}'s story">
-                                <img src="{{ $imageUrl }}" alt="{{ $mother->displayName() }}" loading="lazy">
+                            <a href="{{ $mother->profileRoute() }}" class="mother-portrait-card__media d-block" aria-label="View {{ $displayName }}'s story">
+                                <img src="{{ $imageUrl }}" alt="{{ $displayName }}" loading="lazy">
                                 <span class="mother-portrait-card__overlay">
                                     <span class="mother-portrait-card__cta">View story</span>
                                 </span>
@@ -50,8 +53,8 @@
                         @endif
 
                         <div class="mother-portrait-card__body">
-                            @if(!empty($mother->name))
-                                <h3 class="mother-portrait-card__name">{{ $mother->name }}</h3>
+                            @if(!empty($mother->names) || !empty($mother->name))
+                                <h3 class="mother-portrait-card__name">{{ $mother->names ?? $mother->name }}</h3>
                             @endif
                             @if(!empty($mother->age))
                                 <p class="mother-portrait-card__age">Age {{ $mother->age }}</p>

@@ -40,8 +40,8 @@
                         @endif
 
                         <div class="d-flex flex-wrap gap-3">
-                            <a href="{{ route('sponsorMother') }}" class="tp-btn">Sponsor a mother</a>
-                            <a href="{{ route('mothersGallery') }}" class="tp-btn tp-btn--outline">Back to gallery</a>
+                            <a href="{{ route('getInvolved') }}" class="tp-btn">Get involved</a>
+                            <a href="{{ route('sponsorship.youngMother') }}" class="tp-btn tp-btn--outline">Back to gallery</a>
                         </div>
                     </div>
                 </div>

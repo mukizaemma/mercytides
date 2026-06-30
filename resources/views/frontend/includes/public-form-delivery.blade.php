@@ -15,7 +15,7 @@
         Review your details, complete the check below if shown, then send via <strong>WhatsApp</strong> or <strong>Email</strong>.
         We save your submission only when you open your chosen app — our team receives it on the organisation phone and email in Settings.
     </p> --}}
-    <div class="d-flex flex-wrap gap-2 public-form-delivery__actions">
+    <div class="d-flex flex-wrap gap-2 public-form-delivery__actions{{ !empty($whatsappFirst) ? ' public-form-delivery__actions--whatsapp-first' : '' }}">
         <button type="button" class="btn btn-success btn-lg public-form-delivery__btn" data-channel="whatsapp">
             <i class="fab fa-whatsapp me-1" aria-hidden="true"></i> Send via WhatsApp
         </button>
@@ -23,5 +23,8 @@
             <i class="far fa-envelope me-1" aria-hidden="true"></i> Send via Email
         </button>
     </div>
+    @if(!empty($whatsappFirst))
+        <p class="public-form-delivery__whatsapp-note text-muted small mb-0 mt-2 d-md-none">Recommended on mobile — tap <strong>Send</strong> in WhatsApp to reach our team.</p>
+    @endif
     <div class="public-form-delivery__alert alert mt-3 d-none" role="status"></div>
 </div>

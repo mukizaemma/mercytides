@@ -50,6 +50,13 @@
                                                     <textarea id="background" rows="10" class="form-control" name="donations" data-editor="rich">{!!$data->donations!!}</textarea>
                                                 </div>
                                             </div>
+                                            <div class="col-12">
+                                                <div class="form-group">
+                                                    <label for="get_involved_intro">Get Involved page — why participate</label>
+                                                    <textarea id="get_involved_intro" rows="8" class="form-control" name="get_involved_intro" data-editor="rich">{!! $data->get_involved_intro ?? '' !!}</textarea>
+                                                    <small class="text-muted">Shown in full on the public Get Involved page.</small>
+                                                </div>
+                                            </div>
 
                                         </div>
 

@@ -15,8 +15,8 @@
                                             </h1>
                                             {{-- <p class="home-hero__lede">Hopeful, Christ-centered support for mothers and children through training, entrepreneurship, and community care.</p> --}}
                                             <div class="home-hero__actions d-flex flex-wrap justify-content-center gap-2 gap-md-3 pt-10">
-                                                <a class="tp-btn home-hero__btn" href="{{ route('sponsorMother') }}">Sponsor a Mother</a>
-                                                <a class="tp-btn home-hero__btn" href="{{ route('donate') }}">Donate Now</a>
+                                                <a class="tp-btn home-hero__btn" href="{{ route('getInvolved') }}">Get Involved</a>
+                                                <a class="tp-btn home-hero__btn" href="{{ route('getInvolved') }}">Get Involved</a>
                                                 <a class="tp-btn home-hero__btn home-hero__btn--outline" href="{{ route('applyForSupport') }}">Apply for Support</a>
                                             </div>
                                         </div>
@@ -36,7 +36,7 @@
                                             <h1 class="tp-slider-3-title pb-20 home-hero__title">Breaking Barriers, Bridging A Better Future</h1>
                                             <p class="home-hero__lede">Add hero slides from the admin dashboard to showcase mothers, children, and community impact.</p>
                                             <div class="home-hero__actions d-flex flex-wrap justify-content-center gap-2 gap-md-3 pt-10">
-                                                <a class="tp-btn home-hero__btn" href="{{ route('donate') }}">Donate Now</a>
+                                                <a class="tp-btn home-hero__btn" href="{{ route('getInvolved') }}">Get Involved</a>
                                                 <a class="tp-btn home-hero__btn home-hero__btn--outline" href="{{ route('applyForSupport') }}">Apply for Support</a>
                                             </div>
                                         </div>

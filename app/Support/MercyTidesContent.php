@@ -120,6 +120,138 @@ class MercyTidesContent
         ];
     }
 
+    public static function getInvolvedWhy(): string
+    {
+        return '<p>Every unwed young mother we walk with carries a story of courage — and <strong>you can be part of her next chapter</strong>. Mercy Tides Foundation equips mothers in Uganda through vocational training, entrepreneurship, discipleship, and practical community care.</p>
+<p>When you get involved, you help break cycles of poverty and isolation. Your gift, time, partnership, or visit can provide skills, dignity, solar support, mentorship, and Christ-centered hope for mothers and their children.</p>
+<p>Whether you give financially, volunteer your expertise, partner as a church or organization, or visit to encourage mothers face to face — <strong>your yes matters</strong>. Join us in breaking barriers and bridging a better future.</p>';
+    }
+
+    /** @return array<string, string> */
+    public static function getInvolvedWays(): array
+    {
+        return [
+            'donation' => 'Donation',
+            'volunteer' => 'Volunteer',
+            'partner' => 'Partner',
+            'visit_mothers' => 'Visit the mothers',
+        ];
+    }
+
+    /**
+     * @return list<array{key: string, icon: string, title: string, text: string}>
+     */
+    public static function getInvolvedWayCards(): array
+    {
+        return [
+            ['key' => 'donation', 'icon' => 'fa-hand-holding-heart', 'title' => 'Donation', 'text' => 'Fund training, care, and practical support for mothers and children.'],
+            ['key' => 'volunteer', 'icon' => 'fa-hands-helping', 'title' => 'Volunteer', 'text' => 'Share skills, mentorship, and time to strengthen our programs.'],
+            ['key' => 'partner', 'icon' => 'fa-handshake', 'title' => 'Partner', 'text' => 'Churches, NGOs, schools, and businesses walking with us long term.'],
+            ['key' => 'visit_mothers', 'icon' => 'fa-users', 'title' => 'Visit the mothers', 'text' => 'Encourage mothers in person and witness transformation firsthand.'],
+        ];
+    }
+
+    /** @return array<string, array{label: string, route: string, icon: string, caption: string, intro: string}> */
+    public static function sponsorshipTypes(): array
+    {
+        return [
+            'child' => [
+                'label' => 'Sponsor a Child',
+                'route' => 'sponsorship.child',
+                'icon' => 'fa-child',
+                'caption' => 'Give a child education, nutrition, and a safe place to grow through consistent monthly support.',
+                'intro' => '<p>Through child sponsorship, you help cover school essentials, meals, healthcare, and mentoring for children in our care. Each profile shares their story so you can pray, give, and follow their progress with Mercy Tides Foundation.</p>',
+            ],
+            'young_mother' => [
+                'label' => 'Sponsor a young mother',
+                'route' => 'sponsorship.youngMother',
+                'icon' => 'fa-female',
+                'caption' => 'Walk alongside a young mother with vocational training, discipleship, and practical support.',
+                'intro' => '<p>Young mothers in our programs are rebuilding their lives with skills, faith, and community. Your sponsorship helps provide training, childcare support, mentorship, and the tools she needs to provide for her family with dignity.</p>',
+            ],
+            'family' => [
+                'label' => 'Sponsor a family',
+                'route' => 'sponsorship.family',
+                'icon' => 'fa-home',
+                'caption' => 'Support a whole household — mother and children together — with holistic, lasting care.',
+                'intro' => '<p>Family sponsorship meets practical needs across the home: food, shelter, education, and spiritual encouragement. You help a family move from survival toward stability and hope for the next generation.</p>',
+            ],
+        ];
+    }
+
+    public static function sponsorshipTypeLabel(string $type): string
+    {
+        return self::sponsorshipTypes()[$type]['label'] ?? ucfirst(str_replace('_', ' ', $type));
+    }
+
+    /**
+     * Cards for the main /sponsorship hub page.
+     *
+     * @return list<array{key: string, title: string, text: string, icon: string, route: string}>
+     */
+    public static function sponsorshipHubCards(): array
+    {
+        $cards = [];
+        foreach (self::sponsorshipTypes() as $key => $meta) {
+            $cards[] = [
+                'key' => $key,
+                'title' => $meta['label'],
+                'text' => $meta['caption'],
+                'icon' => $meta['icon'],
+                'route' => $meta['route'],
+            ];
+        }
+
+        $cards[] = [
+            'key' => 'get_involved',
+            'title' => 'Get involved',
+            'text' => 'Volunteer, partner, give, or visit — choose how you want to stand with Mercy Tides.',
+            'icon' => 'fa-hand-holding-heart',
+            'route' => 'getInvolved',
+        ];
+
+        return $cards;
+    }
+
+    /** @return array<string, string> */
+    public static function sponsorshipDonationPreferences(): array
+    {
+        return [
+            'monthly' => 'Monthly giving',
+            'one_time' => 'One-time gift',
+            'in_kind' => 'In-kind support (goods / supplies)',
+            'pledge' => 'I want to discuss options first',
+        ];
+    }
+
+    /**
+     * @return list<array{key: string, icon: string, label: string}>
+     */
+    public static function partnershipInterestOptions(): array
+    {
+        return [
+            ['key' => 'training', 'icon' => 'fa-graduation-cap', 'label' => 'Skills development & training'],
+            ['key' => 'equipment', 'icon' => 'fa-toolbox', 'label' => 'Equipment or materials'],
+            ['key' => 'fundraising', 'icon' => 'fa-hand-holding-heart', 'label' => 'Fundraising or sponsorship'],
+            ['key' => 'volunteering', 'icon' => 'fa-hands-helping', 'label' => 'Volunteering'],
+            ['key' => 'sales_ambassador', 'icon' => 'fa-store', 'label' => 'Sales & ambassador programmes'],
+            ['key' => 'wholesale', 'icon' => 'fa-boxes', 'label' => 'Wholesale / bulk orders'],
+            ['key' => 'corporate', 'icon' => 'fa-building', 'label' => 'Corporate or institutional partnership'],
+            ['key' => 'other', 'icon' => 'fa-ellipsis-h', 'label' => 'Other'],
+        ];
+    }
+
+    /** @return array<string, string> */
+    public static function partnershipInterestLabels(): array
+    {
+        $labels = [];
+        foreach (self::partnershipInterestOptions() as $option) {
+            $labels[$option['key']] = $option['label'];
+        }
+
+        return $labels;
+    }
+
     public static function field(?string $value, string $default): string
     {
         $trimmed = trim(strip_tags(html_entity_decode((string) $value)));

@@ -85,18 +85,7 @@ class HomeController extends Controller
         $homeGallery = Gallery::latest()->get();
         $slides = Slide::oldest()->get();
         $testimonials = Testimony::latest()->paginate(3);
-        $mothers = collect();
-        if (Schema::hasTable('mothers')) {
-            $mothers = Mother::query()
-                ->where(function ($q) {
-                    $q->whereNull('status')
-                        ->orWhere('status', 'Published')
-                        ->orWhere('status', 'Publish')
-                        ->orWhere('status', 'Active');
-                })
-                ->latest()
-                ->get();
-        }
+        $mothers = $this->publishedSponsorshipProfiles('young_mother');
         $partners = Partner::latest()->get();
         $staff = Team::latest()->get();
 
@@ -180,27 +169,85 @@ class HomeController extends Controller
 
     public function mothersGallery()
     {
-        $about = Background::firstOrEmpty();
-        $mothers = collect();
-        if (Schema::hasTable('mothers')) {
-            $mothers = Mother::query()
-                ->where(function ($q) {
-                    $q->whereNull('status')
-                        ->orWhere('status', 'Published')
-                        ->orWhere('status', 'Publish')
-                        ->orWhere('status', 'Active');
-                })
-                ->latest()
-                ->get();
-        }
-
-        return view('frontend.mothers', compact('about', 'mothers'));
+        return redirect()->route('sponsorship.youngMother', [], 301);
     }
 
     public function motherProfile($slug)
     {
+        $profile = Sponsorship::query()
+            ->published()
+            ->where(function ($q) use ($slug) {
+                $q->where('slug', $slug);
+                if (is_numeric($slug)) {
+                    $q->orWhere('id', (int) $slug);
+                }
+            })
+            ->first();
+
+        if ($profile) {
+            return redirect()->route('sponsorshipProfile', ['slug' => $profile->slug ?: $profile->id], 301);
+        }
+
+        if (Schema::hasTable('mothers')) {
+            $mother = Mother::query()
+                ->where(function ($q) use ($slug) {
+                    $q->where('slug', $slug);
+                    if (is_numeric($slug)) {
+                        $q->orWhere('id', (int) $slug);
+                    }
+                })
+                ->firstOrFail();
+
+            return view('frontend.mother', [
+                'about' => Background::firstOrEmpty(),
+                'mother' => $mother,
+            ]);
+        }
+
+        abort(404);
+    }
+
+    public function sponsorshipCategory(string $type)
+    {
+        $types = \App\Support\MercyTidesContent::sponsorshipTypes();
+        if (! array_key_exists($type, $types)) {
+            abort(404);
+        }
+
+        $meta = $types[$type];
         $about = Background::firstOrEmpty();
-        $mother = Mother::query()
+        $profiles = $this->publishedSponsorshipProfiles($type);
+
+        return view('frontend.sponsorship-type', compact('meta', 'profiles', 'type', 'about'));
+    }
+
+    public function sponsorChild()
+    {
+        return $this->sponsorshipCategory('child');
+    }
+
+    public function sponsorshipHub()
+    {
+        $about = Background::firstOrEmpty();
+
+        return view('frontend.sponsorship-hub', compact('about'));
+    }
+
+    public function sponsorYoungMother()
+    {
+        return $this->sponsorshipCategory('young_mother');
+    }
+
+    public function sponsorFamily()
+    {
+        return $this->sponsorshipCategory('family');
+    }
+
+    public function sponsorshipProfile(string $slug)
+    {
+        $about = Background::firstOrEmpty();
+        $profile = Sponsorship::query()
+            ->published()
             ->where(function ($q) use ($slug) {
                 $q->where('slug', $slug);
                 if (is_numeric($slug)) {
@@ -209,7 +256,31 @@ class HomeController extends Controller
             })
             ->firstOrFail();
 
-        return view('frontend.mother', compact('about', 'mother'));
+        $types = \App\Support\MercyTidesContent::sponsorshipTypes();
+        $typeMeta = $types[$profile->type] ?? $types['child'];
+
+        return view('frontend.sponsorship-profile', compact('about', 'profile', 'typeMeta'));
+    }
+
+    /**
+     * @return \Illuminate\Support\Collection<int, \App\Models\Sponsorship>
+     */
+    protected function publishedSponsorshipProfiles(string $type, ?int $limit = null)
+    {
+        if (! Schema::hasTable('sponsorships')) {
+            return collect();
+        }
+
+        $query = Sponsorship::query()
+            ->published()
+            ->ofType($type)
+            ->latest();
+
+        if ($limit !== null) {
+            $query->take($limit);
+        }
+
+        return $query->get();
     }
 
     public function testimony($id){
@@ -435,13 +506,7 @@ public function gallery(){
 
     public function sponsorMother()
     {
-        $about = Background::firstOrEmpty();
-        $mothers = Schema::hasTable('sponsorships')
-            ? Sponsorship::query()->latest()->get()
-            : collect();
-        $headerImage = PageHeaderImage::forSponsorListing();
-
-        return view('frontend.sponsor-a-mother', compact('about', 'mothers', 'headerImage'));
+        return redirect()->route('sponsorship.youngMother', [], 301);
     }
     public function volunteer()
     {
@@ -884,8 +949,18 @@ public function gallery(){
     public function getInvolved()
     {
         $about = Background::firstOrEmpty();
+        $introHtml = \App\Support\MercyTidesContent::field(
+            Schema::hasColumn('backgrounds', 'get_involved_intro') ? ($about->get_involved_intro ?? null) : null,
+            \App\Support\MercyTidesContent::getInvolvedWhy()
+        );
 
-        return view('frontend.get-involved', compact('about'));
+        $impactStats = collect([
+            ['label' => 'Families impacted', 'value' => $about->families_impacted ?? null],
+            ['label' => 'Jobs created', 'value' => $about->jobs_created ?? null],
+            ['label' => 'Training hours', 'value' => $about->training_hours ?? null],
+        ])->filter(fn ($item) => trim((string) ($item['value'] ?? '')) !== '');
+
+        return view('frontend.get-involved', compact('about', 'introHtml', 'impactStats'));
     }
 
     public function storePartnershipInquiry(Request $request)
@@ -996,18 +1071,7 @@ public function gallery(){
             ->latest()
             ->take(8)
             ->get();
-        $mothers = collect();
-        if (Schema::hasTable('mothers')) {
-            $mothers = Mother::query()
-                ->where(function ($q) {
-                    $q->whereNull('status')
-                        ->orWhere('status', 'Published')
-                        ->orWhere('status', 'Publish')
-                        ->orWhere('status', 'Active');
-                })
-                ->latest()
-                ->get();
-        }
+        $mothers = $this->publishedSponsorshipProfiles('young_mother');
         return view('frontend.impact', compact('about', 'initiatives', 'impacts', 'testimonials', 'mothers'));
     }
 

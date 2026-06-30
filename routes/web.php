@@ -42,6 +42,11 @@ Route::post('/form-submissions', [App\Http\Controllers\FormSubmissionController:
 Route::get('/handover',[App\Http\Controllers\HomeController::class,'handoverPage'])->name('handoverPage');
 Route::get('/testimonials',[App\Http\Controllers\HomeController::class,'testimonials'])->name('testimonials');
 Route::get('/testimonials/{id}',[App\Http\Controllers\HomeController::class,'testimony'])->name('testimony');
+Route::get('/sponsorship', [App\Http\Controllers\HomeController::class, 'sponsorshipHub'])->name('sponsorship.hub');
+Route::get('/sponsor-a-child', [App\Http\Controllers\HomeController::class, 'sponsorChild'])->name('sponsorship.child');
+Route::get('/sponsor-a-young-mother', [App\Http\Controllers\HomeController::class, 'sponsorYoungMother'])->name('sponsorship.youngMother');
+Route::get('/sponsor-a-family', [App\Http\Controllers\HomeController::class, 'sponsorFamily'])->name('sponsorship.family');
+Route::get('/sponsorship/{slug}', [App\Http\Controllers\HomeController::class, 'sponsorshipProfile'])->name('sponsorshipProfile');
 Route::get('/young-mothers',[App\Http\Controllers\HomeController::class,'mothersGallery'])->name('mothersGallery');
 Route::get('/young-mothers/{slug}',[App\Http\Controllers\HomeController::class,'motherProfile'])->name('motherProfile');
 Route::get('/updates',[App\Http\Controllers\HomeController::class,'posts'])->name('posts');
@@ -49,7 +54,7 @@ Route::get('/updates/{slug}',[App\Http\Controllers\HomeController::class,'postSi
 
 // Users Action
 Route::get('/donate',[App\Http\Controllers\HomeController::class,'donate'])->name('donate');
-Route::get('/sponsor-a-mother',[App\Http\Controllers\HomeController::class,'sponsorMother'])->name('sponsorMother');
+Route::get('/sponsor-a-mother', fn () => redirect()->route('sponsorship.youngMother', [], 301))->name('sponsorMother');
 Route::get('/apply-for-support',[App\Http\Controllers\HomeController::class,'applyForSupport'])->name('applyForSupport');
 Route::get('/getMembers',[App\Http\Controllers\HomeController::class,'members'])->name('members');
 Route::post('/mailDonation/{id}',[App\Http\Controllers\HomeController::class,'mailDonation'])->name('mailDonation');
@@ -193,7 +198,6 @@ Route::middleware(['auth', 'admin.role'
 
     Route::get('/sponsorships', [App\Http\Controllers\SponsorshipController::class, 'index'])->name('sponsorship.index');
     Route::post('/saveSponsorship', [App\Http\Controllers\SponsorshipController::class, 'store'])->name('saveSponsorship');
-    Route::get('/editSponsorship/{id}', [App\Http\Controllers\SponsorshipController::class, 'edit'])->name('editSponsorship');
     Route::post('/updateSponsorship/{id}', [App\Http\Controllers\SponsorshipController::class, 'update'])->name('updateSponsorship');
     Route::get('/destroySponsorship/{id}', [App\Http\Controllers\SponsorshipController::class, 'destroy'])->name('destroySponsorship');
 

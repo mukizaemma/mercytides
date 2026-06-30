@@ -35,7 +35,7 @@
                             <li><i class="fas fa-solar-panel" aria-hidden="true"></i> Solar &amp; community support where needed</li>
                         </ul>
                         <hr class="my-4">
-                        <p class="small text-muted mb-0">Prefer to sponsor someone specific? <a href="{{ route('sponsorMother') }}">View sponsorship profiles</a>.</p>
+                        <p class="small text-muted mb-0">Prefer to sponsor someone specific? <a href="{{ route('sponsorship.youngMother') }}">View sponsorship profiles</a>.</p>
                     </div>
                 </div>
             </div>

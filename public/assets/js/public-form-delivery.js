@@ -136,7 +136,15 @@
 
                         showAlert(wrap, result.data.message, 'success');
                         if (result.data.open_url) {
-                            window.location.href = result.data.open_url;
+                            var openInNewTab = form.getAttribute('data-channel-new-tab') === 'true';
+                            if (openInNewTab) {
+                                var opened = window.open(result.data.open_url, '_blank', 'noopener,noreferrer');
+                                if (!opened) {
+                                    window.location.href = result.data.open_url;
+                                }
+                            } else {
+                                window.location.href = result.data.open_url;
+                            }
                         }
                     })
                     .catch(function () {

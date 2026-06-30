@@ -1,199 +1,131 @@
 @extends('layouts.adminbase')
 
-@section('title', 'Sponsorship')
-
-@section('sidebar')
-
-    @parent
-
-@endsection
+@section('title', 'Sponsorship profiles')
 
 @section('content')
-
-    <div id="layoutSidenav">
-        <div id="layoutSidenav_nav">
-            @include('admin.includes.sidenav')
-        </div>
-        <div id="layoutSidenav_content">
-            <main>
-                <div class="container-fluid px-4">
-                    {{-- <h1 class="mt-4">Dashboard</h1> --}}
-                    <ol class="breadcrumb mb-4">
-                        <li class="breadcrumb-item active">Sponsorship</li>
-                    </ol>
-                    <div class="row">
-                        @if (session()->has('success'))
-                            <div class="arlert alert-success">
-                                <button class="close" type="button" data-dismiss="alert">X</button>
-                                {{ session()->get('success') }}
-                            </div>
-                        @endif
+<div id="layoutSidenav">
+    <div id="layoutSidenav_nav" data-turbo-permanent>
+        @include('admin.includes.sidenav')
+    </div>
+    <div id="layoutSidenav_content">
+        <main>
+            <div class="container-fluid px-4 py-4">
+                <div class="admin-page-header d-flex align-items-center justify-content-between flex-wrap gap-2">
+                    <div>
+                        <h1>Sponsorship profiles</h1>
+                        <p class="text-muted mb-0">Manage children, young mothers, and families available for sponsorship. Each profile appears on its category page with story, challenges, video, and a donor inquiry form.</p>
                     </div>
+                    <button class="btn btn-primary px-3" data-bs-toggle="modal" data-bs-target="#sponsorshipCreateModal">
+                        <i class="fa fa-plus me-1"></i> Add profile
+                    </button>
+                </div>
 
-                    <div class="card mb-4">
-                        <div class="card-header">
-                            <button class="btn btn-primary float-right" data-bs-toggle="modal" data-bs-target="#myModal"><i
-                                    class="fa fa-plus"></i> Add New Sponsor</button>
+                @if (session()->has('success'))
+                    <div class="alert alert-success">{{ session()->get('success') }}</div>
+                @endif
 
+                <div class="card mb-3">
+                    <div class="card-body py-3">
+                        <div class="d-flex flex-wrap gap-2">
+                            <a href="{{ route('sponsorship.index') }}" class="btn btn-sm {{ empty($typeFilter) ? 'btn-primary' : 'btn-outline-secondary' }}">All types</a>
+                            @foreach($types as $key => $meta)
+                                <a href="{{ route('sponsorship.index', ['type' => $key]) }}" class="btn btn-sm {{ ($typeFilter ?? '') === $key ? 'btn-primary' : 'btn-outline-secondary' }}">{{ $meta['label'] }}</a>
+                            @endforeach
                         </div>
-                        <div class="card-body">
-                            <table id="datatablesSimple">
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-body p-0">
+                        <div class="table-responsive admin-table-wrap">
+                            <table class="table table-hover align-middle mb-0">
                                 <thead>
                                     <tr>
-                                        <th>Picture</th>
-                                        <th>Child Names</th>
-                                        <th>Age</th>
-                                        <th>Contact</th>
-                                        <th>Testimony</th>
-                                        <th>Action</th>
+                                        <th>Photo</th>
+                                        <th>Name</th>
+                                        <th>Type</th>
+                                        <th>Status</th>
+                                        <th>Monthly need</th>
+                                        <th class="text-end">Actions</th>
                                     </tr>
                                 </thead>
-
                                 <tbody>
-                                    @foreach ($children as $rs)
+                                    @forelse($profiles as $profile)
                                         <tr>
-                                            <td><img src="{{ asset('storage/images/sponsorship') . $rs->image }}"
-                                                    alt="" width="150px"></td>
-                                            <td>{{ $rs->names }}</td>
-                                            <td>{{ $rs->age }}</td>
-                                            <td>{{ $rs->phone }}</td>
-                                            <td>{!! $rs->testimany ?? $rs->testimony ?? '' !!}</td>
-                                            <td></td>
-
                                             <td>
-                                                <div class="btn-btn-group ">
-                                                    <a type="button" href="{{ route('editSponsorship', $rs->id) }}"
-                                                        class="btn btn-primary text-black"><i class="fa fa-edit"></i> </a>
-                                                    <a type="button" href="{{ route('destroySponsorship', $rs->id) }}"
-                                                        class="btn btn-danger text-black"
-                                                        onclick="return confirm('Are you sure to delete this item?')"><i
-                                                            class="fa fa-trash"></i></a>
+                                                <img src="{{ \App\Models\Sponsorship::publicImageUrl($profile->image) }}" alt="{{ $profile->displayName() }}" class="rounded border" width="72" height="96" style="object-fit:cover;">
+                                            </td>
+                                            <td>
+                                                <div class="fw-semibold">{{ $profile->displayName() }}</div>
+                                                <small class="text-muted">{{ $profile->age ? 'Age '.$profile->age : '—' }}</small>
+                                            </td>
+                                            <td><span class="badge bg-light text-dark border">{{ $profile->typeLabel() }}</span></td>
+                                            <td>
+                                                <span class="badge {{ $profile->isAvailable() ? 'bg-warning text-dark' : 'bg-success' }}">{{ $profile->status }}</span>
+                                                @if(!$profile->isPublished())
+                                                    <span class="badge bg-secondary">Draft</span>
+                                                @endif
+                                            </td>
+                                            <td>{{ $profile->monthly_need ? '$'.$profile->monthly_need : '—' }}</td>
+                                            <td class="text-end">
+                                                <div class="btn-group btn-group-sm">
+                                                    <a href="{{ $profile->profileRoute() }}" class="btn btn-outline-secondary" target="_blank" rel="noopener">View</a>
+                                                    <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#sponsorshipEditModal{{ $profile->id }}">Edit</button>
+                                                    <a href="{{ route('destroySponsorship', $profile->id) }}" class="btn btn-outline-danger" onclick="return confirm('Delete this sponsorship profile?')">Delete</a>
                                                 </div>
                                             </td>
                                         </tr>
-                                    @endforeach
+                                    @empty
+                                        <tr>
+                                            <td colspan="6" class="border-0">
+                                                <div class="admin-empty-state">
+                                                    <p class="mb-0">No sponsorship profiles yet. Add a child, young mother, or family to publish on the website.</p>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforelse
                                 </tbody>
                             </table>
                         </div>
                     </div>
-                    <!-- The Modal for adding new Event -->
-                    <div class="modal fade" id="myModal">
-                        <div class="modal-dialog modal-lg">
-                            <div class="modal-content">
-
-                                <!-- Modal Header -->
-                                <div class="modal-header">
-                                    <h4 class="modal-title">Adding New Child</h4>
-                                    <button type="button" class="btn-close text-black" data-bs-dismiss="modal">X</button>
-                                </div>
-
-                                <!-- Modal body -->
-                                <div class="modal-body">
-                                    <form class="form" action="{{ route('saveSponsorship') }}" method="POST"
-                                        enctype="multipart/form-data">
-                                        @csrf
-                                        <div class="form-body">
-                                            <div class="row">
-                                                <div class="col-lg-8 col-sm-12">
-                                                    <div class="form-group">
-                                                        <label for="projectinput1">Child Names</label>
-                                                        <input type="text" class="form-control" placeholder="Child Names"
-                                                            name="names" required="">
-                                                    </div>
-                                                </div>
-                                                <div class="col-lg-4 col-sm-12">
-                                                    <div class="form-group">
-                                                        <label for="projectinput4">Age</label>
-                                                        <input type="text" class="form-control" placeholder="Child Age"
-                                                            name="age" required="">
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div class="row mt-3">
-                                                <div class="col-lg-3 col-sm-12">
-                                                    <div class="form-group">
-                                                        <label for="projectinput4">Sex</label>
-                                                        <select name="sex" id="" required="">
-                                                            <option value=""></option>
-                                                            <option value="Male">Male</option>
-                                                            <option value="Female">Female</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div class="col-lg-3 col-sm-12">
-                                                    <div class="form-group">
-                                                        <label for="projectinput4">Sponsorship Status</label>
-                                                        <select name="status" id="" required="">
-                                                            <option value=""></option>
-                                                            <option value="Not Sponsored">Not Sponsored</option>
-                                                            <option value="Sponsored">Sponsored</option>
-                                                            {{-- <option value="Removed">Removed</option> --}}
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div class="col-lg-3 col-sm-12">
-                                                    <div class="form-group">
-                                                        <label for="projectinput4">Address</label>
-                                                        <input type="text" class="form-control"
-                                                            placeholder="Child Address" name="contact">
-                                                    </div>
-                                                </div>
-                                                <div class="col-lg-3 col-sm-12">
-                                                    <div class="form-group">
-                                                        <label for="projectinput4">Contact</label>
-                                                        <input type="text" class="form-control"
-                                                            placeholder="Child Contact" name="phone">
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div class="form-group">
-                                                <label for="projectinput8">Child Testimony</label>
-                                                <textarea id="childTestimony" rows="5" class="form-control" name="testimany" data-editor="rich" placeholder="Testimony"></textarea>
-                                            </div>
-
-                                            <div class="row mt-5">
-
-                                                <div class="col-lg-6 col-sm-12">
-                                                    <label>Child Picture</label>
-                                                    <label id="projectinput7" class="file center-block">
-                                                        <input type="file" id="image" name="image"
-                                                            required="">
-                                                        <span class="file-custom"></span>
-                                                    </label>
-                                                </div>
-                                            </div>
-
-                                        </div>
-
-                                        <div class="form-actions mt-5">
-                                            <button type="submit" class="btn btn-primary text-black">
-                                                <i class="fa fa-save"></i> Save
-                                            </button>
-
-                                        </div>
-                                    </form>
-                                </div>
-
-                                <!-- Modal footer -->
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-danger text-black"
-                                        data-bs-dismiss="modal">Close</button>
-                                </div>
-
-                            </div>
-                        </div>
-                    </div>
-
                 </div>
-            </main>
-            @include('admin.includes.footer')
+            </div>
+        </main>
+        @include('admin.includes.footer')
+    </div>
+</div>
+
+<div class="modal fade" id="sponsorshipCreateModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add sponsorship profile</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                @include('admin.includes.sponsorship-form-fields', ['types' => $types])
+            </div>
         </div>
     </div>
+</div>
+
+@foreach($profiles as $profile)
+    <div class="modal fade" id="sponsorshipEditModal{{ $profile->id }}" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit {{ $profile->displayName() }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    @include('admin.includes.sponsorship-form-fields', ['profile' => $profile, 'types' => $types])
+                </div>
+            </div>
+        </div>
+    </div>
+@endforeach
+@endsection
 
 @section('scripts')
-
     <script src="{{ asset('assets') }}/js/summernote.js"></script>
-
 @endsection

@@ -131,18 +131,35 @@
 
             <div class="row mt-2 mb-4">
                 <div class="col-12 text-center">
+                    <span class="about-home-eyebrow d-block mb-2">Faces of hope</span>
+                    <h3 class="tp-section-title mb-2">Young Mothers We Support</h3>
+                    <p class="mothers-gallery-section__lead mx-auto mb-0">Real women. Real courage. Each portrait is part of a larger story of transformation.</p>
+                </div>
+            </div>
+
+            @include('frontend.includes.mothers-gallery', [
+                'mothers' => $mothers ?? collect(),
+                'limit' => 4,
+                'showSectionHeader' => false,
+                'embedded' => true,
+            ])
+
+            @if(($mothers ?? collect())->isEmpty())
+                <div class="row">
+                    <div class="col-12 text-center">
+                        <p class="text-muted mb-0">Mother profiles will appear here once photos are published.</p>
+                    </div>
+                </div>
+            @endif
+
+            @if(($testimonials ?? collect())->isNotEmpty())
+            <div class="row mt-5 mb-4">
+                <div class="col-12 text-center">
                     <h3 class="tp-section-title mb-0">Testimonials</h3>
                 </div>
             </div>
 
-            @if(($testimonials ?? collect())->isEmpty())
-                <div class="row">
-                    <div class="col-12 text-center">
-                        <p class="text-muted mb-0">Testimonials will appear here once published.</p>
-                    </div>
-                </div>
-            @else
-                <div class="row g-4">
+            <div class="row g-4">
                     @foreach($testimonials as $testimonial)
                         @php
                             $embedUrl = $youtubeEmbed($testimonial->video_url ?? null);

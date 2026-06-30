@@ -42,6 +42,8 @@ Route::post('/form-submissions', [App\Http\Controllers\FormSubmissionController:
 Route::get('/handover',[App\Http\Controllers\HomeController::class,'handoverPage'])->name('handoverPage');
 Route::get('/testimonials',[App\Http\Controllers\HomeController::class,'testimonials'])->name('testimonials');
 Route::get('/testimonials/{id}',[App\Http\Controllers\HomeController::class,'testimony'])->name('testimony');
+Route::get('/young-mothers',[App\Http\Controllers\HomeController::class,'mothersGallery'])->name('mothersGallery');
+Route::get('/young-mothers/{slug}',[App\Http\Controllers\HomeController::class,'motherProfile'])->name('motherProfile');
 Route::get('/updates',[App\Http\Controllers\HomeController::class,'posts'])->name('posts');
 Route::get('/updates/{slug}',[App\Http\Controllers\HomeController::class,'postSingle'])->name('postSingle');
 
@@ -148,6 +150,12 @@ Route::middleware(['auth', 'admin.role'
     Route::get('/editStaff/{id}', [App\Http\Controllers\StaffController::class, 'edit'])->name('editStaff');
     Route::post('/updateStaff/{id}', [App\Http\Controllers\StaffController::class, 'update'])->name('updateStaff');
     Route::get('/destroyStaff/{id}', [App\Http\Controllers\StaffController::class, 'destroy'])->name('destroyStaff');
+
+    // Young mothers gallery
+    Route::get('/mothers', [App\Http\Controllers\MothersController::class, 'index'])->name('mothers.index');
+    Route::post('/saveMother', [App\Http\Controllers\MothersController::class, 'store'])->name('saveMother');
+    Route::post('/updateMother/{id}', [App\Http\Controllers\MothersController::class, 'update'])->name('updateMother');
+    Route::get('/destroyMother/{id}', [App\Http\Controllers\MothersController::class, 'destroy'])->name('destroyMother');
 
     // Testimonies
     Route::get('/getTestimonials', [App\Http\Controllers\TestimoniesController::class, 'index'])->name('getTestimonials');

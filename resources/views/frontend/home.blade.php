@@ -75,7 +75,7 @@
 
     @include('frontend.includes.home-mission-core-values')
 
-    @include('frontend.includes.testimonials')
+    @include('frontend.includes.mothers-gallery', ['mothers' => $mothers ?? collect(), 'limit' => 4])
 
     @include('frontend.includes.home-partners')
 

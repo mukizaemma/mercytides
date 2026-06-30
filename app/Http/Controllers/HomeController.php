@@ -21,6 +21,7 @@ use App\Models\Setting;
 use App\Models\Activity;
 use ReCaptcha\ReCaptcha;
 use App\Models\Testimony;
+use App\Models\Mother;
 use App\Models\Volunteer;
 use App\Mail\ReplyMessage;
 use App\Models\Background;
@@ -84,6 +85,18 @@ class HomeController extends Controller
         $homeGallery = Gallery::latest()->get();
         $slides = Slide::oldest()->get();
         $testimonials = Testimony::latest()->paginate(3);
+        $mothers = collect();
+        if (Schema::hasTable('mothers')) {
+            $mothers = Mother::query()
+                ->where(function ($q) {
+                    $q->whereNull('status')
+                        ->orWhere('status', 'Published')
+                        ->orWhere('status', 'Publish')
+                        ->orWhere('status', 'Active');
+                })
+                ->latest()
+                ->get();
+        }
         $partners = Partner::latest()->get();
         $staff = Team::latest()->get();
 
@@ -130,6 +143,7 @@ class HomeController extends Controller
             'event' =>$event,
             'slides' =>$slides,
             'testimonials' =>$testimonials,
+            'mothers' => $mothers,
             'partners' =>$partners,
             'staff' =>$staff,
             'about' =>$about,
@@ -163,6 +177,41 @@ class HomeController extends Controller
         $about = Background::firstOrEmpty();
         return view('frontend.testimonials',['testimonials'=>$testimonials,'programs'=>$programs, 'about'=>$about]);
     }
+
+    public function mothersGallery()
+    {
+        $about = Background::firstOrEmpty();
+        $mothers = collect();
+        if (Schema::hasTable('mothers')) {
+            $mothers = Mother::query()
+                ->where(function ($q) {
+                    $q->whereNull('status')
+                        ->orWhere('status', 'Published')
+                        ->orWhere('status', 'Publish')
+                        ->orWhere('status', 'Active');
+                })
+                ->latest()
+                ->get();
+        }
+
+        return view('frontend.mothers', compact('about', 'mothers'));
+    }
+
+    public function motherProfile($slug)
+    {
+        $about = Background::firstOrEmpty();
+        $mother = Mother::query()
+            ->where(function ($q) use ($slug) {
+                $q->where('slug', $slug);
+                if (is_numeric($slug)) {
+                    $q->orWhere('id', (int) $slug);
+                }
+            })
+            ->firstOrFail();
+
+        return view('frontend.mother', compact('about', 'mother'));
+    }
+
     public function testimony($id){
         $testimony = Testimony::findOrFail($id);
         $programs = Program:: latest()->get();
@@ -953,7 +1002,19 @@ public function gallery(){
             ->latest()
             ->take(8)
             ->get();
-        return view('frontend.impact', compact('about', 'initiatives', 'impacts', 'testimonials'));
+        $mothers = collect();
+        if (Schema::hasTable('mothers')) {
+            $mothers = Mother::query()
+                ->where(function ($q) {
+                    $q->whereNull('status')
+                        ->orWhere('status', 'Published')
+                        ->orWhere('status', 'Publish')
+                        ->orWhere('status', 'Active');
+                })
+                ->latest()
+                ->get();
+        }
+        return view('frontend.impact', compact('about', 'initiatives', 'impacts', 'testimonials', 'mothers'));
     }
 
     public function handoverPage()

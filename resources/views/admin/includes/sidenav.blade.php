@@ -22,6 +22,9 @@
             <x-admin.nav-link :href="route('blog.index')" icon="fa-newspaper" :active="request()->routeIs('blog.*')">
                 News &amp; blog
             </x-admin.nav-link>
+            <x-admin.nav-link :href="route('mothers.index')" icon="fa-user-circle" :active="request()->routeIs(['mothers.index', 'saveMother', 'updateMother', 'destroyMother'])">
+                Young mothers
+            </x-admin.nav-link>
             <x-admin.nav-link :href="route('getTestimonials')" icon="fa-quote-right" :active="request()->routeIs(['getTestimonials', 'saveTestimony', 'updateTestimony'])">
                 Testimonials
             </x-admin.nav-link>

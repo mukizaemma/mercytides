@@ -5,7 +5,7 @@
 @section('content')
     @include('frontend.includes.page-header', [
         'title' => 'Young Mothers We Support',
-        'pageKey' => 'gallery_mothers',
+        'pageKey' => 'sponsor_young_mother',
     ])
 
     <section class="mothers-gallery-page pt-90 pb-90">

@@ -60,69 +60,6 @@
 
                                         </div>
 
-                                        <hr class="my-4">
-                                        <h5 class="mb-3">Our Factory Content</h5>
-                                        <div class="row">
-                                            <div class="col-12">
-                                                <div class="form-group">
-                                                    <label>Factory page description</label>
-                                                    <textarea rows="6" class="form-control" name="factory_description" data-editor="rich">{!! $data->factory_description !!}</textarea>
-                                                </div>
-                                            </div>
-                                            <div class="col-lg-4">
-                                                <div class="form-group">
-                                                    <label>Factory services</label>
-                                                    <textarea rows="5" class="form-control" name="factory_services" data-editor="rich">{!! $data->factory_services !!}</textarea>
-                                                    <small class="text-muted d-block mt-1">Commas/new lines/bullets supported.</small>
-                                                </div>
-                                                <div class="form-group mt-2">
-                                                    <label>Factory services image</label>
-                                                    <input type="file" class="form-control" name="factory_services_image" accept="image/*">
-                                                    @if(!empty($data->factory_services_image))
-                                                        <img src="{{ asset('storage/images/' . $data->factory_services_image) }}" width="140" class="mt-2 rounded border p-1 bg-white">
-                                                    @endif
-                                                </div>
-                                                <div class="form-group mt-2">
-                                                    <label>Factory services sub-items</label>
-                                                    <textarea rows="4" class="form-control" name="factory_services_subitems" data-editor="plain" placeholder="One sub-item per line, bullet, or comma">{{ old('factory_services_subitems', $data->factory_services_subitems ?? '') }}</textarea>
-                                                </div>
-                                            </div>
-                                            <div class="col-lg-4">
-                                                <div class="form-group">
-                                                    <label>Community impact</label>
-                                                    <textarea rows="5" class="form-control" name="factory_community_impact" data-editor="rich">{!! $data->factory_community_impact !!}</textarea>
-                                                </div>
-                                                <div class="form-group mt-2">
-                                                    <label>Community impact image</label>
-                                                    <input type="file" class="form-control" name="factory_community_impact_image" accept="image/*">
-                                                    @if(!empty($data->factory_community_impact_image))
-                                                        <img src="{{ asset('storage/images/' . $data->factory_community_impact_image) }}" width="140" class="mt-2 rounded border p-1 bg-white">
-                                                    @endif
-                                                </div>
-                                                <div class="form-group mt-2">
-                                                    <label>Community impact sub-items</label>
-                                                    <textarea rows="4" class="form-control" name="factory_community_impact_subitems" data-editor="plain" placeholder="One sub-item per line, bullet, or comma">{{ old('factory_community_impact_subitems', $data->factory_community_impact_subitems ?? '') }}</textarea>
-                                                </div>
-                                            </div>
-                                            <div class="col-lg-4">
-                                                <div class="form-group">
-                                                    <label>Training facilities offered</label>
-                                                    <textarea rows="5" class="form-control" name="factory_training_facilities" data-editor="rich">{!! $data->factory_training_facilities !!}</textarea>
-                                                </div>
-                                                <div class="form-group mt-2">
-                                                    <label>Training facilities image</label>
-                                                    <input type="file" class="form-control" name="factory_training_facilities_image" accept="image/*">
-                                                    @if(!empty($data->factory_training_facilities_image))
-                                                        <img src="{{ asset('storage/images/' . $data->factory_training_facilities_image) }}" width="140" class="mt-2 rounded border p-1 bg-white">
-                                                    @endif
-                                                </div>
-                                                <div class="form-group mt-2">
-                                                    <label>Training facilities sub-items</label>
-                                                    <textarea rows="4" class="form-control" name="factory_training_facilities_subitems" data-editor="plain" placeholder="One sub-item per line, bullet, or comma">{{ old('factory_training_facilities_subitems', $data->factory_training_facilities_subitems ?? '') }}</textarea>
-                                                </div>
-                                            </div>
-                                        </div>
-
                                             <div class="row">
                                                 <div class="col-lg-6 col-sm-12">
                                                     <label>About Cover Image </label><br>

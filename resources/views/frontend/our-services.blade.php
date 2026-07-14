@@ -6,7 +6,7 @@
 
     @include('frontend.includes.page-header', [
         'title' => 'Our Services',
-        'pageKey' => 'services',
+        'pageKey' => 'programs',
     ])
 
     <div class="tp-blog-2__area pt-90 pb-90">

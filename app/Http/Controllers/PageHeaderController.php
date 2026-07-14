@@ -14,8 +14,19 @@ class PageHeaderController extends Controller
     {
         PageHeader::ensureCatalog();
 
-        $headers = PageHeader::query()->ordered()->get();
-        $default = $headers->firstWhere('is_default', true);
+        $catalogKeys = array_keys(PageHeader::catalog());
+
+        // Live public pages from the catalog, plus any admin-created custom headers.
+        $headers = PageHeader::query()
+            ->ordered()
+            ->where(function ($query) use ($catalogKeys) {
+                $query->whereIn('page_key', $catalogKeys)
+                    ->orWhere('page_key', 'like', 'custom_%');
+            })
+            ->get();
+
+        $default = $headers->firstWhere('is_default', true)
+            ?: PageHeader::defaultHeader();
 
         return view('admin.page-headers', compact('headers', 'default'));
     }

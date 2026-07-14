@@ -13,7 +13,7 @@
                 <div class="admin-page-header d-flex align-items-center justify-content-between flex-wrap gap-2">
                     <div>
                         <h1>Page headers</h1>
-                        <p class="text-muted mb-0">Upload a hero image for each public page. Pages without a specific image use the site default.</p>
+                        <p class="text-muted mb-0">Hero images for pages visitors can open on the live site. Pages without their own image use the site default.</p>
                     </div>
                     <button class="btn btn-primary px-3" data-bs-toggle="modal" data-bs-target="#pageHeaderCreateModal">
                         <i class="fa fa-plus me-1"></i> Add custom header

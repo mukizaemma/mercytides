@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Storage;
 
 class PageHeader extends Model
 {
@@ -29,7 +30,8 @@ class PageHeader extends Model
     ];
 
     /**
-     * Catalog of public pages that use the shared breadcrumb/header.
+     * Public Mercy Tides pages that use the shared breadcrumb/header.
+     * Keep this aligned with main nav, footer, and linked public destinations.
      *
      * @return array<string, array{label: string, sort: int}>
      */
@@ -44,25 +46,36 @@ class PageHeader extends Model
             'team' => ['label' => 'Foundation Leadership', 'sort' => 50],
             'programs' => ['label' => 'Our Programs', 'sort' => 60],
             'impact' => ['label' => 'Our Impact', 'sort' => 70],
-            'services' => ['label' => 'Our Services', 'sort' => 80],
-            'factory' => ['label' => 'Our Factory', 'sort' => 90],
-            'products' => ['label' => 'Our Products', 'sort' => 100],
-            'events' => ['label' => 'Upcoming Events', 'sort' => 110],
-            'blog' => ['label' => 'News & Updates', 'sort' => 120],
-            'testimonials' => ['label' => 'Testimonials', 'sort' => 130],
-            'gallery_mothers' => ['label' => 'Young Mothers Gallery', 'sort' => 140],
-            'sponsorship_hub' => ['label' => 'Sponsorship hub', 'sort' => 150],
-            'sponsor_child' => ['label' => 'Sponsor a Child', 'sort' => 160],
-            'sponsor_young_mother' => ['label' => 'Sponsor a young mother', 'sort' => 170],
-            'sponsor_family' => ['label' => 'Sponsor a family', 'sort' => 180],
-            'sponsorship_profile' => ['label' => 'Sponsorship profile detail', 'sort' => 190],
-            'mother_profile' => ['label' => 'Mother profile detail', 'sort' => 200],
-            'donate' => ['label' => 'Donate', 'sort' => 210],
-            'get_involved' => ['label' => 'Get Involved', 'sort' => 220],
-            'volunteer' => ['label' => 'Volunteer', 'sort' => 230],
-            'apply_for_support' => ['label' => 'Apply for Support', 'sort' => 240],
-            'contact' => ['label' => 'Contact', 'sort' => 250],
-            'request_order' => ['label' => 'Request an order', 'sort' => 260],
+            'events' => ['label' => 'Upcoming Events', 'sort' => 80],
+            'blog' => ['label' => 'News & Updates', 'sort' => 90],
+            'testimonials' => ['label' => 'Testimonials', 'sort' => 100],
+            'sponsorship_hub' => ['label' => 'Sponsorship hub', 'sort' => 110],
+            'sponsor_child' => ['label' => 'Sponsor a Child', 'sort' => 120],
+            'sponsor_young_mother' => ['label' => 'Sponsor a young mother', 'sort' => 130],
+            'sponsor_family' => ['label' => 'Sponsor a family', 'sort' => 140],
+            'sponsorship_profile' => ['label' => 'Sponsorship profile detail', 'sort' => 150],
+            'get_involved' => ['label' => 'Get Involved', 'sort' => 160],
+            'donate' => ['label' => 'Donate', 'sort' => 170],
+            'apply_for_support' => ['label' => 'Apply for Support', 'sort' => 180],
+            'contact' => ['label' => 'Contact', 'sort' => 190],
+        ];
+    }
+
+    /**
+     * Former built-in header keys that are no longer part of the live public site.
+     *
+     * @return list<string>
+     */
+    public static function retiredKeys(): array
+    {
+        return [
+            'services',
+            'factory',
+            'products',
+            'request_order',
+            'gallery_mothers',
+            'mother_profile',
+            'volunteer',
         ];
     }
 
@@ -73,7 +86,7 @@ class PageHeader extends Model
         }
 
         foreach (self::catalog() as $key => $meta) {
-            self::query()->firstOrCreate(
+            $header = self::query()->firstOrCreate(
                 ['page_key' => $key],
                 [
                     'label' => $meta['label'],
@@ -81,7 +94,30 @@ class PageHeader extends Model
                     'is_default' => $key === self::DEFAULT_KEY,
                 ]
             );
+
+            // Keep labels/sort order in sync with the live public catalog.
+            if ($header->label !== $meta['label'] || (int) $header->sort_order !== (int) $meta['sort']) {
+                $header->label = $meta['label'];
+                $header->sort_order = $meta['sort'];
+                $header->save();
+            }
         }
+
+        self::query()
+            ->whereIn('page_key', self::retiredKeys())
+            ->get()
+            ->each(function (self $header) {
+                if (! empty($header->image)) {
+                    $path = ltrim((string) $header->image, '/');
+                    if (str_starts_with($path, 'storage/')) {
+                        $path = substr($path, strlen('storage/'));
+                    }
+                    if (Storage::disk('public')->exists($path)) {
+                        Storage::disk('public')->delete($path);
+                    }
+                }
+                $header->delete();
+            });
 
         if (! self::query()->where('is_default', true)->exists()) {
             self::query()->where('page_key', self::DEFAULT_KEY)->update(['is_default' => true]);

@@ -6,7 +6,7 @@
 
     @include('frontend.includes.page-header', [
         'title' => 'Our Factory',
-        'pageKey' => 'factory',
+        'pageKey' => 'about',
     ])
 
     @php

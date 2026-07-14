@@ -1,10 +1,13 @@
 @php
     $isEdit = !empty($profile);
-    $formAction = $isEdit ? route('updateSponsorship', $profile->id) : route('saveSponsorship');
+    // Root-relative URLs so submits stay on the current host (avoids APP_URL cross-domain 404s).
+    $formAction = $isEdit
+        ? route('updateSponsorship', $profile->id, false)
+        : route('saveSponsorship', [], false);
     $types = $types ?? \App\Support\MercyTidesContent::sponsorshipTypes();
 @endphp
 
-<form action="{{ $formAction }}" method="POST" enctype="multipart/form-data">
+<form action="{{ $formAction }}" method="POST" enctype="multipart/form-data" data-turbo="false">
     @csrf
     <div class="row">
         <div class="col-md-6 mb-3">

@@ -90,7 +90,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form action="{{ route('saveMother') }}" method="POST" enctype="multipart/form-data">
+                <form action="{{ route('saveMother', [], false) }}" method="POST" enctype="multipart/form-data" data-turbo="false">
                     @csrf
                     <div class="mb-3">
                         <label class="form-label">Portrait photo <span class="text-danger">*</span></label>
@@ -131,7 +131,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form action="{{ route('updateMother', $mother->id) }}" method="POST" enctype="multipart/form-data">
+                <form action="{{ route('updateMother', $mother->id, false) }}" method="POST" enctype="multipart/form-data" data-turbo="false">
                     @csrf
                     <div class="mb-3">
                         <label class="form-label">Replace portrait (optional)</label>

@@ -51,15 +51,19 @@ class SponsorshipController extends Controller
 
     public function update(Request $request, $id)
     {
-        $profile = Sponsorship::findOrFail($id);
+        $profile = Sponsorship::query()->find($id);
+        if (! $profile) {
+            return redirect()
+                ->route('sponsorship.index')
+                ->with('error', 'That sponsorship profile could not be found. It may have been deleted.');
+        }
+
         $validated = $this->validateProfile($request, false);
 
         $this->fillProfile($profile, $validated, $request);
 
         if ($request->hasFile('image')) {
-            if (! empty($profile->image) && Storage::disk('public')->exists($profile->image)) {
-                Storage::disk('public')->delete($profile->image);
-            }
+            $this->deleteStoredImage($profile->image);
             $profile->image = $request->file('image')->storeOptimized('images/sponsorship', 'public', ['preset' => 'portrait']);
         }
 
@@ -116,7 +120,8 @@ class SponsorshipController extends Controller
     {
         $profile->type = $validated['type'];
         $profile->names = $validated['names'];
-        $profile->slug = $validated['slug'] ?? null;
+        $slug = trim((string) ($validated['slug'] ?? ''));
+        $profile->slug = $slug !== '' ? $slug : null;
         $profile->age = $validated['age'] ?? null;
         $profile->sex = $validated['sex'] ?? null;
         $profile->status = $validated['status'];
@@ -129,5 +134,24 @@ class SponsorshipController extends Controller
         $profile->vision = $validated['vision'] ?? null;
         $profile->video_url = $validated['video_url'] ?? null;
         $profile->monthly_need = $validated['monthly_need'] ?? null;
+    }
+
+    protected function deleteStoredImage(?string $image): void
+    {
+        if (empty($image)) {
+            return;
+        }
+
+        $candidates = array_unique(array_filter([
+            ltrim($image, '/'),
+            'images/sponsorship/' . ltrim(basename($image), '/'),
+            'images/mothers/' . ltrim(basename($image), '/'),
+        ]));
+
+        foreach ($candidates as $path) {
+            if (Storage::disk('public')->exists($path)) {
+                Storage::disk('public')->delete($path);
+            }
+        }
     }
 }

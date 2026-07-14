@@ -15,7 +15,8 @@ class Authenticate extends Middleware
     protected function redirectTo($request)
     {
         if (! $request->expectsJson()) {
-            return route('login');
+            // Prefer the custom admin login; Fortify's /login view is not used for this CMS.
+            return route('loginForm');
         }
     }
 }

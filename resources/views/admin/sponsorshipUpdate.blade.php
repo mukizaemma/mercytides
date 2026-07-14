@@ -34,8 +34,8 @@
                 <div class="card mb-4">
 
                     <div class="card-body">
-                        <form class="form" action="{{ route('updateChild', $data->id) }}" method="POST"
-                        enctype="multipart/form-data">
+                        <form class="form" action="{{ route('updateSponsorship', $data->id, false) }}" method="POST"
+                        enctype="multipart/form-data" data-turbo="false">
                         @csrf
                         <div class="form-body">
                             <div class="row">

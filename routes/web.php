@@ -198,7 +198,12 @@ Route::middleware(['auth', 'admin.role'
 
     Route::get('/sponsorships', [App\Http\Controllers\SponsorshipController::class, 'index'])->name('sponsorship.index');
     Route::post('/saveSponsorship', [App\Http\Controllers\SponsorshipController::class, 'store'])->name('saveSponsorship');
-    Route::post('/updateSponsorship/{id}', [App\Http\Controllers\SponsorshipController::class, 'update'])->name('updateSponsorship');
+    Route::match(['post', 'put', 'patch'], '/updateSponsorship/{id}', [App\Http\Controllers\SponsorshipController::class, 'update'])->name('updateSponsorship');
+    Route::get('/updateSponsorship/{id}', function ($id) {
+        return redirect()
+            ->route('sponsorship.index')
+            ->with('error', 'Please use the Edit form to update a sponsorship profile.');
+    });
     Route::get('/destroySponsorship/{id}', [App\Http\Controllers\SponsorshipController::class, 'destroy'])->name('destroySponsorship');
 
     // Emails

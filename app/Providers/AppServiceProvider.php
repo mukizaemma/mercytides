@@ -12,6 +12,7 @@ use App\Services\FormSubmissionService;
 use App\Services\ImageUploadService;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
 
@@ -26,6 +27,18 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot()
     {
+        // Keep generated URLs on the host the user is actually visiting when APP_URL drifts
+        // (common on shared/multi-site setups) so admin form posts do not 404 elsewhere.
+        if (! $this->app->runningInConsole() && ! $this->app->runningUnitTests()) {
+            $root = request()->getSchemeAndHttpHost() . request()->getBasePath();
+            if ($root !== '') {
+                URL::forceRootUrl(rtrim($root, '/'));
+            }
+            if (request()->isSecure()) {
+                URL::forceScheme('https');
+            }
+        }
+
         UploadedFile::macro('storeOptimized', function (string $directory, string $disk = 'public', array $options = []) {
             return app(ImageUploadService::class)->store($this, $directory, $disk, $options);
         });

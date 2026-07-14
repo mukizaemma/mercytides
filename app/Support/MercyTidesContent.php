@@ -160,21 +160,47 @@ class MercyTidesContent
                 'route' => 'sponsorship.child',
                 'icon' => 'fa-child',
                 'caption' => 'Give a child education, nutrition, and a safe place to grow through consistent monthly support.',
+                'intro_title' => 'Help a child grow with hope',
                 'intro' => '<p>Through child sponsorship, you help cover school essentials, meals, healthcare, and mentoring for children in our care. Each profile shares their story so you can pray, give, and follow their progress with Mercy Tides Foundation.</p>',
+                'grid_title' => 'Children waiting for a sponsor',
+                'grid_lead' => 'Meet a child, learn their story, and partner with Mercy Tides in their education and care.',
             ],
             'young_mother' => [
                 'label' => 'Sponsor a young mother',
                 'route' => 'sponsorship.youngMother',
                 'icon' => 'fa-female',
                 'caption' => 'Walk alongside a young mother with vocational training, discipleship, and practical support.',
-                'intro' => '<p>Young mothers in our programs are rebuilding their lives with skills, faith, and community. Your sponsorship helps provide training, childcare support, mentorship, and the tools she needs to provide for her family with dignity.</p>',
+                'intro_title' => 'Every mother deserves a path forward',
+                'intro' => '<p>Unwed young mothers in Uganda often face stigma, interrupted schooling, and the weight of providing alone. Through Mercy Tides, each mother you meet here is learning a trade, growing in faith, and caring for her child with renewed dignity. Your sponsorship does not buy a label — it walks with her through training, childcare, mentorship, and the practical support that helps her rebuild a stable home.</p>',
+                'grid_title' => 'Mothers waiting for a sponsor',
+                'grid_lead' => 'Choose a mother, read her story, and become part of her next chapter — skills, hope, and a brighter future for her child.',
+                'pillars' => [
+                    [
+                        'icon' => 'fa-hands-helping',
+                        'title' => 'Skills that sustain',
+                        'text' => 'Vocational training and tools so she can earn with dignity and provide for her child.',
+                    ],
+                    [
+                        'icon' => 'fa-heart',
+                        'title' => 'Care for mother & child',
+                        'text' => 'Childcare support, mentoring, and practical help while she grows in confidence.',
+                    ],
+                    [
+                        'icon' => 'fa-pray',
+                        'title' => 'Faith & belonging',
+                        'text' => 'Christ-centered discipleship and a community that reminds her she is not alone.',
+                    ],
+                ],
             ],
             'family' => [
                 'label' => 'Sponsor a family',
                 'route' => 'sponsorship.family',
                 'icon' => 'fa-home',
                 'caption' => 'Support a whole household — mother and children together — with holistic, lasting care.',
+                'intro_title' => 'Support a whole household',
                 'intro' => '<p>Family sponsorship meets practical needs across the home: food, shelter, education, and spiritual encouragement. You help a family move from survival toward stability and hope for the next generation.</p>',
+                'grid_title' => 'Families waiting for a sponsor',
+                'grid_lead' => 'Choose a family, walk with them in prayer and giving, and help build a more stable home.',
             ],
         ];
     }

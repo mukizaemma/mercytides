@@ -2,111 +2,97 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-use App\Models\Gallery;
-use App\Models\Branch;
 use App\Models\Image;
 use App\Models\Program;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 
 class GalleryController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
-        $images = Image::latest()->get();
+        $images = Image::query()->with('program')->latest()->get();
         $programs = Program::latest()->get();
-        return view('admin.gallery', ['images'=>$images,'programs'=>$programs]);
+
+        return view('admin.gallery', [
+            'images' => $images,
+            'programs' => $programs,
+        ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
-        $request->validate([
-            'caption' => ['nullable', 'string'],
+        $validated = $request->validate([
+            'caption' => ['nullable', 'string', 'max:255'],
             'program_id' => ['nullable', 'exists:programs,id'],
-            'image' => ['required', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:4096'],
+            'youtube_url' => ['nullable', 'string', 'max:500', 'regex:/^(https?:\/\/)?(www\.)?(youtube\.com\/(watch\?v=|embed\/|shorts\/)|youtu\.be\/).+/i'],
+            'image' => [
+                Rule::requiredIf(fn () => blank($request->input('youtube_url'))),
+                'nullable',
+                'image',
+                'mimes:jpeg,png,jpg,gif,webp',
+                'max:4096',
+            ],
+        ], [
+            'image.required' => 'Upload an image or provide a YouTube URL.',
+            'youtube_url.regex' => 'Enter a valid YouTube URL.',
         ]);
-        $data = new Image();
-        $data ->caption = $request->caption;
-        $data ->program_id = $request->program_id;
 
-        // Uploading image
+        if (blank($validated['youtube_url'] ?? null) && ! $request->hasFile('image')) {
+            return redirect()->back()->with('error', 'Upload an image or provide a YouTube URL.')->withInput();
+        }
+
+        $data = new Image();
+        $data->caption = $validated['caption'] ?? null;
+        $data->program_id = $validated['program_id'] ?? null;
+        $data->youtube_url = filled($validated['youtube_url'] ?? null) ? trim($validated['youtube_url']) : null;
+
         if ($request->hasFile('image')) {
             $data->image = $request->file('image')->storeOptimized('images/gallery', 'public');
         }
 
-        $stored = $data->save();
+        $data->save();
 
-        if($stored){
-            return redirect('images')->with('success', 'New image has been added successfully');
-        }
-
-        return redirect()->back()->with('error','Failed to add new Image');
+        return redirect()->route('images')->with('success', 'Gallery item has been added successfully.');
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function edit($id)
     {
-        $data = Image::findOrFail($id);
-        return view('admin.galleryUpdate', ['data'=>$data]);
+        $data = Image::query()->findOrFail($id);
+        $programs = Program::latest()->get();
+
+        return view('admin.galleryUpdate', [
+            'data' => $data,
+            'programs' => $programs,
+        ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'caption' => ['nullable', 'string'],
+        $data = Image::query()->findOrFail($id);
+
+        $validated = $request->validate([
+            'caption' => ['nullable', 'string', 'max:255'],
             'program_id' => ['nullable', 'exists:programs,id'],
+            'youtube_url' => ['nullable', 'string', 'max:500', 'regex:/^(https?:\/\/)?(www\.)?(youtube\.com\/(watch\?v=|embed\/|shorts\/)|youtu\.be\/).+/i'],
             'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:4096'],
+        ], [
+            'youtube_url.regex' => 'Enter a valid YouTube URL.',
         ]);
-        $data = Image::findOrFail($id);
-        $data->caption = $request->input('caption');
-        $data->program_id = $request->input('program_id');
+
+        $youtube = filled($validated['youtube_url'] ?? null) ? trim($validated['youtube_url']) : null;
+
+        if (! $request->hasFile('image') && blank($youtube) && empty($data->image)) {
+            return redirect()->back()->with('error', 'Keep an image, upload a new one, or provide a YouTube URL.')->withInput();
+        }
+
+        $data->caption = $validated['caption'] ?? null;
+        $data->program_id = $validated['program_id'] ?? null;
+        $data->youtube_url = $youtube;
 
         if ($request->hasFile('image')) {
-            if (!empty($data->image) && Storage::disk('public')->exists($data->image)) {
+            if (! empty($data->image) && Storage::disk('public')->exists($data->image)) {
                 Storage::disk('public')->delete($data->image);
             }
             $data->image = $request->file('image')->storeOptimized('images/gallery', 'public');
@@ -114,23 +100,19 @@ class GalleryController extends Controller
 
         $data->save();
 
-        return redirect('images')->with('success','Image has been updated');
+        return redirect()->route('images')->with('success', 'Gallery item has been updated.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function destroy($id)
     {
-        $image = Image::findOrFail($id);
-        // delete the image file
-        if (!empty($image->image) && Storage::disk('public')->exists($image->image)) {
+        $image = Image::query()->findOrFail($id);
+
+        if (! empty($image->image) && Storage::disk('public')->exists($image->image)) {
             Storage::disk('public')->delete($image->image);
         }
+
         $image->delete();
-        return redirect()->back()->with('warning', 'Item has been deleted');
+
+        return redirect()->back()->with('warning', 'Gallery item has been deleted.');
     }
 }

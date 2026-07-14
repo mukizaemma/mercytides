@@ -394,15 +394,16 @@ class HomeController extends Controller
         'programs'=>$programs,'about'=>$about,'images'=>$images]);
     }
 
-public function gallery(){
-    $gallery = Projectimage::latest()->take(9)->get();
-    $programs = Activity::with('images')->get();
+    public function gallery()
+    {
+        $gallery = Image::query()
+            ->latest()
+            ->paginate(16);
 
-    return view('frontend.gallery', [
-        'gallery' => $gallery,
-        'programs' => $programs
-    ]);
-}
+        return view('frontend.gallery', [
+            'gallery' => $gallery,
+        ]);
+    }
 
 
     public function contacts(){

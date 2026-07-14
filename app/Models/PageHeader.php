@@ -47,6 +47,7 @@ class PageHeader extends Model
             'programs' => ['label' => 'Our Programs', 'sort' => 60],
             'impact' => ['label' => 'Our Impact', 'sort' => 70],
             'events' => ['label' => 'Upcoming Events', 'sort' => 80],
+            'gallery' => ['label' => 'Gallery', 'sort' => 85],
             'blog' => ['label' => 'News & Updates', 'sort' => 90],
             'testimonials' => ['label' => 'Testimonials', 'sort' => 100],
             'sponsorship_hub' => ['label' => 'Sponsorship hub', 'sort' => 110],

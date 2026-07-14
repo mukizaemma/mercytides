@@ -372,3 +372,23 @@ a:hover {
     border-top: 1px solid rgba(15, 23, 42, 0.08);
     padding-top: 1rem;
 }
+
+/* Summernote usability inside admin pages/modals */
+.note-editor.note-frame {
+    border: 1px solid rgba(15, 23, 42, 0.14);
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+.note-editor.note-frame .note-editing-area .note-editable {
+    background: #fff;
+    min-height: 140px;
+}
+
+.modal .note-editor.note-frame {
+    margin-bottom: 0.25rem;
+}
+
+.note-toolbar {
+    background: #f8fafc;
+}

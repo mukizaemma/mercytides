@@ -7,6 +7,7 @@
 
         @include('frontend.includes.page-header', [
             'title' => $program->title,
+            'pageKey' => 'programs',
             'image' => $program->coverImageUrl(),
         ])
 

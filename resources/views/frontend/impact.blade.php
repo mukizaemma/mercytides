@@ -6,6 +6,7 @@
 
     @include('frontend.includes.page-header', [
         'title' => 'Our Impact',
+        'pageKey' => 'impact',
     ])
 
     @php

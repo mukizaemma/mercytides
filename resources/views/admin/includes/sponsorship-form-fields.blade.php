@@ -93,17 +93,17 @@
 
     <div class="mb-3">
         <label class="form-label">Story / testimonial</label>
-        <textarea class="form-control" name="testimany" rows="4" data-editor="rich" placeholder="Their story in their own words">{{ old('testimany', $isEdit ? ($formProfile->testimany ?? '') : '') }}</textarea>
+        <textarea class="form-control" name="testimany" rows="4" data-editor="rich" placeholder="Their story in their own words">{!! old('testimany', $isEdit ? ($formProfile->testimany ?? '') : '') !!}</textarea>
     </div>
 
     <div class="mb-3">
         <label class="form-label">Challenges</label>
-        <textarea class="form-control" name="challenges" rows="3" data-editor="rich" placeholder="What they are facing today">{{ old('challenges', $isEdit ? ($formProfile->challenges ?? '') : '') }}</textarea>
+        <textarea class="form-control" name="challenges" rows="3" data-editor="rich" placeholder="What they are facing today">{!! old('challenges', $isEdit ? ($formProfile->challenges ?? '') : '') !!}</textarea>
     </div>
 
     <div class="mb-3">
         <label class="form-label">Vision / hopes</label>
-        <textarea class="form-control" name="vision" rows="3" data-editor="rich" placeholder="Their hopes for the future">{{ old('vision', $isEdit ? ($formProfile->vision ?? '') : '') }}</textarea>
+        <textarea class="form-control" name="vision" rows="3" data-editor="rich" placeholder="Their hopes for the future">{!! old('vision', $isEdit ? ($formProfile->vision ?? '') : '') !!}</textarea>
     </div>
 
     <div class="mb-3">

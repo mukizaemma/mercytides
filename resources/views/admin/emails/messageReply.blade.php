@@ -54,11 +54,11 @@
                                     <div class="row">
                                         <div class="col-lg-6 col-sm-12 mb-3">
                                             <label for="">Visitor's Message</label>
-                                            <textarea id="ProgramDescription" rows="10" class="form-control" name="message"  readonly="">{{$data->message}}</textarea>
+                                            <textarea id="visitorMessage" rows="10" class="form-control" name="message" data-editor="plain" readonly>{{ $data->message }}</textarea>
                                         </div>
                                         <div class="col-lg-6 col-sm-12 mb-3">
-                                            <label for="projectinput8">Your Reply Message</label>
-                                            <textarea id="ProgramDescription" rows="10" class="form-control @error('reply') is-invalid @enderror" name="reply" value="{{ old('reply')}}" placeholder="Type your reply here"></textarea>
+                                            <label for="replyMessage">Your Reply Message</label>
+                                            <textarea id="replyMessage" rows="10" class="form-control @error('reply') is-invalid @enderror" name="reply" data-editor="rich" placeholder="Type your reply here">{!! old('reply') !!}</textarea>
                                             @error('reply')
                                             <span class="invalid-feedback" role="alert">
                                                 <strong>{{ $message }}</strong>

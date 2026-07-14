@@ -59,7 +59,7 @@
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Sub-items</label>
-                                    <textarea rows="6" class="form-control" name="factory_services_subitems" placeholder="One sub-item per line, bullet, or comma">{{ old('factory_services_subitems', $background->factory_services_subitems ?? '') }}</textarea>
+                                    <textarea rows="6" class="form-control" name="factory_services_subitems" data-editor="plain" placeholder="One sub-item per line, bullet, or comma">{{ old('factory_services_subitems', $background->factory_services_subitems ?? '') }}</textarea>
                                 </div>
                                 <button type="submit" class="btn btn-primary"><i class="fa fa-save me-1"></i> Save services</button>
                             </form>
@@ -81,7 +81,7 @@
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Sub-items</label>
-                                    <textarea rows="6" class="form-control" name="factory_community_impact_subitems" placeholder="One sub-item per line, bullet, or comma">{{ old('factory_community_impact_subitems', $background->factory_community_impact_subitems ?? '') }}</textarea>
+                                    <textarea rows="6" class="form-control" name="factory_community_impact_subitems" data-editor="plain" placeholder="One sub-item per line, bullet, or comma">{{ old('factory_community_impact_subitems', $background->factory_community_impact_subitems ?? '') }}</textarea>
                                 </div>
                                 <button type="submit" class="btn btn-primary"><i class="fa fa-save me-1"></i> Save community impact</button>
                             </form>
@@ -103,7 +103,7 @@
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Sub-items</label>
-                                    <textarea rows="6" class="form-control" name="factory_training_facilities_subitems" placeholder="One sub-item per line, bullet, or comma">{{ old('factory_training_facilities_subitems', $background->factory_training_facilities_subitems ?? '') }}</textarea>
+                                    <textarea rows="6" class="form-control" name="factory_training_facilities_subitems" data-editor="plain" placeholder="One sub-item per line, bullet, or comma">{{ old('factory_training_facilities_subitems', $background->factory_training_facilities_subitems ?? '') }}</textarea>
                                 </div>
                                 <button type="submit" class="btn btn-primary"><i class="fa fa-save me-1"></i> Save training facilities</button>
                             </form>

@@ -12,6 +12,7 @@
 @include('frontend.includes.page-header', [
     'title' => 'Where We Work',
     'caption' => 'Serving unwed young mothers in Wakiso District and communities near Kampala, Uganda.',
+    'pageKey' => 'model',
 ])
 
 <section class="page-standalone grey-bg pt-60 pb-90">

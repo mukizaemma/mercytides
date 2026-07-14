@@ -76,30 +76,29 @@
 
 	///////////////////////////////////////////////////
 	// 07. Sticky Header Js
-	windowOn.on('scroll', function () {
+	// Header is CSS-sticky; only toggle a scrolled shadow class here.
+	function syncStickyHeaderState() {
 		var scroll = windowOn.scrollTop();
-		if (scroll < 400) {
-			$("#header-sticky").removeClass("header-sticky");
-		} else {
-			$("#header-sticky").addClass("header-sticky");
+		var $header = $("#header-sticky");
+		if (!$header.length) {
+			return;
 		}
-	});
+		if (scroll < 24) {
+			$header.removeClass("header-sticky");
+		} else {
+			$header.addClass("header-sticky");
+		}
+	}
+
+	windowOn.off('scroll.tpStickyHeader').on('scroll.tpStickyHeader', syncStickyHeaderState);
+	syncStickyHeaderState();
+	window.MercyTidesSyncStickyHeader = syncStickyHeaderState;
 
 	if ($('.tp-header-height').length > 0) {
 		var headerHeight = document.querySelector(".tp-header-height");      
 		var setHeaderHeight = headerHeight.offsetHeight;
 		document.documentElement.style.setProperty('--site-header-offset', setHeaderHeight + 'px');
-		$(".tp-header-height").each(function () {
-			$(this).css({
-				'height' : setHeaderHeight + 'px'
-			});
-		});
-				
-		$(".tp-header-height.header-sticky").each(function () {
-			$(this).css({
-				'height' : inherit,
-			});
-		});
+		// Do not force a fixed height on the sticky header — it stays in normal document flow.
 	  }
 
 	////////////////////////////////////////////////////

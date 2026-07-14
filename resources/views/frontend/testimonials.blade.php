@@ -7,6 +7,7 @@
 
         @include('frontend.includes.page-header', [
             'title' => 'Our Testimonials',
+            'pageKey' => 'testimonials',
         ])
 
     <!-- testimonial-area-start -->

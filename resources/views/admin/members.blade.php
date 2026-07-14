@@ -182,7 +182,7 @@
 
                                                     {{-- <div class="form-group mt-3">
                                                         <label for="projectinput8">Tell us more about yourself</label>
-                                                        <textarea id="message" rows="5" class="form-control" name="message"
+                                                        <textarea id="message" rows="5" class="form-control" name="message" data-editor="rich"
                                                             placeholder="Anything would you like us to know?"></textarea>
                                                     </div> --}}
                                                 </div>

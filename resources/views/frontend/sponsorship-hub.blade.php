@@ -13,6 +13,7 @@
 @include('frontend.includes.page-header', [
     'title' => 'Sponsorship',
     'caption' => 'Choose how you would like to walk with mothers and children in Uganda — sponsor someone specific or explore other ways to get involved.',
+    'pageKey' => 'sponsorship_hub',
 ])
 
 <section class="sponsorship-hub-page pt-90 pb-90 grey-bg">

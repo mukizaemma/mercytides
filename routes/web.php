@@ -142,6 +142,14 @@ Route::middleware(['auth', 'admin.role'
     Route::post('/updateSlide/{id}', [App\Http\Controllers\SlidesController::class, 'update'])->name('updateSlide');
     Route::get('/destroySlide/{id}', [App\Http\Controllers\SlidesController::class, 'destroy'])->name('destroySlide');
 
+    // Page header heroes (per-page + site default)
+    Route::get('/page-headers', [App\Http\Controllers\PageHeaderController::class, 'index'])->name('pageHeaders.index');
+    Route::post('/page-headers', [App\Http\Controllers\PageHeaderController::class, 'store'])->name('pageHeaders.store');
+    Route::post('/page-headers/{id}', [App\Http\Controllers\PageHeaderController::class, 'update'])->name('pageHeaders.update');
+    Route::get('/page-headers/{id}/clear', [App\Http\Controllers\PageHeaderController::class, 'clearImage'])->name('pageHeaders.clear');
+    Route::get('/page-headers/{id}/default', [App\Http\Controllers\PageHeaderController::class, 'setDefault'])->name('pageHeaders.setDefault');
+    Route::get('/page-headers/{id}/delete', [App\Http\Controllers\PageHeaderController::class, 'destroy'])->name('pageHeaders.destroy');
+
     // Events
     Route::get('/events', [App\Http\Controllers\EventController::class, 'index'])->name('events');
     Route::post('/saveEvent', [App\Http\Controllers\EventController::class, 'store'])->name('saveEvent');

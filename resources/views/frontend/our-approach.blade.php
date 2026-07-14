@@ -17,6 +17,7 @@
 @include('frontend.includes.page-header', [
     'title' => 'Programs & Core Values',
     'caption' => 'Vocational training, entrepreneurship, holistic leadership, and discipleship for mothers in Uganda.',
+    'pageKey' => 'approach',
 ])
 
 <section class="page-standalone grey-bg pt-60 pb-60">

@@ -139,7 +139,7 @@
                                         </div>
                                         <div class="col-12">
                                             <label class="form-label">Google map embed code</label>
-                                            <textarea class="form-control" rows="5" name="google_map_embed_code" placeholder='<iframe src="https://www.google.com/maps/embed?pb=..." width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe> OR https://www.google.com/maps/embed?pb=...'>{{ $data->google_map_embed_code }}</textarea>
+                                            <textarea class="form-control font-monospace" rows="5" name="google_map_embed_code" data-editor="plain" placeholder='<iframe src="https://www.google.com/maps/embed?pb=..." width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe> OR https://www.google.com/maps/embed?pb=...'>{{ $data->google_map_embed_code }}</textarea>
                                             <small class="text-muted d-block mt-1">Paste either the full iframe code from Google Maps or just the embed URL.</small>
                                         </div>
                                     </div>
@@ -194,19 +194,23 @@
                                     @include('admin.includes.donation-payment-methods-settings', ['data' => $data])
                                 </div>
                                 <div class="tab-pane fade" id="headers-pane" role="tabpanel" aria-labelledby="headers-tab">
+                                    <div class="alert alert-info mb-3">
+                                        Manage per-page header images and the site-wide default fallback from
+                                        <a href="{{ route('pageHeaders.index') }}" class="alert-link">Page headers</a>.
+                                    </div>
                                     <div class="row g-3">
                                         <div class="col-lg-6">
-                                            <label class="form-label">Default page header image</label>
+                                            <label class="form-label">Legacy default image (optional fallback)</label>
                                             <input type="file" class="form-control" name="page_header_image">
-                                            <small class="text-muted d-block mt-1">Used by all breadcrumb headers unless a page provides its own image.</small>
+                                            <small class="text-muted d-block mt-1">Kept for compatibility. Prefer uploading the default in Page headers.</small>
                                             @if(!empty($data->page_header_image))
                                                 <img src="{{ asset('storage/images') . $data->page_header_image }}" alt="Page header image" width="180" class="mt-2 rounded border p-1 bg-white">
                                             @endif
                                         </div>
                                         <div class="col-lg-6">
                                             <label class="form-label">Default header caption</label>
-                                            <textarea class="form-control" rows="4" name="page_header_caption" placeholder="Short caption shown below each page title">{{ $data->page_header_caption }}</textarea>
-                                            <small class="text-muted d-block mt-1">This keeps page hero sections consistent site-wide.</small>
+                                            <textarea class="form-control" rows="4" name="page_header_caption" data-editor="plain" placeholder="Short caption shown below each page title">{{ $data->page_header_caption }}</textarea>
+                                            <small class="text-muted d-block mt-1">Shown under the page title when a page does not pass its own caption.</small>
                                         </div>
                                     </div>
                                 </div>

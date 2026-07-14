@@ -7,6 +7,7 @@
     @include('frontend.includes.page-header', [
         'title' => 'Our Products',
         'caption' => 'Abahizi Manufacturing - bags, accessories and apparel crafted in Rwanda. We produce to order for partners, retailers, and organisations.',
+        'pageKey' => 'products',
     ])
 
     @php

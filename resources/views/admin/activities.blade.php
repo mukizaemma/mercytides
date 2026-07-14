@@ -110,7 +110,7 @@
                         </div>
                         <div class="col-12">
                             <label class="form-label">Initiative details / description</label>
-                            <textarea class="form-control" rows="6" name="description" data-no-editor="true" required></textarea>
+                            <textarea class="form-control" rows="6" name="description" data-editor="rich" required></textarea>
                         </div>
                         <div class="col-12">
                             <label class="form-label">Cover image</label>

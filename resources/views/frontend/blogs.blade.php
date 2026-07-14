@@ -7,6 +7,7 @@
 
         @include('frontend.includes.page-header', [
             'title' => 'Our Recent Updates',
+            'pageKey' => 'blog',
         ])
 
     <!-- service-area-start -->

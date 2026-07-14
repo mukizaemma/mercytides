@@ -74,7 +74,7 @@
                                         <div class="col-12">
                                             <label class="form-label">Core values — grid list (recommended)</label>
                                             <p class="text-muted small mb-2">Enter <strong>one value per line</strong>. These appear as cards in columns on the About Us page. Leave empty to try auto-detect from the rich text below (bullet list or multiple lines).</p>
-                                            <textarea rows="10" class="form-control font-monospace" name="core_values_list" placeholder="One value per line">{{ old('core_values_list', $data->core_values_list ?? '') }}</textarea>
+                                            <textarea rows="10" class="form-control font-monospace" name="core_values_list" data-editor="plain" placeholder="One value per line">{{ old('core_values_list', $data->core_values_list ?? '') }}</textarea>
                                         </div>
                                         <div class="col-12">
                                             <label class="form-label">Core values — rich text (optional)</label>

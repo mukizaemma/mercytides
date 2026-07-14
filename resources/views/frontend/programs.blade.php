@@ -7,6 +7,7 @@
 
         @include('frontend.includes.page-header', [
             'title' => 'Our Programs',
+            'pageKey' => 'programs',
         ])
 
     <!-- service-area-start -->

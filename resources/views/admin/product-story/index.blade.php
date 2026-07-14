@@ -50,7 +50,7 @@
                             @csrf
                             <div class="col-12">
                                 <label class="form-label">Text</label>
-                                <textarea name="content" class="form-control" rows="4" required placeholder="Paragraph or bullet text…">{{ old('content') }}</textarea>
+                                <textarea name="content" class="form-control" rows="4" required data-editor="rich" placeholder="Paragraph or bullet text…">{!! old('content') !!}</textarea>
                                 <small class="text-muted">You can add multiple points at once using commas, new lines, or bullet symbols.</small>
                             </div>
                             <div class="col-md-3">
@@ -73,7 +73,7 @@
                                 <div class="row g-2">
                                     <div class="col-12">
                                         <label class="form-label small text-muted mb-1">Point #{{ $point->id }}</label>
-                                        <textarea name="content" class="form-control" rows="3" required>{{ $point->content }}</textarea>
+                                        <textarea name="content" class="form-control" rows="3" required data-editor="rich">{!! $point->content !!}</textarea>
                                     </div>
                                     <div class="col-md-2">
                                         <label class="form-label small">Sort</label>

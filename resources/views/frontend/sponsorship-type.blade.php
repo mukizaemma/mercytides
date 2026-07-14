@@ -6,6 +6,11 @@
 @include('frontend.includes.page-header', [
     'title' => $meta['label'],
     'caption' => $meta['caption'],
+    'pageKey' => match ($type ?? '') {
+        'child' => 'sponsor_child',
+        'family' => 'sponsor_family',
+        default => 'sponsor_young_mother',
+    },
 ])
 
 @php

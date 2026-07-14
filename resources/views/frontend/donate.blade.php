@@ -18,6 +18,7 @@
     'caption' => $sponsorProfile
         ? 'You are giving toward sponsorship for ' . $sponsorProfile->names . ' — thank you for walking alongside her.'
         : 'Your gift equips mothers with skills, hope, and Christ-centered community support in Uganda.',
+    'pageKey' => 'donate',
     'image' => $headerImage ?? null,
 ])
 

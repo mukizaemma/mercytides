@@ -84,7 +84,7 @@
                                                 </div>
                                                 <div class="form-group mt-2">
                                                     <label>Factory services sub-items</label>
-                                                    <textarea rows="4" class="form-control" name="factory_services_subitems" placeholder="One sub-item per line, bullet, or comma">{{ old('factory_services_subitems', $data->factory_services_subitems ?? '') }}</textarea>
+                                                    <textarea rows="4" class="form-control" name="factory_services_subitems" data-editor="plain" placeholder="One sub-item per line, bullet, or comma">{{ old('factory_services_subitems', $data->factory_services_subitems ?? '') }}</textarea>
                                                 </div>
                                             </div>
                                             <div class="col-lg-4">
@@ -101,7 +101,7 @@
                                                 </div>
                                                 <div class="form-group mt-2">
                                                     <label>Community impact sub-items</label>
-                                                    <textarea rows="4" class="form-control" name="factory_community_impact_subitems" placeholder="One sub-item per line, bullet, or comma">{{ old('factory_community_impact_subitems', $data->factory_community_impact_subitems ?? '') }}</textarea>
+                                                    <textarea rows="4" class="form-control" name="factory_community_impact_subitems" data-editor="plain" placeholder="One sub-item per line, bullet, or comma">{{ old('factory_community_impact_subitems', $data->factory_community_impact_subitems ?? '') }}</textarea>
                                                 </div>
                                             </div>
                                             <div class="col-lg-4">
@@ -118,7 +118,7 @@
                                                 </div>
                                                 <div class="form-group mt-2">
                                                     <label>Training facilities sub-items</label>
-                                                    <textarea rows="4" class="form-control" name="factory_training_facilities_subitems" placeholder="One sub-item per line, bullet, or comma">{{ old('factory_training_facilities_subitems', $data->factory_training_facilities_subitems ?? '') }}</textarea>
+                                                    <textarea rows="4" class="form-control" name="factory_training_facilities_subitems" data-editor="plain" placeholder="One sub-item per line, bullet, or comma">{{ old('factory_training_facilities_subitems', $data->factory_training_facilities_subitems ?? '') }}</textarea>
                                                 </div>
                                             </div>
                                         </div>

@@ -52,7 +52,7 @@
                         </div>
                         <div class="col-12">
                             <label class="form-label">Instructions for donors</label>
-                            <textarea class="form-control" rows="2" name="donation_methods[{{ $method['id'] }}][instructions]">{{ $method['instructions'] }}</textarea>
+                            <textarea class="form-control" rows="3" name="donation_methods[{{ $method['id'] }}][instructions]" data-editor="rich">{!! $method['instructions'] !!}</textarea>
                         </div>
                     </div>
                 </div>

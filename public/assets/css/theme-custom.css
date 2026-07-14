@@ -49,21 +49,31 @@ body {
     border-bottom: 1px solid var(--brand-neutral);
 }
 
-/* Keep nav above page hero images (breadcrumb / inner headers) */
+/* Keep the top nav pinned while the page scrolls */
 header.tp-header-height {
-    position: relative;
-    z-index: 1020;
+    position: sticky;
+    top: 0;
+    z-index: 1030;
     isolation: isolate;
-}
-
-#header-sticky {
-    position: relative;
-    z-index: 1020;
+    width: 100%;
     background-color: #ffffff;
 }
 
+#header-sticky,
+#header-sticky.header-sticky,
+.tp-header-3__area.header-sticky {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    width: 100%;
+    z-index: 1030;
+    background-color: #ffffff;
+    animation: none !important;
+}
+
 #header-sticky.header-sticky {
-    z-index: 1020;
+    box-shadow: 0 4px 24px rgba(15, 31, 20, 0.1);
 }
 
 .tp-header-3__main-menu nav > ul > li > a {
@@ -3762,11 +3772,6 @@ a.contact-stat-card__value:hover {
 
 .home-impact-band .about-core-values-parallax__body {
     color: rgba(255, 255, 255, 0.9);
-}
-
-/* Sticky header subtle shadow when scrolled */
-#header-sticky.header-sticky {
-    box-shadow: 0 4px 24px rgba(15, 31, 20, 0.08);
 }
 
 #header-sticky.header-sticky .tp-header-3__btn .tp-btn {

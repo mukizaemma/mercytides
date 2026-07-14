@@ -5,6 +5,7 @@
 @section('content')
     @include('frontend.includes.page-header', [
         'title' => $mother->displayName(),
+        'pageKey' => 'mother_profile',
     ])
 
     <section class="mother-profile-page pt-90 pb-90">

@@ -1,21 +1,10 @@
 @php
     $headerTitle = $title ?? '';
     $headerCaption = $caption ?? ($setting->page_header_caption ?? null);
+    $pageKey = $pageKey ?? null;
 
-    $headerImageUrl = null;
-    if (!empty($image)) {
-        $headerImageUrl = $image;
-    } elseif (!empty($setting->page_header_image ?? null)) {
-        $headerImageUrl = asset('storage/images' . $setting->page_header_image);
-    } elseif (!empty($about->image2 ?? null)) {
-        $headerImageUrl = asset('storage/images/' . $about->image2);
-    } elseif (!empty($about->image1 ?? null)) {
-        $headerImageUrl = asset('storage/images/' . $about->image1);
-    } elseif (!empty($about->image ?? null)) {
-        $headerImageUrl = asset('storage/images/' . $about->image);
-    }
-
-    $hasCustomCover = !empty($image);
+    $headerImageUrl = \App\Support\PageHeaderImage::resolve($pageKey, $image ?? null);
+    $hasCustomCover = ! empty($image) || (! empty($pageKey) && ! empty($headerImageUrl));
 @endphp
 
 <section

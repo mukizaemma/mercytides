@@ -6,6 +6,7 @@
 
     @include('frontend.includes.page-header', [
         'title' => $service->title,
+        'pageKey' => 'services',
     ])
 
     <div class="tp-about-4__area tp-about-4__space p-relative fix grey-bg pt-60 pb-90">

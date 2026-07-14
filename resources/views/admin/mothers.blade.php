@@ -153,11 +153,11 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Testimonial / story</label>
-                        <textarea class="form-control" name="description" rows="4" data-editor="rich">{{ $mother->description }}</textarea>
+                        <textarea class="form-control" name="description" rows="4" data-editor="rich">{!! $mother->description !!}</textarea>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Vision</label>
-                        <textarea class="form-control" name="vision" rows="3" data-editor="rich">{{ $mother->vision }}</textarea>
+                        <textarea class="form-control" name="vision" rows="3" data-editor="rich">{!! $mother->vision !!}</textarea>
                     </div>
                     <div class="d-flex flex-wrap gap-2 justify-content-end pt-2">
                         <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>

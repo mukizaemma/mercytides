@@ -7,6 +7,7 @@
 @include('frontend.includes.page-header', [
     'title' => 'Foundation Leadership',
     'caption' => 'Mercy Tides Foundation is led by a committed team serving mothers and families in Uganda.',
+    'pageKey' => 'team',
 ])
 
 <section class="about-page-team pt-60 pb-90 grey-bg">

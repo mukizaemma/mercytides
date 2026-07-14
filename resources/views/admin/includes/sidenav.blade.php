@@ -10,6 +10,9 @@
             <x-admin.nav-link :href="route('slides')" icon="fa-images" :active="request()->routeIs(['slides', 'saveSlide', 'updateSlide', 'destroySlide'])">
                 Home slides
             </x-admin.nav-link>
+            <x-admin.nav-link :href="route('pageHeaders.index')" icon="fa-heading" :active="request()->routeIs('pageHeaders.*')">
+                Page headers
+            </x-admin.nav-link>
             <x-admin.nav-link :href="route('programs')" icon="fa-list-alt" :active="request()->routeIs(['programs', 'editProgram', 'saveProgram', 'updateProgram', 'destroyProgram'])">
                 Programs
             </x-admin.nav-link>

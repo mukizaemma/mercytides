@@ -43,7 +43,7 @@
                                 </div>
                                 <div class="col-12">
                                     <label class="form-label">Initiative details / description</label>
-                                    <textarea rows="7" class="form-control" name="description" data-no-editor="true" required>{!! $data->description !!}</textarea>
+                                    <textarea rows="7" class="form-control" name="description" data-editor="rich" required>{!! $data->description !!}</textarea>
                                 </div>
                                 <div class="col-lg-6">
                                     <label class="form-label">Current cover</label>

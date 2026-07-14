@@ -7,6 +7,7 @@
 
         @include('frontend.includes.page-header', [
             'title' => 'Upcoming Events',
+            'pageKey' => 'events',
         ])
 
             @include('frontend.includes.events')

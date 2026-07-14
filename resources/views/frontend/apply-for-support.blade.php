@@ -6,6 +6,7 @@
 @include('frontend.includes.page-header', [
     'title' => 'Apply for Support',
     'caption' => 'Mothers in Uganda can request training, mentorship, and holistic care through Mercy Tides Foundation.',
+    'pageKey' => 'apply_for_support',
 ])
 
 <section class="py-5 grey-bg">

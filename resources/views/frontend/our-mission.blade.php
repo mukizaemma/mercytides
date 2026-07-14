@@ -14,6 +14,7 @@
 @include('frontend.includes.page-header', [
     'title' => 'Vision & Mission',
     'caption' => 'Breaking Barriers, Bridging A Better Future — empowering unwed young mothers in Uganda.',
+    'pageKey' => 'mission',
 ])
 
 <section class="tp-about-4__area tp-about-4__space p-relative fix grey-bg pt-60 pb-60">

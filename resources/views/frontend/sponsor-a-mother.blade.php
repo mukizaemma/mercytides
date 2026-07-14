@@ -6,6 +6,7 @@
 @include('frontend.includes.page-header', [
     'title' => 'Sponsor a Mother',
     'caption' => 'Walk alongside a mother with monthly support, encouragement, and progress updates.',
+    'pageKey' => 'sponsor_young_mother',
     'image' => $headerImage ?? null,
 ])
 

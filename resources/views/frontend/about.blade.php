@@ -9,6 +9,7 @@
 @include('frontend.includes.page-header', [
     'title' => 'Our Story',
     'caption' => 'A Christian non-profit serving unwed young mothers in Uganda — the Pearl of Africa.',
+    'pageKey' => 'about',
 ])
 
 <!-- Background section -->

@@ -15,6 +15,7 @@
 @include('frontend.includes.page-header', [
     'title' => 'Contact',
     'caption' => 'Reach our team in Uganda — by phone, email, WhatsApp, or the form below.',
+    'pageKey' => 'contact',
 ])
 
 <section class="contact-page pt-90 pb-90 grey-bg">

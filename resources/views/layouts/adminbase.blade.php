@@ -177,34 +177,110 @@
                 });
             }
 
-            function initAdminSummernote() {
+            function shouldUseAdminSummernote(textarea) {
+                if (!textarea || textarea.tagName !== 'TEXTAREA') {
+                    return false;
+                }
+                if (textarea.readOnly || textarea.disabled) {
+                    return false;
+                }
+                if (textarea.classList.contains('note-codable') || textarea.classList.contains('note-input')) {
+                    return false;
+                }
+                if (textarea.closest('.note-editor') || textarea.closest('.swal2-container')) {
+                    return false;
+                }
+
+                const mode = (textarea.getAttribute('data-editor') || '').toLowerCase();
+                if (mode === 'plain' || textarea.hasAttribute('data-no-editor')) {
+                    return false;
+                }
+                if (mode === 'rich') {
+                    return true;
+                }
+
+                const name = String(textarea.getAttribute('name') || '').toLowerCase();
+                const plainNames = /(subitems|embed|caption|core_values_list|page_key|slug|address|phone|email|heading|title)/i;
+                if (plainNames.test(name)) {
+                    return false;
+                }
+
+                const richNames = /(description|testimany|testimony|body|bio|vision|mission|values|content|message|reply|notice|challenges|approach|model|problem|solution|what_we_do|how_it_works|expertise|impact|products_intro|welcome|donations|get_involved|factory_description|factory_services|factory_community|factory_training|short_description|instructions)/i;
+                if (richNames.test(name)) {
+                    return true;
+                }
+
+                const rows = parseInt(textarea.getAttribute('rows') || '0', 10);
+                return rows >= 4 && !textarea.classList.contains('font-monospace');
+            }
+
+            function destroyAdminSummernote(textarea) {
+                const $el = window.jQuery(textarea);
+                if ($el.data('summernote')) {
+                    $el.summernote('destroy');
+                }
+                $el.removeData('summernote-initialized');
+            }
+
+            window.initAdminSummernote = function initAdminSummernote(root) {
                 if (typeof window.jQuery === 'undefined' || typeof window.jQuery.fn.summernote === 'undefined') {
                     return;
                 }
-                window.jQuery('form textarea[data-editor="rich"]').each(function () {
-                    const $el = window.jQuery(this);
-                    // Skip summernote-generated/internal textareas
-                    if ($el.hasClass('note-codable') || $el.hasClass('note-input') || $el.closest('.note-editor').length) {
+
+                const scope = root && root.querySelectorAll ? root : document;
+                const textareas = scope.querySelectorAll('form textarea, .modal textarea, textarea[data-editor="rich"]');
+
+                textareas.forEach((textarea) => {
+                    if (!shouldUseAdminSummernote(textarea)) {
                         return;
                     }
-                    if ($el.hasClass('swal2-textarea') || $el.closest('.swal2-container').length) {
+
+                    const $el = window.jQuery(textarea);
+                    if ($el.data('summernote-initialized') === true && $el.next('.note-editor').length) {
                         return;
                     }
+
                     if ($el.data('summernote-initialized') === true) {
-                        return;
+                        destroyAdminSummernote(textarea);
                     }
+
+                    const rows = parseInt(textarea.getAttribute('rows') || '4', 10);
+                    const height = Math.max(160, Math.min(420, rows * 36));
+                    const placeholder = textarea.getAttribute('placeholder') || 'Write content here...';
+
                     $el.summernote({
-                        height: 220,
-                        placeholder: 'Write content here...',
+                        height: height,
+                        placeholder: placeholder,
+                        dialogsInBody: true,
                         toolbar: [
                             ['style', ['style']],
                             ['font', ['bold', 'italic', 'underline', 'clear']],
                             ['para', ['ul', 'ol', 'paragraph']],
                             ['insert', ['link', 'picture']],
                             ['view', ['codeview']]
-                        ]
+                        ],
+                        callbacks: {
+                            onChange: function (contents) {
+                                $el.val(contents);
+                            }
+                        }
                     });
                     $el.data('summernote-initialized', true);
+                });
+            }
+
+            function syncAdminSummernoteFields(form) {
+                if (typeof window.jQuery === 'undefined' || typeof window.jQuery.fn.summernote === 'undefined' || !form) {
+                    return;
+                }
+                window.jQuery(form).find('textarea').each(function () {
+                    const $el = window.jQuery(this);
+                    if ($el.data('summernote')) {
+                        if ($el.summernote('codeview.isActivated')) {
+                            $el.summernote('codeview.deactivate');
+                        }
+                        $el.val($el.summernote('code'));
+                    }
                 });
             }
 
@@ -296,15 +372,31 @@
                 cleanupOrphanModalBackdrops();
             }
 
+            function bindAdminSummernoteFormSync() {
+                document.querySelectorAll('form').forEach((form) => {
+                    if (form.dataset.summernoteSyncBound === 'true') {
+                        return;
+                    }
+                    form.dataset.summernoteSyncBound = 'true';
+                    form.addEventListener('submit', () => syncAdminSummernoteFields(form));
+                });
+            }
+
             document.addEventListener('DOMContentLoaded', initAdminAlerts);
             document.addEventListener('DOMContentLoaded', initAdminSubmitFeedback);
-            document.addEventListener('DOMContentLoaded', initAdminSummernote);
+            document.addEventListener('DOMContentLoaded', () => initAdminSummernote(document));
+            document.addEventListener('DOMContentLoaded', bindAdminSummernoteFormSync);
             document.addEventListener('DOMContentLoaded', initAdminModalCloseControls);
             document.addEventListener('turbo:load', initAdminAlerts);
             document.addEventListener('turbo:load', initAdminSubmitFeedback);
-            document.addEventListener('turbo:load', initAdminSummernote);
+            document.addEventListener('turbo:load', () => initAdminSummernote(document));
+            document.addEventListener('turbo:load', bindAdminSummernoteFormSync);
             document.addEventListener('turbo:load', initAdminModalCloseControls);
-            document.addEventListener('shown.bs.tab', initAdminSummernote);
+            document.addEventListener('shown.bs.tab', (event) => initAdminSummernote(event.target));
+            document.addEventListener('shown.bs.modal', (event) => {
+                initAdminSummernote(event.target);
+                bindAdminSummernoteFormSync();
+            });
             document.addEventListener('hidden.bs.modal', cleanupOrphanModalBackdrops);
             document.addEventListener('turbo:before-cache', cleanupOrphanModalBackdrops);
             document.addEventListener('turbo:before-render', cleanupOrphanModalBackdrops);

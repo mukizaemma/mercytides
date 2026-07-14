@@ -7,6 +7,7 @@
 @include('frontend.includes.page-header', [
     'title' => 'Request an order',
     'caption' => 'We produce to order for partners, retailers, and organisations. Share what you need and we will follow up with timelines and pricing.',
+    'pageKey' => 'request_order',
 ])
 
 <section class="py-5 grey-bg site-form-page">

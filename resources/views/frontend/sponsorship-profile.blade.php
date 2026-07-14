@@ -6,6 +6,7 @@
 @include('frontend.includes.page-header', [
     'title' => $profile->displayName(),
     'caption' => $profile->typeLabel() . ($profile->age ? ' · Age '.$profile->age : ''),
+    'pageKey' => 'sponsorship_profile',
 ])
 
 <section class="sponsorship-profile-page pt-90 pb-90">

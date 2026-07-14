@@ -34,7 +34,7 @@
             </div>
             <div class="col-12">
                 <label class="form-label">Message on donate page (optional)</label>
-                <textarea class="form-control" rows="2" name="donation_gateway_notice" placeholder="Shown above the card form when checkout preview is visible.">{{ $data->donation_gateway_notice ?? '' }}</textarea>
+                <textarea class="form-control" rows="3" name="donation_gateway_notice" data-editor="rich" placeholder="Shown above the card form when checkout preview is visible.">{!! $data->donation_gateway_notice ?? '' !!}</textarea>
             </div>
         </div>
     </div>

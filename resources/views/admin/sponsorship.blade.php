@@ -95,34 +95,24 @@
     </div>
 </div>
 
-<div class="modal fade" id="sponsorshipCreateModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-scrollable">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Add sponsorship profile</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                @include('admin.includes.sponsorship-form-fields', ['types' => $types])
-            </div>
-        </div>
-    </div>
-</div>
+@include('admin.includes.admin-modal', [
+    'id' => 'sponsorshipCreateModal',
+    'title' => 'Add sponsorship profile',
+    'body' => view('admin.includes.sponsorship-form-fields', [
+        'formProfile' => null,
+        'types' => $types,
+    ])->render(),
+])
 
 @foreach($profiles as $profile)
-    <div class="modal fade" id="sponsorshipEditModal{{ $profile->id }}" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-scrollable">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Edit {{ $profile->displayName() }}</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    @include('admin.includes.sponsorship-form-fields', ['profile' => $profile, 'types' => $types])
-                </div>
-            </div>
-        </div>
-    </div>
+    @include('admin.includes.admin-modal', [
+        'id' => 'sponsorshipEditModal'.$profile->id,
+        'title' => 'Edit '.$profile->displayName(),
+        'body' => view('admin.includes.sponsorship-form-fields', [
+            'formProfile' => $profile,
+            'types' => $types,
+        ])->render(),
+    ])
 @endforeach
 @endsection
 

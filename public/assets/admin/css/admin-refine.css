@@ -333,3 +333,42 @@ a:hover {
     flex-basis: 48px;
     min-width: 48px;
 }
+
+/* Reliable modal close affordances across all admin dialogs */
+.modal-header {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: #fff;
+    gap: 0.75rem;
+}
+
+.modal-header .btn-close,
+.modal-header [data-bs-dismiss="modal"].btn-close {
+    margin: 0 0 0 auto;
+    opacity: 0.75;
+    box-shadow: none;
+    background-color: transparent;
+    border: 0;
+    width: 1rem;
+    height: 1rem;
+    padding: 0.75rem;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23000'%3e%3cpath d='M.293.293a1 1 0 011.414 0L8 6.586 14.293.293a1 1 0 111.414 1.414L9.414 8l6.293 6.293a1 1 0 01-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 01-1.414-1.414L6.586 8 .293 1.707a1 1 0 010-1.414z'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 1em;
+}
+
+.modal-header .btn-close:hover,
+.modal-header .btn-close:focus {
+    opacity: 1;
+}
+
+.modal-header .btn-close.text-black {
+    color: transparent;
+}
+
+.admin-modal__fallback-actions {
+    border-top: 1px solid rgba(15, 23, 42, 0.08);
+    padding-top: 1rem;
+}

@@ -208,28 +208,92 @@
                 });
             }
 
+            function ensureModalDismissButton(container, options) {
+                if (!container) {
+                    return;
+                }
+
+                let dismissBtn = container.querySelector('[data-bs-dismiss="modal"], [data-dismiss="modal"]');
+                if (dismissBtn) {
+                    dismissBtn.setAttribute('data-bs-dismiss', 'modal');
+                    dismissBtn.setAttribute('type', 'button');
+                    dismissBtn.setAttribute('aria-label', dismissBtn.getAttribute('aria-label') || 'Close');
+                    return;
+                }
+
+                dismissBtn = document.createElement('button');
+                dismissBtn.type = 'button';
+                dismissBtn.setAttribute('data-bs-dismiss', 'modal');
+                dismissBtn.setAttribute('aria-label', 'Close');
+
+                if (options && options.variant === 'header') {
+                    dismissBtn.className = 'btn-close';
+                } else {
+                    dismissBtn.className = 'btn btn-outline-secondary';
+                    dismissBtn.textContent = options && options.label ? options.label : 'Close';
+                }
+
+                container.appendChild(dismissBtn);
+            }
+
+            function cleanupOrphanModalBackdrops() {
+                const openModals = document.querySelectorAll('.modal.show').length;
+                if (openModals > 0) {
+                    return;
+                }
+
+                document.querySelectorAll('.modal-backdrop').forEach((backdrop) => backdrop.remove());
+                document.body.classList.remove('modal-open');
+                document.body.style.removeProperty('padding-right');
+                document.body.style.removeProperty('overflow');
+            }
+
             function initAdminModalCloseControls() {
                 document.querySelectorAll('.modal').forEach((modal) => {
-                    const header = modal.querySelector('.modal-header');
-                    if (header && !header.querySelector('[data-bs-dismiss="modal"]')) {
-                        const closeBtn = document.createElement('button');
-                        closeBtn.type = 'button';
-                        closeBtn.className = 'btn-close';
-                        closeBtn.setAttribute('data-bs-dismiss', 'modal');
-                        closeBtn.setAttribute('aria-label', 'Close');
-                        header.appendChild(closeBtn);
+                    modal.setAttribute('data-bs-backdrop', modal.getAttribute('data-bs-backdrop') || 'true');
+                    modal.setAttribute('data-bs-keyboard', modal.getAttribute('data-bs-keyboard') || 'true');
+
+                    let header = modal.querySelector('.modal-header');
+                    if (!header) {
+                        const content = modal.querySelector('.modal-content') || modal;
+                        header = document.createElement('div');
+                        header.className = 'modal-header';
+                        const title = document.createElement('h5');
+                        title.className = 'modal-title';
+                        title.textContent = modal.getAttribute('aria-label') || 'Dialog';
+                        header.appendChild(title);
+                        content.prepend(header);
                     }
 
+                    ensureModalDismissButton(header, { variant: 'header' });
+
+                    // Normalize legacy Bootstrap 4 dismiss attributes.
+                    modal.querySelectorAll('[data-dismiss="modal"]').forEach((btn) => {
+                        btn.setAttribute('data-bs-dismiss', 'modal');
+                        btn.setAttribute('type', 'button');
+                    });
+
                     const footer = modal.querySelector('.modal-footer');
-                    if (footer && !footer.querySelector('[data-bs-dismiss="modal"]')) {
-                        const footerCloseBtn = document.createElement('button');
-                        footerCloseBtn.type = 'button';
-                        footerCloseBtn.className = 'btn btn-outline-secondary';
-                        footerCloseBtn.setAttribute('data-bs-dismiss', 'modal');
-                        footerCloseBtn.textContent = 'Close';
-                        footer.prepend(footerCloseBtn);
+                    if (footer) {
+                        ensureModalDismissButton(footer, { label: 'Close' });
+                    } else {
+                        const body = modal.querySelector('.modal-body');
+                        const hasBodyDismiss = body && body.querySelector('[data-bs-dismiss="modal"], .admin-modal__fallback-actions');
+                        if (body && !hasBodyDismiss) {
+                            const actions = document.createElement('div');
+                            actions.className = 'd-flex justify-content-end gap-2 mt-3 admin-modal__fallback-actions';
+                            const cancelBtn = document.createElement('button');
+                            cancelBtn.type = 'button';
+                            cancelBtn.className = 'btn btn-outline-secondary';
+                            cancelBtn.setAttribute('data-bs-dismiss', 'modal');
+                            cancelBtn.textContent = 'Cancel';
+                            actions.appendChild(cancelBtn);
+                            body.appendChild(actions);
+                        }
                     }
                 });
+
+                cleanupOrphanModalBackdrops();
             }
 
             document.addEventListener('DOMContentLoaded', initAdminAlerts);
@@ -241,6 +305,9 @@
             document.addEventListener('turbo:load', initAdminSummernote);
             document.addEventListener('turbo:load', initAdminModalCloseControls);
             document.addEventListener('shown.bs.tab', initAdminSummernote);
+            document.addEventListener('hidden.bs.modal', cleanupOrphanModalBackdrops);
+            document.addEventListener('turbo:before-cache', cleanupOrphanModalBackdrops);
+            document.addEventListener('turbo:before-render', cleanupOrphanModalBackdrops);
 
             document.addEventListener('turbo:load', () => {
                 const nav = document.getElementById('layoutSidenav_nav');

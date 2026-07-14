@@ -82,7 +82,7 @@
     </div>
 </div>
 
-<div class="modal fade" id="motherCreateModal" tabindex="-1" aria-hidden="true">
+<div class="modal fade" id="motherCreateModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="true" data-bs-keyboard="true">
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
@@ -90,7 +90,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form action="{{ route('saveMother', [], false) }}" method="POST" enctype="multipart/form-data" data-turbo="false">
+                <form action="{{ route('saveMother', [], false) }}" method="POST" enctype="multipart/form-data" data-turbo="false" autocomplete="off">
                     @csrf
                     <div class="mb-3">
                         <label class="form-label">Portrait photo <span class="text-danger">*</span></label>
@@ -115,7 +115,10 @@
                         <label class="form-label">Vision</label>
                         <textarea class="form-control" name="vision" rows="3" data-editor="rich" placeholder="Her hopes and vision for the future (optional)"></textarea>
                     </div>
-                    <button type="submit" class="btn btn-primary">Save</button>
+                    <div class="d-flex flex-wrap gap-2 justify-content-end pt-2">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
                 </form>
             </div>
         </div>
@@ -123,7 +126,7 @@
 </div>
 
 @foreach($mothers as $mother)
-<div class="modal fade" id="motherEditModal{{ $mother->id }}" tabindex="-1" aria-hidden="true">
+<div class="modal fade" id="motherEditModal{{ $mother->id }}" tabindex="-1" aria-hidden="true" data-bs-backdrop="true" data-bs-keyboard="true">
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
@@ -131,7 +134,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form action="{{ route('updateMother', $mother->id, false) }}" method="POST" enctype="multipart/form-data" data-turbo="false">
+                <form action="{{ route('updateMother', $mother->id, false) }}" method="POST" enctype="multipart/form-data" data-turbo="false" autocomplete="off">
                     @csrf
                     <div class="mb-3">
                         <label class="form-label">Replace portrait (optional)</label>
@@ -156,7 +159,10 @@
                         <label class="form-label">Vision</label>
                         <textarea class="form-control" name="vision" rows="3" data-editor="rich">{{ $mother->vision }}</textarea>
                     </div>
-                    <button type="submit" class="btn btn-primary">Update</button>
+                    <div class="d-flex flex-wrap gap-2 justify-content-end pt-2">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Update</button>
+                    </div>
                 </form>
             </div>
         </div>

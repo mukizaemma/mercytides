@@ -16,7 +16,9 @@
                     <img src="{{ \App\Models\Sponsorship::publicImageUrl($profile->image) }}" alt="{{ $profile->displayName() }}" class="w-100">
                 </div>
                 <div class="sponsorship-profile-page__meta mt-3">
-                    <span class="badge {{ $profile->isAvailable() ? 'bg-warning text-dark' : 'bg-success' }}">{{ $profile->status }}</span>
+                    @if($profile->shouldShowStatusPublicly() && !empty($profile->status))
+                        <span class="badge {{ $profile->isAvailable() ? 'bg-warning text-dark' : 'bg-success' }}">{{ $profile->status }}</span>
+                    @endif
                     @if(!empty($profile->monthly_need))
                         <p class="text-muted small mt-2 mb-0">Suggested support: <strong>${{ $profile->monthly_need }}</strong> / month</p>
                     @endif

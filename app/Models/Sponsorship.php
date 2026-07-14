@@ -21,6 +21,7 @@ class Sponsorship extends Model
         'age',
         'sex',
         'status',
+        'show_status_publicly',
         'publish_status',
         'phone',
         'contact',
@@ -32,6 +33,10 @@ class Sponsorship extends Model
         'monthly_need',
         'image',
         'added_by',
+    ];
+
+    protected $casts = [
+        'show_status_publicly' => 'boolean',
     ];
 
     public function donations()
@@ -76,6 +81,11 @@ class Sponsorship extends Model
     public function isAvailable(): bool
     {
         return strtolower((string) ($this->status ?? '')) !== 'sponsored';
+    }
+
+    public function shouldShowStatusPublicly(): bool
+    {
+        return (bool) ($this->show_status_publicly ?? false);
     }
 
     public function hasProfileDetails(): bool

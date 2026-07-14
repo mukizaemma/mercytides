@@ -65,6 +65,20 @@
                     <option value="{{ $status }}" {{ old('status', $isEdit ? ($formProfile->status ?? 'Not Sponsored') : 'Not Sponsored') === $status ? 'selected' : '' }}>{{ $status }}</option>
                 @endforeach
             </select>
+            <div class="form-check mt-2">
+                <input
+                    type="checkbox"
+                    class="form-check-input"
+                    id="show_status_publicly_{{ $isEdit ? $formProfile->id : 'new' }}"
+                    name="show_status_publicly"
+                    value="1"
+                    {{ old('show_status_publicly', $isEdit ? ($formProfile->show_status_publicly ?? false) : false) ? 'checked' : '' }}
+                >
+                <label class="form-check-label" for="show_status_publicly_{{ $isEdit ? $formProfile->id : 'new' }}">
+                    Show this status on the public site
+                </label>
+            </div>
+            <small class="text-muted d-block mt-1">Leave unchecked for mothers already supported internally who are not listed as needing a public sponsor.</small>
         </div>
         <div class="col-md-4 mb-3">
             <label class="form-label">Monthly need (USD)</label>

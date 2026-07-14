@@ -6,10 +6,10 @@
     $ctaLabel = $isMother
         ? ($isGenericLabel ? 'View her story' : 'Walk with '.$firstName)
         : ($isGenericLabel ? 'View profile' : 'Meet '.$firstName);
-    $excerpt = trim(strip_tags($profile->testimany ?? ''));
-    if ($excerpt === '' && $isMother) {
-        $excerpt = 'A young mother rebuilding her future through skills training, mentorship, and Christ-centered care for herself and her child.';
-    }
+    $excerpt = trim(strip_tags(html_entity_decode((string) ($profile->testimany ?? ''))));
+    $showStatus = method_exists($profile, 'shouldShowStatusPublicly')
+        ? $profile->shouldShowStatusPublicly()
+        : false;
 @endphp
 <article class="sponsor-card h-100 d-flex flex-column">
     @if(!empty($profile->image))
@@ -23,18 +23,22 @@
         <h3 class="sponsor-card__name">
             <a href="{{ $profile->profileRoute() }}" class="text-decoration-none">{{ $displayName }}</a>
         </h3>
-        <p class="sponsor-card__meta">
-            @if(!empty($profile->age))Age {{ $profile->age }}@endif
-            @if(!empty($profile->monthly_need)){{ !empty($profile->age) ? ' · ' : '' }}${{ $profile->monthly_need }}/mo suggested @endif
-        </p>
+        @if(!empty($profile->age) || !empty($profile->monthly_need))
+            <p class="sponsor-card__meta">
+                @if(!empty($profile->age))Age {{ $profile->age }}@endif
+                @if(!empty($profile->monthly_need)){{ !empty($profile->age) ? ' · ' : '' }}${{ $profile->monthly_need }}/mo suggested @endif
+            </p>
+        @endif
         @if($excerpt !== '')
             <p class="flex-grow-1 sponsor-card__excerpt">{{ \Illuminate\Support\Str::limit($excerpt, 120, '…') }}</p>
         @else
             <div class="flex-grow-1"></div>
         @endif
-        <span class="badge sponsor-card__badge {{ $profile->isAvailable() ? 'bg-warning text-dark' : 'bg-success' }} mb-3 align-self-start">
-            {{ $profile->status ?? 'Available' }}
-        </span>
+        @if($showStatus && !empty($profile->status))
+            <span class="badge sponsor-card__badge {{ $profile->isAvailable() ? 'bg-warning text-dark' : 'bg-success' }} mb-3 align-self-start">
+                {{ $profile->status }}
+            </span>
+        @endif
         <a href="{{ $profile->profileRoute() }}" class="tp-btn align-self-start">{{ $ctaLabel }}</a>
     </div>
 </article>

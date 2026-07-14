@@ -95,6 +95,7 @@ class SponsorshipController extends Controller
             'age' => ['nullable', 'string', 'max:50'],
             'sex' => ['nullable', 'string', 'max:32'],
             'status' => ['required', 'string', 'max:64'],
+            'show_status_publicly' => ['nullable', 'boolean'],
             'publish_status' => ['required', 'string', 'max:64'],
             'phone' => ['nullable', 'string', 'max:64'],
             'contact' => ['nullable', 'string', 'max:255'],
@@ -125,6 +126,9 @@ class SponsorshipController extends Controller
         $profile->age = $validated['age'] ?? null;
         $profile->sex = $validated['sex'] ?? null;
         $profile->status = $validated['status'];
+        if (Schema::hasColumn('sponsorships', 'show_status_publicly')) {
+            $profile->show_status_publicly = $request->boolean('show_status_publicly');
+        }
         $profile->publish_status = $validated['publish_status'];
         $profile->phone = $validated['phone'] ?? null;
         $profile->contact = $validated['contact'] ?? null;

@@ -7,6 +7,8 @@
 
     $firstName = explode(' ', $profile->displayName())[0] ?? $profile->displayName();
     $supportOptions = MercyTidesContent::sponsorshipSupportFocusOptions();
+    $featuredSupport = collect($supportOptions)->firstWhere('key', 'full_care');
+    $otherSupport = collect($supportOptions)->reject(fn ($option) => $option['key'] === 'full_care')->values();
     $uploadedVideoUrl = $profile->uploadedVideoUrl();
     $embedUrl = $uploadedVideoUrl ? null : $profile->youtubeEmbedUrl();
     $hasVideo = (bool) ($uploadedVideoUrl || $embedUrl);
@@ -20,34 +22,59 @@
     $challengesHtml = $filledHtml($profile->challenges ?? null) ? $profile->challenges : null;
     $visionHtml = $filledHtml($profile->vision ?? null) ? $profile->vision : null;
     $relatedProfiles = $relatedProfiles ?? collect();
+
+    $relatedTitle = match ($profile->type) {
+        'young_mother' => 'More mothers',
+        'child' => 'More children',
+        'family' => 'More families',
+        default => 'More profiles',
+    };
 @endphp
 
 @section('content')
 <section class="sponsorship-profile-page">
     <div class="container sponsorship-profile-page__inner">
-        {{-- Identity + media --}}
-        <header class="sponsorship-profile-page__intro text-center">
-            <p class="sponsorship-profile-page__eyebrow mb-2">{{ $profile->typeLabel() }}@if($profile->age) · Age {{ $profile->age }}@endif</p>
-            <h1 class="sponsorship-profile-page__name">{{ $profile->displayName() }}</h1>
-            @if($profile->shouldShowStatusPublicly() && !empty($profile->status))
-                <span class="badge sponsorship-profile-page__status {{ $profile->isAvailable() ? 'bg-warning text-dark' : 'bg-success' }}">{{ $profile->status }}</span>
-            @endif
-            @if(!empty($profile->monthly_need))
-                <p class="sponsorship-profile-page__need mb-0">Suggested support: <strong>${{ $profile->monthly_need }}</strong> / month</p>
-            @endif
-        </header>
-
-        <div class="row g-4 g-xl-5 align-items-stretch sponsorship-profile-page__media-row">
-            <div class="{{ $hasVideo ? 'col-lg-5' : 'col-lg-5 mx-lg-auto' }}">
+        <div class="row g-4 g-xl-5 sponsorship-profile-page__hero-row">
+            {{-- Meet her --}}
+            <div class="{{ $hasVideo ? 'col-lg-5' : 'col-lg-6 mx-lg-auto' }}">
                 <div class="sponsorship-profile-page__portrait">
-                    <img src="{{ $posterUrl }}" alt="{{ $profile->displayName() }}" class="w-100" width="640" height="853">
+                    <img src="{{ $posterUrl }}" alt="{{ $profile->displayName() }}" width="640" height="853" loading="eager">
+                </div>
+
+                <div class="sponsorship-profile-page__identity">
+                    <p class="sponsorship-profile-page__eyebrow">{{ $profile->typeLabel() }}@if($profile->age) · Age {{ $profile->age }}@endif</p>
+                    <h1 class="sponsorship-profile-page__name">{{ $profile->displayName() }}</h1>
+
+                    <div class="sponsorship-profile-page__meta-row">
+                        @if($profile->shouldShowStatusPublicly() && !empty($profile->status))
+                            <span class="badge sponsorship-profile-page__status {{ $profile->isAvailable() ? 'bg-warning text-dark' : 'bg-success' }}">{{ $profile->status }}</span>
+                        @endif
+                        @if(!empty($profile->monthly_need))
+                            <span class="sponsorship-profile-page__need">From <strong>${{ $profile->monthly_need }}</strong> / month</span>
+                        @endif
+                    </div>
+
+                    <div class="sponsorship-profile-page__actions">
+                        <button type="button"
+                                class="tp-btn js-open-sponsor-commitment"
+                                data-bs-toggle="modal"
+                                data-bs-target="#sponsorCommitmentModal"
+                                data-support-focus="full_care">
+                            Support {{ $firstName }}
+                        </button>
+                        <a href="#ways-to-support" class="sponsorship-profile-page__text-link">See ways to help</a>
+                    </div>
                 </div>
             </div>
 
+            {{-- Hear her --}}
             @if($hasVideo)
                 <div class="col-lg-7">
-                    <div class="sponsorship-profile-page__video">
-                        <p class="sponsorship-profile-page__video-label mb-3">Hear from {{ $firstName }}</p>
+                    <div class="sponsorship-profile-page__video-panel">
+                        <div class="sponsorship-profile-page__video-head">
+                            <p class="sponsorship-profile-page__video-label">Hear from {{ $firstName }}</p>
+                            <p class="sponsorship-profile-page__video-hint mb-0">Watch her share her journey</p>
+                        </div>
                         <div class="ratio ratio-16x9 sponsorship-profile-page__video-frame">
                             @if($uploadedVideoUrl)
                                 @php
@@ -77,18 +104,6 @@
             @endif
         </div>
 
-        {{-- CTAs under details --}}
-        <div class="sponsorship-profile-page__actions d-flex flex-wrap justify-content-center gap-2 gap-md-3">
-            <button type="button"
-                    class="tp-btn js-open-sponsor-commitment"
-                    data-bs-toggle="modal"
-                    data-bs-target="#sponsorCommitmentModal"
-                    data-support-focus="full_care">
-                Support {{ $firstName }}
-            </button>
-            <a href="{{ route('getInvolved') }}" class="tp-btn tp-btn--outline">Get involved</a>
-        </div>
-
         @if($storyHtml || $challengesHtml || $visionHtml)
             <div class="sponsorship-profile-page__story">
                 @if($storyHtml)
@@ -97,14 +112,12 @@
                         <div class="postbox__text">{!! $storyHtml !!}</div>
                     </div>
                 @endif
-
                 @if($challengesHtml)
                     <div class="sponsorship-profile-page__block">
                         <h2 class="sponsorship-profile-page__heading">Challenges she faces</h2>
                         <div class="postbox__text">{!! $challengesHtml !!}</div>
                     </div>
                 @endif
-
                 @if($visionHtml)
                     <div class="sponsorship-profile-page__block">
                         <h2 class="sponsorship-profile-page__heading">Her vision</h2>
@@ -114,18 +127,35 @@
             </div>
         @endif
 
-        {{-- Ways to support --}}
-        <div class="sponsorship-profile-page__support">
-            <div class="sponsorship-profile-page__support-header text-center">
-                <p class="sponsorship-profile-page__eyebrow mb-2">Walk with {{ $firstName }}</p>
-                <h2 class="sponsorship-profile-page__heading">Ways to support</h2>
+        {{-- Decide how to help --}}
+        <section id="ways-to-support" class="sponsorship-profile-page__support" aria-labelledby="ways-to-support-heading">
+            <div class="sponsorship-profile-page__support-header">
+                <h2 id="ways-to-support-heading" class="sponsorship-profile-page__heading">How would you like to help {{ $firstName }}?</h2>
                 <p class="sponsorship-profile-page__support-lead mb-0">
-                    Choose a focus. We will follow up with secure giving options — nothing is charged on this page.
+                    Pick one focus to start. We’ll follow up with next steps — nothing is charged here.
                 </p>
             </div>
 
+            @if($featuredSupport)
+                <button type="button"
+                        class="sponsorship-support-featured js-open-sponsor-commitment"
+                        data-bs-toggle="modal"
+                        data-bs-target="#sponsorCommitmentModal"
+                        data-support-focus="{{ $featuredSupport['key'] }}">
+                    <span class="sponsorship-support-featured__badge">Recommended</span>
+                    <span class="sponsorship-support-featured__body">
+                        <span class="sponsorship-support-featured__icon" aria-hidden="true"><i class="fas {{ $featuredSupport['icon'] }}"></i></span>
+                        <span class="sponsorship-support-featured__copy">
+                            <span class="sponsorship-support-featured__title">{{ $featuredSupport['label'] }}</span>
+                            <span class="sponsorship-support-featured__text">{{ $featuredSupport['text'] }}</span>
+                        </span>
+                    </span>
+                    <span class="sponsorship-support-featured__cta">Choose this</span>
+                </button>
+            @endif
+
             <div class="sponsorship-support-grid" role="list">
-                @foreach($supportOptions as $option)
+                @foreach($otherSupport as $option)
                     <button type="button"
                             class="sponsorship-support-card js-open-sponsor-commitment"
                             role="listitem"
@@ -139,48 +169,50 @@
                             <span class="sponsorship-support-card__title">{{ $option['label'] }}</span>
                             <span class="sponsorship-support-card__text">{{ $option['text'] }}</span>
                         </span>
-                        <span class="sponsorship-support-card__arrow" aria-hidden="true">
-                            <i class="fas fa-arrow-right"></i>
-                        </span>
                     </button>
                 @endforeach
             </div>
-        </div>
+        </section>
 
-        {{-- More mothers / related profiles --}}
+        {{-- Related --}}
         @if($relatedProfiles->isNotEmpty())
-            @php
-                $relatedTitle = match ($profile->type) {
-                    'young_mother' => 'More mothers to support',
-                    'child' => 'More children to support',
-                    'family' => 'More families to support',
-                    default => 'More profiles to support',
-                };
-            @endphp
-            @include('frontend.includes.mothers-gallery', [
-                'mothers' => $relatedProfiles,
-                'limit' => 4,
-                'sectionEyebrow' => 'Keep walking with others',
-                'sectionTitle' => $relatedTitle,
-                'sectionLead' => 'Meet others seeking skills, care, and a path toward dignity.',
-                'viewMoreRoute' => route($typeMeta['route']),
-                'viewMoreLabel' => 'View all',
-            ])
+            <section class="sponsorship-profile-page__related" aria-labelledby="related-profiles-heading">
+                <div class="sponsorship-profile-page__related-head">
+                    <h2 id="related-profiles-heading" class="sponsorship-profile-page__heading mb-1">{{ $relatedTitle }}</h2>
+                    <a href="{{ route($typeMeta['route']) }}" class="sponsorship-profile-page__text-link">View all</a>
+                </div>
+
+                <div class="sponsorship-related-grid">
+                    @foreach($relatedProfiles->take(4) as $related)
+                        @php
+                            $relatedName = $related->displayName();
+                            $relatedFirst = explode(' ', $relatedName)[0] ?? $relatedName;
+                            $relatedImg = \App\Models\Sponsorship::publicImageUrl($related->image);
+                        @endphp
+                        <a href="{{ $related->profileRoute() }}" class="sponsorship-related-card">
+                            <span class="sponsorship-related-card__media">
+                                <img src="{{ $relatedImg }}" alt="{{ $relatedName }}" loading="lazy" width="320" height="400">
+                            </span>
+                            <span class="sponsorship-related-card__name">{{ $relatedName }}</span>
+                            <span class="sponsorship-related-card__cta">Meet {{ $relatedFirst }}</span>
+                        </a>
+                    @endforeach
+                </div>
+            </section>
         @endif
     </div>
 </section>
 
-{{-- Sticky mobile CTA --}}
 <div class="sponsorship-profile-page__sticky-cta d-md-none">
     <button type="button"
             class="tp-btn w-100 js-open-sponsor-commitment"
             data-bs-toggle="modal"
-            data-bs-target="#sponsorCommitmentModal">
+            data-bs-target="#sponsorCommitmentModal"
+            data-support-focus="full_care">
         Support {{ $firstName }}
     </button>
 </div>
 
-{{-- Commitment modal --}}
 <div class="modal fade" id="sponsorCommitmentModal" tabindex="-1" aria-labelledby="sponsorCommitmentModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
         <div class="modal-content sponsorship-commitment-modal">

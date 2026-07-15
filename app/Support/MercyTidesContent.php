@@ -130,12 +130,8 @@ class MercyTidesContent
     /** @return array<string, string> */
     public static function getInvolvedWays(): array
     {
-        return [
-            'donation' => 'Donation',
-            'volunteer' => 'Volunteer',
-            'partner' => 'Partner',
-            'visit_mothers' => 'Visit the mothers',
-        ];
+        // Keep site-wide “ways to support” aligned with young-mother sponsorship options.
+        return SponsorshipSupportOptions::activeLabels();
     }
 
     /**
@@ -143,12 +139,14 @@ class MercyTidesContent
      */
     public static function getInvolvedWayCards(): array
     {
-        return [
-            ['key' => 'donation', 'icon' => 'fa-hand-holding-heart', 'title' => 'Donation', 'text' => 'Fund training, care, and practical support for mothers and children.'],
-            ['key' => 'volunteer', 'icon' => 'fa-hands-helping', 'title' => 'Volunteer', 'text' => 'Share skills, mentorship, and time to strengthen our programs.'],
-            ['key' => 'partner', 'icon' => 'fa-handshake', 'title' => 'Partner', 'text' => 'Churches, NGOs, schools, and businesses walking with us long term.'],
-            ['key' => 'visit_mothers', 'icon' => 'fa-users', 'title' => 'Visit the mothers', 'text' => 'Encourage mothers in person and witness transformation firsthand.'],
-        ];
+        return array_map(static function (array $option): array {
+            return [
+                'key' => $option['key'],
+                'icon' => $option['icon'],
+                'title' => $option['label'],
+                'text' => $option['text'],
+            ];
+        }, SponsorshipSupportOptions::active());
     }
 
     /** @return array<string, array{label: string, route: string, icon: string, caption: string, intro: string}> */

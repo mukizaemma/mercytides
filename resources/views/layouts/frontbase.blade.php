@@ -223,6 +223,8 @@
         @yield('content')
     </main>
 
+    @include('frontend.includes.home-partners')
+
     <footer class="site-footer" role="contentinfo">
         <div class="site-footer__upper">
             <div class="container py-5 py-lg-5">

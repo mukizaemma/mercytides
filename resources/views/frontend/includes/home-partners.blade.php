@@ -1,32 +1,31 @@
 @if(($partners ?? collect())->isNotEmpty())
-<section class="py-70 grey-bg home-partners-section">
+<section class="home-partners-section" aria-labelledby="our-partners-heading">
     <div class="container">
-        <div class="row">
-            <div class="col-12 text-center pb-40 wow tpfadeUp reveal-on-scroll" data-wow-duration=".9s" data-wow-delay=".1s">
-                <span class="about-home-eyebrow d-block mb-2">Together we grow</span>
-                <h4 class="tp-section-title">Partners &amp; churches</h4>
-                <p class="text-muted mb-0">Walking together to serve mothers and families across Uganda.</p>
-            </div>
+        <div class="home-partners-section__header">
+            <h2 id="our-partners-heading" class="home-partners-section__title">Our Partners</h2>
         </div>
-        <div class="row g-4 align-items-center justify-content-center">
+
+        <div class="home-partners-section__grid" role="list">
             @foreach ($partners as $partner)
-                <div class="col-6 col-md-4 col-lg-3 text-center wow tpfadeUp reveal-on-scroll" data-wow-duration=".9s" data-wow-delay=".2s">
+                <div class="home-partners-section__item" role="listitem">
                     @if($partner->hasLogo())
                         @if(!empty($partner->website))
                             <a
                                 href="{{ \Illuminate\Support\Str::startsWith($partner->website, ['http://', 'https://']) ? $partner->website : 'https://'.$partner->website }}"
-                                class="home-partners-section__link d-inline-block"
+                                class="home-partners-section__link"
                                 target="_blank"
                                 rel="noopener"
                                 aria-label="{{ $partner->names ?? 'Partner' }}"
                             >
-                                <img src="{{ $partner->logoUrl() }}" alt="{{ $partner->names ?? 'Partner' }}" class="home-partners-section__logo img-fluid" loading="lazy">
+                                <img src="{{ $partner->logoUrl() }}" alt="{{ $partner->names ?? 'Partner' }}" class="home-partners-section__logo" loading="lazy">
                             </a>
                         @else
-                            <img src="{{ $partner->logoUrl() }}" alt="{{ $partner->names ?? 'Partner' }}" class="home-partners-section__logo img-fluid" loading="lazy">
+                            <span class="home-partners-section__link">
+                                <img src="{{ $partner->logoUrl() }}" alt="{{ $partner->names ?? 'Partner' }}" class="home-partners-section__logo" loading="lazy">
+                            </span>
                         @endif
                     @else
-                        <span class="home-partners-section__name d-inline-block px-3 py-2">{{ $partner->names ?? 'Partner' }}</span>
+                        <span class="home-partners-section__name">{{ $partner->names ?? 'Partner' }}</span>
                     @endif
                 </div>
             @endforeach

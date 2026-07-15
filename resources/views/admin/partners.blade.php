@@ -82,7 +82,7 @@
                                         <tr>
                                             <td colspan="4" class="border-0">
                                                 <div class="admin-empty-state">
-                                                    <p class="mb-0">No partners yet. Add a logo to show on the homepage.</p>
+                                                    <p class="mb-0">No partners yet. Add a logo to show site-wide above the footer.</p>
                                                 </div>
                                             </td>
                                         </tr>

@@ -1916,26 +1916,26 @@ header.tp-header-height {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 2.5rem;
-    height: 2.5rem;
-    border-radius: 999px;
+    width: 2.65rem;
+    height: 2.65rem;
+    border-radius: 12px;
     background: rgba(51, 134, 181, 0.12);
-    color: var(--brand-primary, #3386B5);
-    margin-bottom: 0.75rem;
-    font-size: 1rem;
+    color: var(--brand-secondary, #00205b);
+    margin-bottom: 0.85rem;
+    font-size: 1.05rem;
 }
 
 .get-involved-way-card__title {
-    font-size: 1rem;
+    font-size: 1.02rem;
     font-weight: 700;
-    margin-bottom: 0.35rem;
-    color: var(--brand-dark, #00205b);
+    margin-bottom: 0.4rem;
+    color: var(--brand-secondary, #00205b);
 }
 
 .get-involved-way-card__text {
-    font-size: 0.88rem;
+    font-size: 0.92rem;
     line-height: 1.55;
-    color: #5f6368;
+    color: var(--brand-muted-text, #3f5566);
 }
 
 .get-involved-donation-chips {
@@ -4130,29 +4130,90 @@ a.contact-stat-card__value:hover {
     color: #1a1a1a !important;
 }
 
-.home-partners-section__logo {
-    max-height: 88px;
-    max-width: 100%;
-    width: auto;
-    height: auto;
-    object-fit: contain;
-    filter: none;
-    opacity: 1;
-    background: #fff;
-    padding: 0.65rem 0.85rem;
-    border-radius: 12px;
-    border: 1px solid rgba(0, 32, 91, 0.08);
+.home-partners-section {
+    padding: clamp(2.75rem, 5vw, 4rem) 0;
+    background: #f3f7fa;
+}
+
+.home-partners-section__header {
+    text-align: center;
+    margin-bottom: clamp(1.75rem, 3.5vw, 2.5rem);
+}
+
+.home-partners-section__title {
+    margin: 0;
+    font-family: var(--font-display, "Fraunces", Georgia, serif);
+    font-size: clamp(1.85rem, 3.5vw, 2.45rem);
+    font-weight: 650;
+    letter-spacing: -0.02em;
+    color: var(--brand-secondary, #00205b);
+}
+
+.home-partners-section__grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: stretch;
+    gap: clamp(1.25rem, 3vw, 2rem);
+}
+
+.home-partners-section__item {
+    flex: 0 1 18rem;
+    max-width: 20rem;
+    width: min(100%, 20rem);
 }
 
 .home-partners-section__link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 11rem;
+    padding: 1.35rem 1.5rem;
+    background: #fff;
+    border: 1px solid rgba(0, 32, 91, 0.08);
+    border-radius: 18px;
     text-decoration: none;
+    box-shadow: 0 10px 28px rgba(0, 32, 91, 0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.home-partners-section__link:hover,
+.home-partners-section__link:focus-visible {
+    transform: translateY(-3px);
+    box-shadow: 0 16px 34px rgba(0, 32, 91, 0.1);
+    outline: none;
+}
+
+.home-partners-section__logo {
+    display: block;
+    width: 100%;
+    max-width: 15rem;
+    max-height: 8.5rem;
+    height: auto;
+    object-fit: contain;
+    object-position: center;
+    filter: none;
+    opacity: 1;
+    background: transparent;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
 }
 
 .home-partners-section__name {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 11rem;
+    padding: 1.25rem;
     background: #fff;
-    border-radius: 10px;
+    border-radius: 18px;
     border: 1px solid rgba(0, 0, 0, 0.08);
     font-weight: 600;
+    text-align: center;
+    color: var(--brand-secondary, #00205b);
 }
 
 /* sponsor-card styles consolidated above in Sponsorship module */

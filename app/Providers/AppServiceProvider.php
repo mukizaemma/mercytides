@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\Activity;
+use App\Models\Partner;
 use App\Models\ProductStoryPoint;
 use App\Models\ProductStorySetting;
 use App\Models\Program;
@@ -63,6 +64,12 @@ class AppServiceProvider extends ServiceProvider
             'menuServices',
             Schema::hasTable('services')
                 ? Service::query()->active()->orderBy('sort_order')->orderBy('title')->get()
+                : collect()
+        );
+        View::share(
+            'partners',
+            Schema::hasTable('partners')
+                ? Partner::query()->latest()->get()
                 : collect()
         );
 

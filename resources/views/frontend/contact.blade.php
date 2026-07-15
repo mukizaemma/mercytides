@@ -14,7 +14,7 @@
 
 @include('frontend.includes.page-header', [
     'title' => 'Contact',
-    'caption' => 'Reach our team in Uganda — by phone, email, WhatsApp, or the form below.',
+    'caption' => 'Reach our team in Uganda — and choose how you want to support young mothers.',
     'pageKey' => 'contact',
 ])
 
@@ -83,9 +83,9 @@
             <div class="col-lg-6">
                 <div class="card border-0 shadow-sm site-form-card contact-page__form-card h-100">
                     <div class="card-body p-4 p-lg-5">
-                        <span class="about-home-eyebrow d-block mb-2">Get involved</span>
-                        <h2 class="h4 mb-2">Tell us how you would like to get involved</h2>
-                        <p class="text-muted mb-4">Choose one option below, complete your details, then send via WhatsApp or email.</p>
+                        <span class="about-home-eyebrow d-block mb-2">Support mothers</span>
+                        <h2 class="h4 mb-2">Choose a way to support</h2>
+                        <p class="text-muted mb-4">Pick one of the five support paths below, share your details, then send via WhatsApp or email.</p>
 
                         @if(session('success'))
                             <div class="alert alert-success">{{ session('success') }}</div>
@@ -105,6 +105,8 @@
                             'compactLayout' => true,
                             'formPrefix' => 'contact',
                             'countriesListId' => 'contact-countries',
+                            'waysLabel' => 'Ways to support mothers',
+                            'waysHint' => 'Choose the option that matches how you want to help.',
                         ])
                     </div>
                 </div>

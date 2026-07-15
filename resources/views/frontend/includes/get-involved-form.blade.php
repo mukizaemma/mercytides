@@ -4,13 +4,17 @@
     $singleSelect = $singleSelect ?? true;
     $formPrefix = $formPrefix ?? 'gi';
     $compactLayout = $compactLayout ?? false;
-    $wayColClass = $compactLayout ? 'col-sm-6' : 'col-sm-6 col-lg-3';
+    $wayColClass = $compactLayout ? 'col-sm-6' : 'col-sm-6 col-lg-4';
     $countriesListId = $countriesListId ?? ($formPrefix . '-countries');
     $wayCards = $wayCards ?? MercyTidesContent::getInvolvedWayCards();
     $oldWays = (array) old('ways', $selectedWays ?? []);
     if ($singleSelect && count($oldWays) > 1) {
         $oldWays = [reset($oldWays)];
     }
+    $waysLabel = $waysLabel ?? 'Ways to support mothers';
+    $waysHint = $waysHint ?? ($singleSelect
+        ? 'Choose the support focus that best fits how you want to help.'
+        : 'Select all that apply.');
 @endphp
 
 <form class="row g-3 site-partner-form js-public-form js-get-involved-form"
@@ -29,11 +33,9 @@
     @endif
 
     <div class="col-12">
-        <label class="form-label mb-2">How would you like to get involved? <span class="text-danger">*</span></label>
-        <p class="text-muted small mb-3 js-get-involved-way-hint">
-            {{ $singleSelect ? 'Choose the option that best fits you.' : 'Select all that apply.' }}
-        </p>
-        <div class="row g-3 get-involved-way-cards" role="{{ $singleSelect ? 'radiogroup' : 'group' }}" aria-label="How would you like to get involved?">
+        <label class="form-label mb-2">{{ $waysLabel }} <span class="text-danger">*</span></label>
+        <p class="text-muted small mb-3 js-get-involved-way-hint">{{ $waysHint }}</p>
+        <div class="row g-3 get-involved-way-cards" role="{{ $singleSelect ? 'radiogroup' : 'group' }}" aria-label="{{ $waysLabel }}">
             @foreach($wayCards as $card)
                 <div class="{{ $wayColClass }}">
                     <label class="get-involved-way-card get-involved-way-card--selectable mb-0 {{ in_array($card['key'], $oldWays, true) ? 'is-selected' : '' }}">
@@ -53,7 +55,7 @@
                 </div>
             @endforeach
         </div>
-        <div class="invalid-feedback d-block js-get-involved-way-error" hidden>Please select how you would like to get involved.</div>
+        <div class="invalid-feedback d-block js-get-involved-way-error" hidden>Please choose a way to support.</div>
     </div>
 
     <div class="col-md-6">
@@ -85,50 +87,16 @@
         </datalist>
     </div>
 
-    <div class="col-12 js-get-involved-panel" data-panel="donation" hidden>
-        <label class="form-label">Donation amount (USD) <span class="text-danger">*</span></label>
-        <div class="get-involved-donation-chips mb-3" role="group" aria-label="Suggested donation amounts">
-            @foreach([25, 50, 100] as $amount)
-                <button type="button" class="get-involved-donation-chip js-donation-chip" data-amount="{{ $amount }}">${{ $amount }}</button>
-            @endforeach
-            <button type="button" class="get-involved-donation-chip js-donation-chip" data-amount="custom">Other</button>
-        </div>
-        <div class="input-group js-donation-custom-wrap" hidden>
-            <span class="input-group-text">$</span>
-            <input type="number" name="donation_amount" class="form-control js-donation-amount-input" min="1" step="1" value="{{ old('donation_amount') }}" placeholder="Enter amount">
-        </div>
-        <div class="invalid-feedback d-block js-donation-amount-error" hidden>Please choose or enter a donation amount.</div>
-        <small class="text-muted d-block mt-2">We will follow up with secure giving instructions after you send your message.</small>
-    </div>
-
-    <div class="col-12 js-get-involved-panel" data-panel="volunteer" hidden>
-        <label class="form-label">Areas of interest &amp; experience <span class="text-danger">*</span></label>
-        <textarea name="volunteer_experience" class="form-control" rows="4" placeholder="Tell us your skills, availability, and how you would like to serve…">{{ old('volunteer_experience') }}</textarea>
-    </div>
-
-    <div class="col-12 js-get-involved-panel" data-panel="partner" hidden>
-        <label class="form-label">Partnership vision &amp; expected impact <span class="text-danger">*</span></label>
-        <textarea name="partnership_details" class="form-control" rows="4" placeholder="Describe the kind of partnership you are looking for and the impact you hope to make…">{{ old('partnership_details') }}</textarea>
-    </div>
-
-    <div class="col-12 js-get-involved-panel" data-panel="visit_mothers" hidden>
-        <div class="alert alert-light border mb-0 small">
-            <i class="fas fa-info-circle me-1 text-primary" aria-hidden="true"></i>
-            Thank you for your heart to visit. Share any preferred dates or questions in the notes below — our team will coordinate with you.
-        </div>
-    </div>
-
     <div class="col-12">
-        <label class="form-label">Additional notes <span class="text-muted">(optional)</span></label>
-        <textarea name="message" class="form-control" rows="3" placeholder="Anything else we should know…">{{ old('message') }}</textarea>
+        <label class="form-label">Commitment description <span class="text-danger">*</span></label>
+        <textarea name="message" class="form-control" rows="4" required placeholder="Describe how you want to support young mothers through this option…">{{ old('message') }}</textarea>
     </div>
 
-    <div class="col-12">
-        <hr class="my-2">
-        <h3 class="h6 mb-2">Send your request</h3>
-        <p class="text-muted small mb-1">Your details are saved on our site, then your app opens in a new tab — tap <strong>Send</strong> to reach our team.</p>
-        <p class="text-muted small mb-3">We typically respond within 2–3 business days.</p>
-    </div>
-
-    @include('frontend.includes.public-form-delivery', ['formType' => 'get_involved', 'whatsappFirst' => true])
+    @include('frontend.includes.public-form-delivery', [
+        'formType' => 'get_involved',
+        'whatsappFirst' => true,
+        'whatsappLabel' => 'Send via WhatsApp',
+        'emailLabel' => 'Send via Email',
+        'hideWhatsappNote' => true,
+    ])
 </form>

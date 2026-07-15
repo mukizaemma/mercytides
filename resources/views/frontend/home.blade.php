@@ -103,8 +103,6 @@
     {{-- 8. How we work day to day --}}
     @include('frontend.includes.home-mission-core-values')
 
-    @include('frontend.includes.home-partners')
-
     @include('frontend.includes.home-news')
 
     @if(($setting->show_products_publicly ?? false))

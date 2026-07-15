@@ -24,7 +24,7 @@
 
 @include('frontend.includes.page-header', [
     'title' => 'Get Involved',
-    'caption' => 'Stand with young mothers in Uganda — through giving, volunteering, partnership, or a personal visit.',
+    'caption' => 'Stand with young mothers in Uganda — choose a clear way to support her journey.',
     'pageKey' => 'get_involved',
 ])
 
@@ -80,14 +80,16 @@
             <div class="col-lg-10 col-xl-9">
                 <div class="card border-0 shadow-sm site-form-card get-involved-page__form-card">
                     <div class="card-body p-4 p-lg-5">
-                        <h2 class="h4 mb-2">Tell us how you would like to get involved</h2>
-                        <p class="text-muted mb-4">Choose one option below, complete your details, then send via WhatsApp or email.</p>
+                        <h2 class="h4 mb-2">Choose a way to support mothers</h2>
+                        <p class="text-muted mb-4">These are the same support paths used across Mercy Tides. Pick one, share your details, then send via WhatsApp or email.</p>
 
                         @include('frontend.includes.get-involved-form', [
                             'singleSelect' => true,
                             'formPrefix' => 'gi',
                             'countriesListId' => 'get-involved-countries',
                             'selectedWays' => $selectedWays,
+                            'waysLabel' => 'Ways to support mothers',
+                            'waysHint' => 'Choose the option that matches how you want to help.',
                         ])
                     </div>
                 </div>

@@ -199,7 +199,7 @@ class FormSubmissionService
                 'donation_amount' => ['nullable', 'numeric', 'min:1'],
                 'volunteer_experience' => ['nullable', 'string', 'max:5000'],
                 'partnership_details' => ['nullable', 'string', 'max:5000'],
-                'message' => ['nullable', 'string', 'max:2000'],
+                'message' => ['required', 'string', 'max:2000'],
             ],
             'sponsor_inquiry' => [
                 'full_name' => ['required', 'string', 'max:255'],
@@ -247,20 +247,9 @@ class FormSubmissionService
         }
 
         if ($formType === 'get_involved') {
-            $ways = (array) ($validated['ways'] ?? []);
-            if (in_array('donation', $ways, true) && empty($validated['donation_amount'])) {
+            if (trim((string) ($validated['message'] ?? '')) === '') {
                 throw ValidationException::withMessages([
-                    'donation_amount' => 'Please enter the amount you would like to give in USD.',
-                ]);
-            }
-            if (in_array('volunteer', $ways, true) && trim((string) ($validated['volunteer_experience'] ?? '')) === '') {
-                throw ValidationException::withMessages([
-                    'volunteer_experience' => 'Please describe your areas of interest and experience.',
-                ]);
-            }
-            if (in_array('partner', $ways, true) && trim((string) ($validated['partnership_details'] ?? '')) === '') {
-                throw ValidationException::withMessages([
-                    'partnership_details' => 'Please describe the partnership you are looking for and the impact you hope to make.',
+                    'message' => 'Please describe your commitment.',
                 ]);
             }
         }
@@ -428,19 +417,10 @@ class FormSubmissionService
                 $lines[] = 'Country: ' . ($payload['country'] ?? '');
                 $ways = $this->formatGetInvolvedWays((array) ($payload['ways'] ?? []));
                 if ($ways !== '') {
-                    $lines[] = 'Ways to get involved: ' . $ways;
-                }
-                if (! empty($payload['donation_amount'])) {
-                    $lines[] = 'Donation amount (USD): ' . $payload['donation_amount'];
-                }
-                if (! empty($payload['volunteer_experience'])) {
-                    $lines[] = 'Volunteer interests & experience: ' . $payload['volunteer_experience'];
-                }
-                if (! empty($payload['partnership_details'])) {
-                    $lines[] = 'Partnership details: ' . $payload['partnership_details'];
+                    $lines[] = 'Ways to support mothers: ' . $ways;
                 }
                 if (! empty($payload['message'])) {
-                    $lines[] = 'Additional notes: ' . $payload['message'];
+                    $lines[] = 'Commitment description: ' . $payload['message'];
                 }
                 break;
 

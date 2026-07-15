@@ -2308,14 +2308,8 @@ a.contact-stat-card__value:hover {
     margin: 0 auto clamp(1.75rem, 4vw, 2.5rem);
 }
 
-.sp-profile__intro .sp-profile__meta,
-.sp-profile__intro .sp-profile__cta-group,
-.sp-profile__intro .sp-profile__cta-secondary {
+.sp-profile__intro .sp-profile__meta {
     justify-content: center;
-}
-
-.sp-profile__intro .sp-profile__cta-group {
-    align-items: center;
 }
 
 .sp-profile__intro .sp-profile__lede {
@@ -2416,16 +2410,6 @@ a.contact-stat-card__value:hover {
     background: #000;
 }
 
-.sp-profile__eyebrow {
-    margin: 0 0 0.55rem;
-    font-family: var(--font-body, "Source Sans 3", sans-serif);
-    font-size: 0.78rem;
-    font-weight: 700;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--brand-primary, #2f84b5);
-}
-
 .sp-profile__name {
     margin: 0 0 1rem;
     font-family: var(--font-display, "Fraunces", Georgia, serif);
@@ -2472,19 +2456,11 @@ a.contact-stat-card__value:hover {
 }
 
 .sp-profile__lede {
-    margin: 0 0 1.5rem;
+    margin: 0;
     max-width: 36rem;
     font-size: clamp(1.05rem, 2vw, 1.2rem);
     line-height: 1.7;
     color: var(--brand-muted-text, #3f5566);
-}
-
-.sp-profile__cta-group {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.9rem;
-    margin-bottom: 1rem;
 }
 
 .sp-profile__btn-primary {
@@ -2520,13 +2496,6 @@ a.contact-stat-card__value:hover {
     width: 100%;
 }
 
-.sp-profile__cta-secondary {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.45rem 0.65rem;
-}
-
 .sp-profile__link {
     font-size: 0.98rem;
     font-weight: 650;
@@ -2545,17 +2514,6 @@ a.contact-stat-card__value:hover {
 
 .sp-profile__link--standout {
     white-space: nowrap;
-}
-
-.sp-profile__dot {
-    color: rgba(63, 85, 102, 0.45);
-}
-
-.sp-profile__trust {
-    margin: 0;
-    font-size: 0.9rem;
-    line-height: 1.5;
-    color: rgba(63, 85, 102, 0.9);
 }
 
 .sp-profile__section-head {

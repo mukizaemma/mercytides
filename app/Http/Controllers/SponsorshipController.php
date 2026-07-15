@@ -150,8 +150,14 @@ class SponsorshipController extends Controller
     {
         $profile->type = $validated['type'];
         $profile->names = $validated['names'];
-        $slug = trim((string) ($validated['slug'] ?? ''));
-        $profile->slug = $slug !== '' ? $slug : null;
+        $submittedSlug = trim((string) ($validated['slug'] ?? ''));
+
+        // When the public name changes, rebuild the URL slug from the new name.
+        if ($profile->isDirty('names') || ($submittedSlug === '' && empty($profile->slug))) {
+            $profile->slug = null;
+        } elseif ($submittedSlug !== '') {
+            $profile->slug = $submittedSlug;
+        }
         $profile->age = $validated['age'] ?? null;
         $profile->sex = $validated['sex'] ?? null;
         $profile->status = $validated['status'];

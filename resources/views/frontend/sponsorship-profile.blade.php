@@ -40,13 +40,15 @@
 <section class="sp-profile">
     <div class="container sp-profile__container">
 
-        {{-- Identity + CTA above media --}}
+        {{-- Name above media --}}
         <header class="sp-profile__intro">
-            <p class="sp-profile__eyebrow">{{ $profile->typeLabel() }}@if($profile->age) · Age {{ $profile->age }}@endif</p>
             <h1 class="sp-profile__name">{{ $profile->displayName() }}</h1>
 
-            @if($profile->shouldShowStatusPublicly() && !empty($profile->status) || !empty($profile->monthly_need))
+            @if(($profile->shouldShowStatusPublicly() && !empty($profile->status)) || !empty($profile->age) || !empty($profile->monthly_need))
                 <div class="sp-profile__meta">
+                    @if(!empty($profile->age))
+                        <span class="sp-profile__need">Age {{ $profile->age }}</span>
+                    @endif
                     @if($profile->shouldShowStatusPublicly() && !empty($profile->status))
                         <span class="sp-profile__chip {{ $profile->isAvailable() ? 'sp-profile__chip--open' : 'sp-profile__chip--sponsored' }}">
                             {{ $profile->status }}
@@ -61,28 +63,6 @@
             @if($storyExcerpt !== '')
                 <p class="sp-profile__lede">{{ $storyExcerpt }}</p>
             @endif
-
-            <div class="sp-profile__cta-group">
-                <button
-                    type="button"
-                    class="sp-profile__btn-primary js-open-sponsor-commitment"
-                    data-bs-toggle="modal"
-                    data-bs-target="#sponsorCommitmentModal"
-                    data-support-focus="full_care"
-                >
-                    {{ $sponsorCta }}
-                </button>
-
-                <div class="sp-profile__cta-secondary">
-                    <a href="#ways-to-support" class="sp-profile__link">See ways to help</a>
-                    @if($hasVideo)
-                        <span class="sp-profile__dot" aria-hidden="true">·</span>
-                        <a href="#her-video" class="sp-profile__link">Watch her story</a>
-                    @endif
-                </div>
-            </div>
-
-            <p class="sp-profile__trust">No payment is taken on this page. We’ll follow up with secure next steps.</p>
         </header>
 
         {{-- Photo + video, equal-height row --}}

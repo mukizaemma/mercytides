@@ -172,23 +172,33 @@ class Sponsorship extends Model
     protected static function booted(): void
     {
         static::saving(function (Sponsorship $profile) {
-            if (! empty($profile->names) && empty($profile->slug)) {
-                $base = Str::slug($profile->names);
-                $slug = $base !== '' ? $base : 'sponsor-' . ($profile->id ?? 'new');
-                $suffix = 1;
+            if (empty($profile->names)) {
+                return;
+            }
 
-                while (
-                    static::query()
-                        ->where('slug', $slug)
-                        ->when($profile->exists, fn ($q) => $q->where('id', '!=', $profile->id))
-                        ->exists()
-                ) {
-                    $slug = $base . '-' . $suffix;
-                    $suffix++;
-                }
-
-                $profile->slug = $slug;
+            // Rebuild from name when slug is empty (new profiles, or after a name change).
+            if (empty($profile->slug) || $profile->isDirty('names')) {
+                $profile->slug = static::uniqueSlugFromName((string) $profile->names, $profile->id);
             }
         });
+    }
+
+    public static function uniqueSlugFromName(string $names, int|string|null $ignoreId = null): string
+    {
+        $base = Str::slug($names);
+        $slug = $base !== '' ? $base : 'sponsor-' . ($ignoreId ?: 'new');
+        $suffix = 1;
+
+        while (
+            static::query()
+                ->where('slug', $slug)
+                ->when($ignoreId, fn ($q) => $q->where('id', '!=', $ignoreId))
+                ->exists()
+        ) {
+            $slug = ($base !== '' ? $base : 'sponsor') . '-' . $suffix;
+            $suffix++;
+        }
+
+        return $slug;
     }
 }

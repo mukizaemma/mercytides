@@ -93,7 +93,8 @@
 
     <div class="mb-3">
         <label class="form-label">URL slug</label>
-        <input type="text" class="form-control" name="slug" value="{{ old('slug', $isEdit ? ($formProfile->slug ?? '') : '') }}" placeholder="Auto-generated from name if empty">
+        <input type="text" class="form-control" name="slug" value="{{ old('slug', $isEdit ? ($formProfile->slug ?? '') : '') }}" placeholder="Auto from name — updates when the name changes">
+        <small class="text-muted">Leave blank to generate from the name. Editing the name also refreshes this slug.</small>
     </div>
 
     <div class="mb-3">

@@ -4,11 +4,10 @@
 
 @php
     use App\Support\MercyTidesContent;
+    use Illuminate\Support\Str;
 
     $firstName = explode(' ', $profile->displayName())[0] ?? $profile->displayName();
     $supportOptions = MercyTidesContent::sponsorshipSupportFocusOptions();
-    $featuredSupport = collect($supportOptions)->firstWhere('key', 'full_care');
-    $otherSupport = collect($supportOptions)->reject(fn ($option) => $option['key'] === 'full_care')->values();
     $uploadedVideoUrl = $profile->uploadedVideoUrl();
     $embedUrl = $uploadedVideoUrl ? null : $profile->youtubeEmbedUrl();
     $hasVideo = (bool) ($uploadedVideoUrl || $embedUrl);
@@ -21,180 +20,228 @@
     $storyHtml = $filledHtml($profile->testimany ?? null) ? $profile->testimany : null;
     $challengesHtml = $filledHtml($profile->challenges ?? null) ? $profile->challenges : null;
     $visionHtml = $filledHtml($profile->vision ?? null) ? $profile->vision : null;
-    $relatedProfiles = $relatedProfiles ?? collect();
 
+    $storyExcerpt = $storyHtml
+        ? Str::limit(trim(preg_replace('/\s+/', ' ', strip_tags(html_entity_decode((string) $profile->testimany)))), 320, '…')
+        : trim(strip_tags(html_entity_decode((string) ($typeMeta['caption'] ?? ''))));
+
+    $relatedProfiles = $relatedProfiles ?? collect();
     $relatedTitle = match ($profile->type) {
-        'young_mother' => 'More mothers',
-        'child' => 'More children',
-        'family' => 'More families',
-        default => 'More profiles',
+        'young_mother' => 'More mothers to support',
+        'child' => 'More children to support',
+        'family' => 'More families to support',
+        default => 'More profiles to support',
     };
+
+    $sponsorCta = 'Sponsor ' . $firstName;
 @endphp
 
 @section('content')
-<section class="sponsorship-profile-page">
-    <div class="container sponsorship-profile-page__inner">
-        <div class="row g-4 g-xl-5 sponsorship-profile-page__hero-row">
-            {{-- Meet her --}}
-            <div class="{{ $hasVideo ? 'col-lg-5' : 'col-lg-6 mx-lg-auto' }}">
-                <div class="sponsorship-profile-page__portrait">
-                    <img src="{{ $posterUrl }}" alt="{{ $profile->displayName() }}" width="640" height="853" loading="eager">
-                </div>
+<section class="sp-profile">
+    <div class="container sp-profile__container">
 
-                <div class="sponsorship-profile-page__identity">
-                    <p class="sponsorship-profile-page__eyebrow">{{ $profile->typeLabel() }}@if($profile->age) · Age {{ $profile->age }}@endif</p>
-                    <h1 class="sponsorship-profile-page__name">{{ $profile->displayName() }}</h1>
+        {{-- Hero: photo + story + CTA --}}
+        <div class="sp-profile__hero">
+            <div class="sp-profile__hero-media">
+                <figure class="sp-profile__portrait">
+                    <img
+                        src="{{ $posterUrl }}"
+                        alt="{{ $profile->displayName() }}"
+                        width="720"
+                        height="960"
+                        loading="eager"
+                        decoding="async"
+                    >
+                </figure>
+            </div>
 
-                    <div class="sponsorship-profile-page__meta-row">
+            <div class="sp-profile__hero-copy">
+                <p class="sp-profile__eyebrow">{{ $profile->typeLabel() }}@if($profile->age) · Age {{ $profile->age }}@endif</p>
+                <h1 class="sp-profile__name">{{ $profile->displayName() }}</h1>
+
+                @if($profile->shouldShowStatusPublicly() && !empty($profile->status) || !empty($profile->monthly_need))
+                    <div class="sp-profile__meta">
                         @if($profile->shouldShowStatusPublicly() && !empty($profile->status))
-                            <span class="badge sponsorship-profile-page__status {{ $profile->isAvailable() ? 'bg-warning text-dark' : 'bg-success' }}">{{ $profile->status }}</span>
+                            <span class="sp-profile__chip {{ $profile->isAvailable() ? 'sp-profile__chip--open' : 'sp-profile__chip--sponsored' }}">
+                                {{ $profile->status }}
+                            </span>
                         @endif
                         @if(!empty($profile->monthly_need))
-                            <span class="sponsorship-profile-page__need">From <strong>${{ $profile->monthly_need }}</strong> / month</span>
+                            <span class="sp-profile__need">Suggested <strong>${{ $profile->monthly_need }}</strong>/month</span>
                         @endif
                     </div>
+                @endif
 
-                    <div class="sponsorship-profile-page__actions">
-                        <button type="button"
-                                class="tp-btn js-open-sponsor-commitment"
-                                data-bs-toggle="modal"
-                                data-bs-target="#sponsorCommitmentModal"
-                                data-support-focus="full_care">
-                            Support {{ $firstName }}
-                        </button>
-                        <a href="#ways-to-support" class="sponsorship-profile-page__text-link">See ways to help</a>
+                @if($storyExcerpt !== '')
+                    <p class="sp-profile__lede">{{ $storyExcerpt }}</p>
+                @endif
+
+                <div class="sp-profile__cta-group">
+                    <button
+                        type="button"
+                        class="sp-profile__btn-primary js-open-sponsor-commitment"
+                        data-bs-toggle="modal"
+                        data-bs-target="#sponsorCommitmentModal"
+                        data-support-focus="full_care"
+                    >
+                        {{ $sponsorCta }}
+                    </button>
+
+                    <div class="sp-profile__cta-secondary">
+                        <a href="#ways-to-support" class="sp-profile__link">See ways to help</a>
+                        @if($hasVideo)
+                            <span class="sp-profile__dot" aria-hidden="true">·</span>
+                            <a href="#her-video" class="sp-profile__link">Watch her story</a>
+                        @endif
                     </div>
                 </div>
+
+                <p class="sp-profile__trust">No payment is taken on this page. We’ll follow up with secure next steps.</p>
             </div>
-
-            {{-- Hear her --}}
-            @if($hasVideo)
-                <div class="col-lg-7">
-                    <div class="sponsorship-profile-page__video-panel">
-                        <div class="sponsorship-profile-page__video-head">
-                            <p class="sponsorship-profile-page__video-label">Hear from {{ $firstName }}</p>
-                            <p class="sponsorship-profile-page__video-hint mb-0">Watch her share her journey</p>
-                        </div>
-                        <div class="ratio ratio-16x9 sponsorship-profile-page__video-frame">
-                            @if($uploadedVideoUrl)
-                                @php
-                                    $videoExt = strtolower(pathinfo((string) $profile->video_path, PATHINFO_EXTENSION));
-                                    $videoMime = match ($videoExt) {
-                                        'webm' => 'video/webm',
-                                        'mov' => 'video/quicktime',
-                                        default => 'video/mp4',
-                                    };
-                                @endphp
-                                <video
-                                    class="sponsorship-profile-page__native-video"
-                                    controls
-                                    playsinline
-                                    preload="metadata"
-                                    @if($posterUrl) poster="{{ $posterUrl }}" @endif
-                                >
-                                    <source src="{{ $uploadedVideoUrl }}" type="{{ $videoMime }}">
-                                    Your browser does not support embedded video.
-                                </video>
-                            @else
-                                <iframe src="{{ $embedUrl }}" title="Video about {{ $profile->displayName() }}" allowfullscreen loading="lazy"></iframe>
-                            @endif
-                        </div>
-                    </div>
-                </div>
-            @endif
         </div>
 
-        @if($storyHtml || $challengesHtml || $visionHtml)
-            <div class="sponsorship-profile-page__story">
-                @if($storyHtml)
-                    <div class="sponsorship-profile-page__block">
-                        <h2 class="sponsorship-profile-page__heading">Her story</h2>
-                        <div class="postbox__text">{!! $storyHtml !!}</div>
+        {{-- Optional video --}}
+        @if($hasVideo)
+            <section id="her-video" class="sp-profile__video-section" aria-labelledby="her-video-heading">
+                <div class="sp-profile__section-head sp-profile__section-head--left">
+                    <h2 id="her-video-heading" class="sp-profile__section-title">Hear from {{ $firstName }}</h2>
+                    <p class="sp-profile__section-lead">Watch her share her journey in her own words.</p>
+                </div>
+                <div class="sp-profile__video-card">
+                    <div class="ratio ratio-16x9 sp-profile__video-frame">
+                        @if($uploadedVideoUrl)
+                            @php
+                                $videoExt = strtolower(pathinfo((string) $profile->video_path, PATHINFO_EXTENSION));
+                                $videoMime = match ($videoExt) {
+                                    'webm' => 'video/webm',
+                                    'mov' => 'video/quicktime',
+                                    default => 'video/mp4',
+                                };
+                            @endphp
+                            <video
+                                class="sp-profile__native-video"
+                                controls
+                                playsinline
+                                preload="metadata"
+                                @if($posterUrl) poster="{{ $posterUrl }}" @endif
+                            >
+                                <source src="{{ $uploadedVideoUrl }}" type="{{ $videoMime }}">
+                                Your browser does not support embedded video.
+                            </video>
+                        @else
+                            <iframe
+                                src="{{ $embedUrl }}"
+                                title="Video about {{ $profile->displayName() }}"
+                                allowfullscreen
+                                loading="lazy"
+                            ></iframe>
+                        @endif
                     </div>
-                @endif
-                @if($challengesHtml)
-                    <div class="sponsorship-profile-page__block">
-                        <h2 class="sponsorship-profile-page__heading">Challenges she faces</h2>
-                        <div class="postbox__text">{!! $challengesHtml !!}</div>
-                    </div>
-                @endif
-                @if($visionHtml)
-                    <div class="sponsorship-profile-page__block">
-                        <h2 class="sponsorship-profile-page__heading">Her vision</h2>
-                        <div class="postbox__text">{!! $visionHtml !!}</div>
-                    </div>
-                @endif
-            </div>
+                </div>
+            </section>
         @endif
 
-        {{-- Decide how to help --}}
-        <section id="ways-to-support" class="sponsorship-profile-page__support" aria-labelledby="ways-to-support-heading">
-            <div class="sponsorship-profile-page__support-header">
-                <h2 id="ways-to-support-heading" class="sponsorship-profile-page__heading">How would you like to help {{ $firstName }}?</h2>
-                <p class="sponsorship-profile-page__support-lead mb-0">
-                    Pick one focus to start. We’ll follow up with next steps — nothing is charged here.
+        {{-- Longer story blocks only when filled --}}
+        @if($storyHtml || $challengesHtml || $visionHtml)
+            <section class="sp-profile__story" aria-label="Her full story">
+                @if($storyHtml)
+                    <article class="sp-profile__story-block">
+                        <h2 class="sp-profile__section-title">Her story</h2>
+                        <div class="sp-profile__prose postbox__text">{!! $storyHtml !!}</div>
+                    </article>
+                @endif
+                @if($challengesHtml)
+                    <article class="sp-profile__story-block">
+                        <h2 class="sp-profile__section-title">Challenges she faces</h2>
+                        <div class="sp-profile__prose postbox__text">{!! $challengesHtml !!}</div>
+                    </article>
+                @endif
+                @if($visionHtml)
+                    <article class="sp-profile__story-block">
+                        <h2 class="sp-profile__section-title">Her vision</h2>
+                        <div class="sp-profile__prose postbox__text">{!! $visionHtml !!}</div>
+                    </article>
+                @endif
+            </section>
+        @endif
+
+        {{-- Ways to support cards --}}
+        <section id="ways-to-support" class="sp-profile__support" aria-labelledby="ways-to-support-heading">
+            <div class="sp-profile__section-head">
+                <h2 id="ways-to-support-heading" class="sp-profile__section-title">Ways to support {{ $firstName }}</h2>
+                <p class="sp-profile__section-lead">
+                    Choose a focus. We will follow up with secure giving options — nothing is charged on this page.
                 </p>
             </div>
 
-            @if($featuredSupport)
-                <button type="button"
-                        class="sponsorship-support-featured js-open-sponsor-commitment"
+            <div class="sp-support-grid" role="list">
+                @foreach($supportOptions as $option)
+                    <button
+                        type="button"
+                        class="sp-support-card js-open-sponsor-commitment{{ $option['key'] === 'full_care' ? ' sp-support-card--featured' : '' }}"
+                        role="listitem"
                         data-bs-toggle="modal"
                         data-bs-target="#sponsorCommitmentModal"
-                        data-support-focus="{{ $featuredSupport['key'] }}">
-                    <span class="sponsorship-support-featured__badge">Recommended</span>
-                    <span class="sponsorship-support-featured__body">
-                        <span class="sponsorship-support-featured__icon" aria-hidden="true"><i class="fas {{ $featuredSupport['icon'] }}"></i></span>
-                        <span class="sponsorship-support-featured__copy">
-                            <span class="sponsorship-support-featured__title">{{ $featuredSupport['label'] }}</span>
-                            <span class="sponsorship-support-featured__text">{{ $featuredSupport['text'] }}</span>
-                        </span>
-                    </span>
-                    <span class="sponsorship-support-featured__cta">Choose this</span>
-                </button>
-            @endif
-
-            <div class="sponsorship-support-grid" role="list">
-                @foreach($otherSupport as $option)
-                    <button type="button"
-                            class="sponsorship-support-card js-open-sponsor-commitment"
-                            role="listitem"
-                            data-bs-toggle="modal"
-                            data-bs-target="#sponsorCommitmentModal"
-                            data-support-focus="{{ $option['key'] }}">
-                        <span class="sponsorship-support-card__icon" aria-hidden="true">
+                        data-support-focus="{{ $option['key'] }}"
+                    >
+                        @if($option['key'] === 'full_care')
+                            <span class="sp-support-card__badge">Most complete</span>
+                        @endif
+                        <span class="sp-support-card__icon" aria-hidden="true">
                             <i class="fas {{ $option['icon'] }}"></i>
                         </span>
-                        <span class="sponsorship-support-card__copy">
-                            <span class="sponsorship-support-card__title">{{ $option['label'] }}</span>
-                            <span class="sponsorship-support-card__text">{{ $option['text'] }}</span>
+                        <span class="sp-support-card__title">{{ $option['label'] }}</span>
+                        <span class="sp-support-card__text">{{ $option['text'] }}</span>
+                        <span class="sp-support-card__action">
+                            Choose this
+                            <i class="fas fa-arrow-right" aria-hidden="true"></i>
                         </span>
                     </button>
                 @endforeach
             </div>
+
+            <div class="sp-profile__support-footer">
+                <button
+                    type="button"
+                    class="sp-profile__btn-primary js-open-sponsor-commitment"
+                    data-bs-toggle="modal"
+                    data-bs-target="#sponsorCommitmentModal"
+                    data-support-focus="full_care"
+                >
+                    {{ $sponsorCta }}
+                </button>
+            </div>
         </section>
 
-        {{-- Related --}}
+        {{-- Related profiles --}}
         @if($relatedProfiles->isNotEmpty())
-            <section class="sponsorship-profile-page__related" aria-labelledby="related-profiles-heading">
-                <div class="sponsorship-profile-page__related-head">
-                    <h2 id="related-profiles-heading" class="sponsorship-profile-page__heading mb-1">{{ $relatedTitle }}</h2>
-                    <a href="{{ route($typeMeta['route']) }}" class="sponsorship-profile-page__text-link">View all</a>
+            <section class="sp-profile__related" aria-labelledby="related-heading">
+                <div class="sp-profile__related-head">
+                    <div>
+                        <h2 id="related-heading" class="sp-profile__section-title">{{ $relatedTitle }}</h2>
+                        <p class="sp-profile__section-lead mb-0">Meet others seeking skills, care, and a path toward dignity.</p>
+                    </div>
+                    <a href="{{ route($typeMeta['route']) }}" class="sp-profile__link sp-profile__link--standout">View all</a>
                 </div>
 
-                <div class="sponsorship-related-grid">
+                <div class="sp-related-grid">
                     @foreach($relatedProfiles->take(4) as $related)
                         @php
                             $relatedName = $related->displayName();
                             $relatedFirst = explode(' ', $relatedName)[0] ?? $relatedName;
                             $relatedImg = \App\Models\Sponsorship::publicImageUrl($related->image);
                         @endphp
-                        <a href="{{ $related->profileRoute() }}" class="sponsorship-related-card">
-                            <span class="sponsorship-related-card__media">
-                                <img src="{{ $relatedImg }}" alt="{{ $relatedName }}" loading="lazy" width="320" height="400">
+                        <a href="{{ $related->profileRoute() }}" class="sp-related-card">
+                            <span class="sp-related-card__media">
+                                <img src="{{ $relatedImg }}" alt="{{ $relatedName }}" loading="lazy" width="400" height="500">
                             </span>
-                            <span class="sponsorship-related-card__name">{{ $relatedName }}</span>
-                            <span class="sponsorship-related-card__cta">Meet {{ $relatedFirst }}</span>
+                            <span class="sp-related-card__body">
+                                <span class="sp-related-card__name">{{ $relatedName }}</span>
+                                @if(!empty($related->age))
+                                    <span class="sp-related-card__meta">Age {{ $related->age }}</span>
+                                @endif
+                                <span class="sp-related-card__cta">Meet {{ $relatedFirst }} <i class="fas fa-arrow-right" aria-hidden="true"></i></span>
+                            </span>
                         </a>
                     @endforeach
                 </div>
@@ -203,13 +250,16 @@
     </div>
 </section>
 
-<div class="sponsorship-profile-page__sticky-cta d-md-none">
-    <button type="button"
-            class="tp-btn w-100 js-open-sponsor-commitment"
-            data-bs-toggle="modal"
-            data-bs-target="#sponsorCommitmentModal"
-            data-support-focus="full_care">
-        Support {{ $firstName }}
+{{-- Mobile sticky primary CTA --}}
+<div class="sp-profile__sticky d-md-none">
+    <button
+        type="button"
+        class="sp-profile__btn-primary sp-profile__btn-primary--block js-open-sponsor-commitment"
+        data-bs-toggle="modal"
+        data-bs-target="#sponsorCommitmentModal"
+        data-support-focus="full_care"
+    >
+        {{ $sponsorCta }}
     </button>
 </div>
 
@@ -217,7 +267,7 @@
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
         <div class="modal-content sponsorship-commitment-modal">
             <div class="modal-header border-0 pb-0">
-                <h2 class="modal-title h5 visually-hidden" id="sponsorCommitmentModalLabel">Commit to support {{ $profile->displayName() }}</h2>
+                <h2 class="modal-title h5 visually-hidden" id="sponsorCommitmentModalLabel">{{ $sponsorCta }}</h2>
                 <button type="button" class="btn-close ms-auto" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body pt-2 px-4 px-lg-5 pb-4">

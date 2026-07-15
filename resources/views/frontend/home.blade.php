@@ -81,14 +81,15 @@
         </div>
     </section>
 
-    {{-- 4. Who we serve --}}
+    {{-- 4. Who we serve — oldest 4 program mother portraits --}}
     @include('frontend.includes.mothers-gallery', [
         'mothers' => $mothers ?? collect(),
         'limit' => 4,
         'sectionEyebrow' => 'Who we serve',
-        'sectionTitle' => 'Young mothers in Uganda',
-        'sectionLead' => 'We walk with unwed and teenage mothers near Kampala — toward independence, dignity, and a brighter future for their children.',
-        'viewMoreRoute' => route('sponsorship.youngMother'),
+        'sectionTitle' => 'Mothers in our program',
+        'sectionLead' => 'Meet some of the young mothers we walk with — toward independence, dignity, and a brighter future for their children.',
+        'viewMoreRoute' => route('mothersGallery'),
+        'viewMoreLabel' => 'View more mothers',
     ])
 
     {{-- 5. How we serve --}}

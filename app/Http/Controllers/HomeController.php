@@ -85,7 +85,7 @@ class HomeController extends Controller
         $homeGallery = Gallery::latest()->get();
         $slides = Slide::oldest()->get();
         $testimonials = Testimony::latest()->paginate(3);
-        $mothers = $this->publishedSponsorshipProfiles('young_mother');
+        $mothers = $this->programMothers(4);
         $partners = Partner::latest()->get();
         $staff = Team::latest()->get();
 
@@ -169,7 +169,33 @@ class HomeController extends Controller
 
     public function mothersGallery()
     {
-        return redirect()->route('sponsorship.youngMother', [], 301);
+        return view('frontend.mothers', [
+            'about' => Background::firstOrEmpty(),
+            'mothers' => $this->programMothers(),
+        ]);
+    }
+
+    /**
+     * Portrait gallery mothers from the Young Mothers admin list (oldest first).
+     *
+     * @return \Illuminate\Support\Collection<int, \App\Models\Mother>
+     */
+    protected function programMothers(?int $limit = null)
+    {
+        if (! Schema::hasTable('mothers')) {
+            return collect();
+        }
+
+        $query = Mother::query()
+            ->whereNotNull('image')
+            ->where('image', '!=', '')
+            ->oldest('id');
+
+        if ($limit !== null) {
+            $query->take($limit);
+        }
+
+        return $query->get();
     }
 
     public function motherProfile($slug)
@@ -1083,7 +1109,7 @@ class HomeController extends Controller
             ->latest()
             ->take(8)
             ->get();
-        $mothers = $this->publishedSponsorshipProfiles('young_mother');
+        $mothers = $this->programMothers(4);
         return view('frontend.impact', compact('about', 'initiatives', 'impacts', 'testimonials', 'mothers'));
     }
 

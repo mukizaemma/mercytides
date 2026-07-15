@@ -143,6 +143,8 @@
                 'limit' => 4,
                 'showSectionHeader' => false,
                 'embedded' => true,
+                'viewMoreRoute' => route('mothersGallery'),
+                'viewMoreLabel' => 'View more mothers',
             ])
 
             @if(($mothers ?? collect())->isEmpty())

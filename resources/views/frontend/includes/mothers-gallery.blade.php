@@ -5,7 +5,9 @@
     $sectionEyebrow = $sectionEyebrow ?? 'Faces of hope';
     $sectionTitle = $sectionTitle ?? 'Young Mothers We Support';
     $sectionLead = $sectionLead ?? 'Each portrait represents a young mother walking toward independence, dignity, and a brighter future for her family.';
-    $viewMoreRoute = $viewMoreRoute ?? route('sponsorship.youngMother');
+    $viewMoreRoute = $viewMoreRoute ?? route('mothersGallery');
+    $viewMoreLabel = $viewMoreLabel ?? 'View more mothers';
+    $showViewMore = $showViewMore ?? true;
 @endphp
 
 @if($galleryMothers->isNotEmpty())
@@ -73,11 +75,13 @@
             @endforeach
         </div>
 
+        @if($showViewMore)
         <div class="row mt-4">
             <div class="col-12 text-center">
-                <a class="tp-btn mothers-gallery-section__more-btn" href="{{ $viewMoreRoute }}">{{ $viewMoreLabel ?? 'View more mothers' }}</a>
+                <a class="tp-btn mothers-gallery-section__more-btn" href="{{ $viewMoreRoute }}">{{ $viewMoreLabel }}</a>
             </div>
         </div>
+        @endif
 @if(!$embedded)
     </div>
 </section>

@@ -23,6 +23,8 @@ class GalleryController extends Controller
 
     public function store(Request $request)
     {
+        $this->forgetRequestRecordIds($request, ['gallery_id', 'image_id']);
+
         $validated = $request->validate([
             'caption' => ['nullable', 'string', 'max:255'],
             'program_id' => ['nullable', 'exists:programs,id'],
@@ -43,6 +45,8 @@ class GalleryController extends Controller
             return redirect()->back()->with('error', 'Upload an image or provide a YouTube URL.')->withInput();
         }
 
+        $countBefore = Image::query()->count();
+
         $data = new Image();
         $data->caption = $validated['caption'] ?? null;
         $data->program_id = $validated['program_id'] ?? null;
@@ -52,14 +56,21 @@ class GalleryController extends Controller
             $data->image = $request->file('image')->storeOptimized('images/gallery', 'public');
         }
 
+        $this->assertCreatingNew($data);
         $data->save();
+
+        if (Image::query()->count() !== $countBefore + 1) {
+            return redirect()
+                ->route('images')
+                ->with('error', 'Something went wrong while saving. Existing gallery items were left unchanged.');
+        }
 
         return redirect()->route('images')->with('success', 'Gallery item has been added successfully.');
     }
 
     public function edit($id)
     {
-        $data = Image::query()->findOrFail($id);
+        $data = $this->findAdminRecord(Image::class, $id);
         $programs = Program::latest()->get();
 
         return view('admin.galleryUpdate', [
@@ -70,7 +81,8 @@ class GalleryController extends Controller
 
     public function update(Request $request, $id)
     {
-        $data = Image::query()->findOrFail($id);
+        $data = $this->findAdminRecord(Image::class, $id);
+        $targetId = (int) $data->id;
 
         $validated = $request->validate([
             'caption' => ['nullable', 'string', 'max:255'],
@@ -98,6 +110,7 @@ class GalleryController extends Controller
             $data->image = $request->file('image')->storeOptimized('images/gallery', 'public');
         }
 
+        $this->assertSameRecord($data, $targetId);
         $data->save();
 
         return redirect()->route('images')->with('success', 'Gallery item has been updated.');
@@ -105,7 +118,7 @@ class GalleryController extends Controller
 
     public function destroy($id)
     {
-        $image = Image::query()->findOrFail($id);
+        $image = $this->findAdminRecord(Image::class, $id);
 
         if (! empty($image->image) && Storage::disk('public')->exists($image->image)) {
             Storage::disk('public')->delete($image->image);

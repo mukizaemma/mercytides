@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
@@ -54,6 +53,8 @@ class NewsController extends Controller
 
     public function store(Request $request)
     {
+        $this->forgetRequestRecordIds($request, ['news_id', 'blog_id']);
+
         $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'author' => ['nullable', 'string', 'max:255'],
@@ -62,8 +63,10 @@ class NewsController extends Controller
             'gallery.*' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:4096'],
         ]);
 
+        $countBefore = News::query()->count();
+
         $fileName = '';
-        if($request->hasFile('image')){
+        if ($request->hasFile('image')) {
             $fileName = $request->file('image')->storeOptimized('images/news', 'public');
         }
 
@@ -72,16 +75,22 @@ class NewsController extends Controller
         $blog->author = $request->input('author');
         $blog->body = $request->input('body');
         $blog->image = $fileName ?: null;
-        $blog->slug = $this->uniqueSlug($request->input('title'));
+        $blog->slug = $this->uniqueModelSlug(News::class, (string) $request->input('title'), null, 'news');
         $blog->published_at = null; // explicit draft
         $blog->published_by = null;
         if (Schema::hasColumn('news', 'added_by')) {
             $blog->added_by = Auth::id() ?? Auth::guard('admin')->id();
         }
+
+        $this->assertCreatingNew($blog);
         $blog->save();
 
-        if($request->hasFile('gallery')){
-            foreach($request->file('gallery') as $gallery){
+        if (News::query()->count() !== $countBefore + 1) {
+            return redirect('blogs')->with('error', 'Something went wrong while saving. Existing posts were left unchanged.');
+        }
+
+        if ($request->hasFile('gallery')) {
+            foreach ($request->file('gallery') as $gallery) {
                 $path = $gallery->storeOptimized('images/news/gallery', 'public');
                 $blog->blogimages()->create([
                     'gallery' => $path,
@@ -91,16 +100,14 @@ class NewsController extends Controller
         }
 
         return redirect('blogs')->with('success', 'Blog saved as draft successfully');
-
     }
-
 
     public function edit($id)
     {
-        $blog = News::with('blogimages')->findOrFail($id);
+        $blog = News::with('blogimages')->findOrFail((int) $id);
+
         return view('admin.newsUpdate', compact('blog'));
     }
-
 
     public function update(Request $request, $id)
     {
@@ -112,21 +119,20 @@ class NewsController extends Controller
             'gallery.*' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:4096'],
         ]);
 
-        $blog = News::with('blogimages')->findOrFail($id);
+        $blog = $this->findAdminRecord(News::class, $id);
+        $blog->load('blogimages');
+        $targetId = (int) $blog->id;
 
-        // Check if the request has an image
         if ($request->hasFile('image')) {
-            // Delete the old image
-            if (!empty($blog->image) && Storage::disk('public')->exists($blog->image)) {
+            if (! empty($blog->image) && Storage::disk('public')->exists($blog->image)) {
                 Storage::disk('public')->delete($blog->image);
             }
-            // Store the new image
             $blog->image = $request->file('image')->storeOptimized('images/news', 'public');
         }
 
         // Append gallery images (don't erase existing)
         if ($request->hasFile('gallery')) {
-            foreach($request->file('gallery') as $gallery){
+            foreach ($request->file('gallery') as $gallery) {
                 $path = $gallery->storeOptimized('images/news/gallery', 'public');
                 $blog->blogimages()->create([
                     'gallery' => $path,
@@ -135,11 +141,15 @@ class NewsController extends Controller
             }
         }
 
-        // Update the other fields
-        $blog->title = $request->input('title');
+        $newTitle = (string) $request->input('title');
+        if ($blog->title !== $newTitle) {
+            $blog->slug = $this->uniqueModelSlug(News::class, $newTitle, $targetId, 'news');
+        }
+        $blog->title = $newTitle;
         $blog->author = $request->input('author');
         $blog->body = $request->input('body');
-        $blog->slug = $this->uniqueSlug($request->input('title'), $blog->id);
+
+        $this->assertSameRecord($blog, $targetId);
         $blog->save();
 
         return redirect('blogs')->with('success', 'News post has been updated successfully');
@@ -203,20 +213,4 @@ class NewsController extends Controller
         return back()->with('warning', 'Blog gallery image deleted');
     }
 
-    private function uniqueSlug(string $title, ?int $ignoreId = null): string
-    {
-        $baseSlug = Str::slug($title);
-        $slug = $baseSlug;
-        $i = 1;
-        while (
-            News::query()
-                ->when($ignoreId, fn ($q) => $q->where('id', '!=', $ignoreId))
-                ->where('slug', $slug)
-                ->exists()
-        ) {
-            $slug = $baseSlug . '-' . $i;
-            $i++;
-        }
-        return $slug;
-    }
 }

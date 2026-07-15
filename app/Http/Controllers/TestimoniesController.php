@@ -36,6 +36,8 @@ class TestimoniesController extends Controller
      */
     public function store(Request $request)
     {
+        $this->forgetRequestRecordIds($request, ['testimony_id']);
+
         $request->validate([
             'names' => ['required', 'string', 'max:255'],
             'title' => ['required', 'string', 'max:255'],
@@ -43,27 +45,30 @@ class TestimoniesController extends Controller
             'video_url' => ['nullable', 'url', 'regex:/^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\//i'],
             'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:4096'],
         ]);
+
+        $countBefore = Testimony::query()->count();
+
         $data = new Testimony();
         $data->names = $request->names;
-        $data ->title = $request->title;
-        $data ->testimony = $request->testimony;
+        $data->title = $request->title;
+        $data->testimony = $request->testimony;
         $data->video_url = $request->filled('video_url') ? trim((string) $request->input('video_url')) : null;
         if (Schema::hasColumn('testimonies', 'added_by')) {
             $data->added_by = Auth::id() ?? Auth::guard('admin')->id();
         }
 
-        // Uploading image
         if ($request->hasFile('image')) {
             $data->image = $request->file('image')->storeOptimized('images/testimonies', 'public', ['preset' => 'portrait']);
         }
 
+        $this->assertCreatingNew($data);
         $stored = $data->save();
 
-        if($stored){
+        if ($stored && Testimony::query()->count() === $countBefore + 1) {
             return redirect()->route('getTestimonials')->with('success', 'New testimony has been added successfully');
         }
 
-        return redirect()->back()->with('error','Failed to add new Testimony');
+        return redirect()->back()->with('error', 'Failed to add new Testimony. Existing testimonials were left unchanged.');
     }
 
     /**
@@ -85,8 +90,9 @@ class TestimoniesController extends Controller
      */
     public function edit($id)
     {
-        $data = Testimony::findOrFail($id);
-        return view('admin.testimonyUpdate', ['data'=>$data]);
+        $data = $this->findAdminRecord(Testimony::class, $id);
+
+        return view('admin.testimonyUpdate', ['data' => $data]);
     }
 
     /**
@@ -106,22 +112,24 @@ class TestimoniesController extends Controller
             'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:4096'],
         ]);
 
-        $data = Testimony::findOrFail($id);
+        $data = $this->findAdminRecord(Testimony::class, $id);
+        $targetId = (int) $data->id;
         $data->names = $request->input('names');
         $data->title = $request->input('title');
         $data->testimony = $request->input('testimony');
         $data->video_url = $request->filled('video_url') ? trim((string) $request->input('video_url')) : null;
 
         if ($request->hasFile('image')) {
-            if (!empty($data->image) && Storage::disk('public')->exists($data->image)) {
+            if (! empty($data->image) && Storage::disk('public')->exists($data->image)) {
                 Storage::disk('public')->delete($data->image);
             }
             $data->image = $request->file('image')->storeOptimized('images/testimonies', 'public', ['preset' => 'portrait']);
         }
 
+        $this->assertSameRecord($data, $targetId);
         $data->save();
 
-        return redirect()->route('getTestimonials')->with('success','Testimony has been updated');
+        return redirect()->route('getTestimonials')->with('success', 'Testimony has been updated');
     }
 
     /**
@@ -132,7 +140,7 @@ class TestimoniesController extends Controller
      */
     public function destroy($id)
     {
-        $data = Testimony::findOrFail($id);
+        $data = $this->findAdminRecord(Testimony::class, $id);
         $isSuperAdmin = (Auth::user()->email ?? null) === 'admin@iremetech.com';
         $isOwner = !Schema::hasColumn('testimonies', 'added_by')
             || ((int) ($data->added_by ?? 0) === (int) (Auth::id() ?? Auth::guard('admin')->id()));

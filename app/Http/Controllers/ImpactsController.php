@@ -2,55 +2,39 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 use App\Models\Impact;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 
 class ImpactsController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
         $impacts = Impact::latest()->get();
-        return view('admin.impacts',['impacts'=>$impacts]);
+
+        return view('admin.impacts', ['impacts' => $impacts]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function create()
     {
         //
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
+        $this->forgetRequestRecordIds($request, ['impact_id']);
 
-            // Validate the input data
-        $validatedData = $request->validate([
+        $request->validate([
             'title' => 'required|max:255',
             'value' => 'nullable|string|max:255',
             'description' => 'required',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
+        $countBefore = Impact::query()->count();
+
         $fileName = '';
-        if($request->hasFile('image')){
+        if ($request->hasFile('image')) {
             $fileName = $this->storeOptimizedImageBasename(
                 $request->file('image'),
                 'images/impacts',
@@ -58,59 +42,47 @@ class ImpactsController extends Controller
             );
         }
 
-        // Generate the slug
-        $slug = Str::of($request->input('title'))->slug();
+        $title = (string) $request->input('title');
+        $slug = $this->uniqueModelSlug(Impact::class, $title, null, 'impact');
 
-        // Check if a blog post with the same slug already exists
-        $blog = Impact::firstOrCreate(
-            ['slug' => $slug],
-            [
-                'title' => $request->input('title'),
-                'value' => $request->input('value'),
-                'description' => $request->input('description'),
-                'image' => $fileName,
-                'slug' => $slug
-            ]
-        );
+        $impact = new Impact();
+        $impact->title = $title;
+        $impact->value = $request->input('value');
+        $impact->description = $request->input('description');
+        $impact->image = $fileName;
+        $impact->slug = $slug;
+
+        $this->assertCreatingNew($impact);
+        $impact->save();
+
+        if (Impact::query()->count() !== $countBefore + 1) {
+            return redirect()
+                ->route('impacts.index')
+                ->with('error', 'Something went wrong while saving. Existing impacts were left unchanged.');
+        }
+
         return redirect()->route('impacts.index')->with('success', 'Impact created successfully');
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function show($id)
     {
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function edit($id)
     {
-        $data = Impact::find($id);
-        return view('admin.impactUpdate',['data'=>$data]);
+        $data = $this->findAdminRecord(Impact::class, $id);
+
+        return view('admin.impactUpdate', ['data' => $data]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, $id)
     {
-        $impact = Impact::find($id);
-        $imagePath = 'public/images/impacts/' . $impact->image;
+        $impact = $this->findAdminRecord(Impact::class, $id);
+        $targetId = (int) $impact->id;
+        $imagePath = 'public/images/impacts/'.$impact->image;
 
-        $validatedData = $request->validate([
+        $request->validate([
             'title' => 'required|max:255',
             'value' => 'nullable|string|max:255',
             'description' => 'required',
@@ -131,36 +103,33 @@ class ImpactsController extends Controller
             $fileName = $impact->image;
         }
 
-        $slug = Str::of($request->input('title'))->slug();
+        $newTitle = (string) $request->input('title');
+        if ($impact->title !== $newTitle) {
+            $impact->slug = $this->uniqueModelSlug(Impact::class, $newTitle, $targetId, 'impact');
+        }
 
-        $impact->update([
-            'title' => $request->input('title'),
-            'value' => $request->input('value'),
-            'description' => $request->input('description'),
-            'image' => $fileName,
-            'slug' => $slug
-        ]);
+        $impact->title = $newTitle;
+        $impact->value = $request->input('value');
+        $impact->description = $request->input('description');
+        $impact->image = $fileName;
+
+        $this->assertSameRecord($impact, $targetId);
+        $impact->save();
 
         return redirect()->route('impacts.index')->with('success', 'Impact updated successfully');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function destroy($id)
     {
-        $impact = Impact::find($id);
-        $imagePath = storage_path('app/public/images/impacts/') . $impact->image;
+        $impact = $this->findAdminRecord(Impact::class, $id);
+        $imagePath = storage_path('app/public/images/impacts/').$impact->image;
 
-        if(File::exists($imagePath)){
+        if (File::exists($imagePath)) {
             File::delete($imagePath);
         }
 
         $impact->delete();
 
-        return redirect()->back()->with('success','Impact and its image was deleted');
+        return redirect()->back()->with('success', 'Impact and its image was deleted');
     }
 }

@@ -38,34 +38,37 @@ class StaffController extends Controller
      */
     public function store(Request $request)
     {
-        $data = new Team();
-        $data ->names = $request->names;
-        $data ->phone = $request->phone;
-        $data ->position = $request->position;
-        $data ->category = $request->category;
-        $data ->facebook = $request->facebook;
-        $data ->instagram = $request->instagram;
-        $data ->twitter = $request->twitter;
-        $data ->bio = $request->bio;
+        $this->forgetRequestRecordIds($request, ['staff_id', 'team_id']);
 
-        // Uploading image
+        $countBefore = Team::query()->count();
+
+        $data = new Team();
+        $data->names = $request->names;
+        $data->phone = $request->phone;
+        $data->position = $request->position;
+        $data->category = $request->category;
+        $data->facebook = $request->facebook;
+        $data->instagram = $request->instagram;
+        $data->twitter = $request->twitter;
+        $data->bio = $request->bio;
+
         if ($request->hasFile('image')) {
             $file = $request->file('image');
             $fileName = time().'_'.$file->getClientOriginalName();
             $this->storeOptimizedImageAs($file, 'images/staff', $fileName, 'public', ['preset' => 'portrait']);
             $data->image = '/'.$fileName;
         } else {
-            dd('Image not received');
+            return redirect()->back()->with('error', 'Image is required.');
         }
 
-
+        $this->assertCreatingNew($data);
         $stored = $data->save();
 
-        if($stored){
+        if ($stored && Team::query()->count() === $countBefore + 1) {
             return redirect('staff')->with('success', 'New Staff has been added successfuly');
         }
 
-        return redirect()->back()->with('error','Failed to add new Staff');
+        return redirect()->back()->with('error', 'Failed to add new Staff. Existing staff were left unchanged.');
     }
 
     /**
@@ -87,8 +90,9 @@ class StaffController extends Controller
      */
     public function edit($id)
     {
-        $data = Team::find($id);
-        return view('admin.teamUpdate', ['data'=>$data]);
+        $data = $this->findAdminRecord(Team::class, $id);
+
+        return view('admin.teamUpdate', ['data' => $data]);
     }
 
     /**
@@ -100,7 +104,9 @@ class StaffController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $data = Team::find($id);
+        $data = $this->findAdminRecord(Team::class, $id);
+        $targetId = (int) $data->id;
+
         $data->names = $request->input('names');
         $data->phone = $request->input('phone');
         $data->position = $request->input('position');
@@ -109,11 +115,6 @@ class StaffController extends Controller
         $data->instagram = $request->input('instagram');
         $data->twitter = $request->input('twitter');
         $data->bio = $request->input('bio');
-        //$data->display = "Yes";
-
-        if(!$data){
-            return back()->with('Error','Staff Not Found');
-        }
 
         if ($request->hasFile('image') && request('image') != '') {
             $fileName = time().'_'.$request->file('image')->getClientOriginalName();
@@ -127,9 +128,10 @@ class StaffController extends Controller
             $data->image = '/'.$fileName;
         }
 
-        $data->update();
+        $this->assertSameRecord($data, $targetId);
+        $data->save();
 
-        return redirect('staff')->with('success','Staff Members has been updated');
+        return redirect('staff')->with('success', 'Staff Members has been updated');
     }
 
     /**
@@ -140,8 +142,9 @@ class StaffController extends Controller
      */
     public function destroy($id)
     {
-        $data = Team::find($id);
-        $data->delete($id);
+        $data = $this->findAdminRecord(Team::class, $id);
+        $data->delete();
+
         return redirect()->back()->with('success', 'Staff has been deleted');
     }
 }

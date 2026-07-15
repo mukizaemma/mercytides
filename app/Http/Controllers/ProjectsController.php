@@ -7,6 +7,7 @@ use App\Models\Program;
 use App\Models\Projectimage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -21,6 +22,8 @@ class ProjectsController extends Controller
 
     public function store(Request $request)
     {
+        $this->forgetRequestRecordIds($request, ['activity_id', 'project_id']);
+
         $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'program_id' => ['required', 'exists:programs,id'],
@@ -28,11 +31,13 @@ class ProjectsController extends Controller
             'image' => ['required', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:3072'],
         ]);
 
+        $countBefore = Activity::query()->count();
+
         $activity = new Activity();
         $activity->title = $request->input('title');
         $activity->description = $request->input('description');
         $activity->program_id = $request->input('program_id');
-        $activity->slug = $this->uniqueSlug($request->input('title'));
+        $activity->slug = $this->uniqueModelSlug(Activity::class, (string) $request->input('title'), null, 'project');
         if (Schema::hasColumn('activities', 'added_by')) {
             $activity->added_by = Auth::id() ?? Auth::guard('admin')->id();
         }
@@ -41,7 +46,15 @@ class ProjectsController extends Controller
             $activity->image = $request->file('image')->storeOptimized('images/projects', 'public');
         }
 
+        $this->assertCreatingNew($activity);
         $activity->save();
+
+        if (Activity::query()->count() !== $countBefore + 1) {
+            return redirect()
+                ->route('getProjects')
+                ->with('error', 'Something went wrong while saving. Existing projects were left unchanged.');
+        }
+
         return redirect()->route('getProjects')->with('success', 'Project created successfully.');
     }
 
@@ -52,13 +65,13 @@ class ProjectsController extends Controller
 
     public function edit($id)
     {
-        $data = Activity::findOrFail($id);
+        $data = $this->findAdminRecord(Activity::class, $id);
         $images = $data->images;
         $totalImages = $images->count();
         $programs = Program::query()->orderBy('title')->get();
+
         return view('admin.activityUpdate', ['data' => $data, 'programs' => $programs, 'images' => $images, 'totalImages' => $totalImages]);
     }
-
 
     public function update(Request $request, $id)
     {
@@ -69,21 +82,24 @@ class ProjectsController extends Controller
             'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:3072'],
         ]);
 
-        $data = Activity::findOrFail($id);
-        $data->title = $request->input('title');
+        $data = $this->findAdminRecord(Activity::class, $id);
+        $targetId = (int) $data->id;
+        $newTitle = (string) $request->input('title');
+        $data->title = $newTitle;
         $data->description = $request->input('description');
         $data->program_id = $request->input('program_id');
-        if ($data->slug !== Str::slug($request->input('title'))) {
-            $data->slug = $this->uniqueSlug($request->input('title'), $data->id);
+        if ($data->slug !== Str::slug($newTitle)) {
+            $data->slug = $this->uniqueModelSlug(Activity::class, $newTitle, $targetId, 'project');
         }
 
         if ($request->hasFile('image')) {
-            if (!empty($data->image) && Storage::disk('public')->exists($data->image)) {
+            if (! empty($data->image) && Storage::disk('public')->exists($data->image)) {
                 Storage::disk('public')->delete($data->image);
             }
             $data->image = $request->file('image')->storeOptimized('images/projects', 'public');
         }
 
+        $this->assertSameRecord($data, $targetId);
         $data->save();
 
         return redirect()->route('editProject', $data->id)->with('success', 'Project has been updated');
@@ -91,7 +107,7 @@ class ProjectsController extends Controller
 
     public function destroy($id)
     {
-        $data = Activity::findOrFail($id);
+        $data = $this->findAdminRecord(Activity::class, $id);
         $isSuperAdmin = (Auth::user()->email ?? null) === 'admin@iremetech.com';
         $isOwner = !Schema::hasColumn('activities', 'added_by')
             || ((int) ($data->added_by ?? 0) === (int) (Auth::id() ?? Auth::guard('admin')->id()));
@@ -146,22 +162,4 @@ class ProjectsController extends Controller
         return redirect()->back()->with('warning', 'Image has been deleted');
     }
 
-    private function uniqueSlug(string $title, ?int $ignoreId = null): string
-    {
-        $baseSlug = Str::slug($title);
-        $slug = $baseSlug;
-        $i = 1;
-
-        while (
-            Activity::query()
-                ->when($ignoreId, fn ($q) => $q->where('id', '!=', $ignoreId))
-                ->where('slug', $slug)
-                ->exists()
-        ) {
-            $slug = $baseSlug . '-' . $i;
-            $i++;
-        }
-
-        return $slug;
-    }
 }

@@ -99,16 +99,19 @@
 </div>
 
 @include('admin.includes.admin-modal', [
-    'id' => 'pageHeaderCreateModal',
+    'modalId' => 'pageHeaderCreateModal',
     'title' => 'Add custom page header',
-    'body' => view('admin.includes.page-header-form-fields')->render(),
+    'body' => view('admin.includes.page-header-form-fields', ['forceCreate' => true])->render(),
 ])
 
 @foreach($headers as $header)
     @include('admin.includes.admin-modal', [
-        'id' => 'pageHeaderEditModal'.$header->id,
+        'modalId' => 'pageHeaderEditModal'.$header->id,
         'title' => 'Edit '.$header->label,
-        'body' => view('admin.includes.page-header-form-fields', ['header' => $header])->render(),
+        'body' => view('admin.includes.page-header-form-fields', [
+            'forceCreate' => false,
+            'formHeader' => $header,
+        ])->render(),
     ])
 @endforeach
 @endsection

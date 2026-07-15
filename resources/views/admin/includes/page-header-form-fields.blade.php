@@ -1,29 +1,34 @@
 @php
-    $header = $header ?? null;
-    $isEdit = $header instanceof \App\Models\PageHeader;
-    $isBuiltIn = $isEdit && array_key_exists($header->page_key, \App\Models\PageHeader::catalog());
+    $forceCreate = (bool) ($forceCreate ?? false);
+    $formHeader = $forceCreate ? null : ($formHeader ?? $header ?? null);
+    $isEdit = ! $forceCreate && $formHeader instanceof \App\Models\PageHeader;
+    $isBuiltIn = $isEdit && array_key_exists($formHeader->page_key, \App\Models\PageHeader::catalog());
     $formAction = $isEdit
-        ? route('pageHeaders.update', $header->id, false)
+        ? route('pageHeaders.update', $formHeader->id, false)
         : route('pageHeaders.store', [], false);
 @endphp
 
 <form action="{{ $formAction }}" method="POST" enctype="multipart/form-data" data-turbo="false" autocomplete="off">
     @csrf
+    @if($isEdit)
+        <input type="hidden" name="page_header_id" value="{{ $formHeader->id }}">
+    @endif
+
     <div class="mb-3">
         <label class="form-label">Label <span class="text-danger">*</span></label>
-        <input type="text" class="form-control" name="label" required value="{{ old('label', $isEdit ? $header->label : '') }}" placeholder="e.g. Sponsor a young mother">
+        <input type="text" class="form-control" name="label" required value="{{ old('label', $isEdit ? $formHeader->label : '') }}" placeholder="e.g. Sponsor a young mother">
     </div>
 
     @unless($isBuiltIn)
         <div class="mb-3">
             <label class="form-label">Page key @if(!$isEdit)<span class="text-muted">(optional)</span>@endif</label>
-            <input type="text" class="form-control" name="page_key" value="{{ old('page_key', $isEdit ? $header->page_key : '') }}" placeholder="custom_page_key" pattern="[a-z0-9_\-]+">
+            <input type="text" class="form-control" name="page_key" value="{{ old('page_key', $isEdit ? $formHeader->page_key : '') }}" placeholder="custom_page_key" pattern="[a-z0-9_\-]+">
             <small class="text-muted">Lowercase letters, numbers, dashes, underscores. Auto-generated if left blank.</small>
         </div>
     @else
         <div class="mb-3">
             <label class="form-label">Page key</label>
-            <input type="text" class="form-control" value="{{ $header->page_key }}" disabled>
+            <input type="text" class="form-control" value="{{ $formHeader->page_key }}" disabled>
         </div>
     @endunless
 
@@ -31,14 +36,14 @@
         <label class="form-label">Header image @if(!$isEdit)<span class="text-danger">*</span>@endif</label>
         <input type="file" class="form-control" name="image" {{ $isEdit ? '' : 'required' }} accept="image/*" data-image-preset="hero">
         <small class="text-muted">Wide landscape photos work best for the breadcrumb hero.</small>
-        @if($isEdit && $header->imageUrl())
-            <img src="{{ $header->imageUrl() }}" alt="" class="mt-2 rounded border" width="220" height="90" style="object-fit:cover;">
+        @if($isEdit && $formHeader->imageUrl())
+            <img src="{{ $formHeader->imageUrl() }}" alt="" class="mt-2 rounded border" width="220" height="90" style="object-fit:cover;">
         @endif
     </div>
 
     <div class="form-check mb-3">
-        <input class="form-check-input" type="checkbox" name="is_default" value="1" id="page_header_default_{{ $isEdit ? $header->id : 'new' }}" {{ old('is_default', $isEdit && $header->is_default) ? 'checked' : '' }}>
-        <label class="form-check-label" for="page_header_default_{{ $isEdit ? $header->id : 'new' }}">
+        <input class="form-check-input" type="checkbox" name="is_default" value="1" id="page_header_default_{{ $isEdit ? $formHeader->id : 'new' }}" {{ old('is_default', $isEdit && $formHeader->is_default) ? 'checked' : '' }}>
+        <label class="form-check-label" for="page_header_default_{{ $isEdit ? $formHeader->id : 'new' }}">
             Use as site default when a page has no specific image
         </label>
     </div>

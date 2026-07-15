@@ -23,6 +23,8 @@ class ProgramController extends Controller
 
     public function store(Request $request)
     {
+        $this->forgetRequestRecordIds($request, ['program_id']);
+
         $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
@@ -30,15 +32,25 @@ class ProgramController extends Controller
             'gallery_images.*' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:3072'],
         ]);
 
+        $countBefore = Program::query()->count();
+
         $program = new Program();
         $program->title = $request->input('title');
         $program->description = $request->input('description');
-        $program->slug = $this->uniqueSlug($request->input('title'));
+        $program->slug = $this->uniqueModelSlug(Program::class, (string) $request->input('title'), null, 'program');
         $program->image = $request->file('image')->storeOptimized('images/programs', 'public');
         if (Schema::hasColumn('programs', 'added_by')) {
             $program->added_by = Auth::id() ?? Auth::guard('admin')->id();
         }
+
+        $this->assertCreatingNew($program);
         $program->save();
+
+        if (Program::query()->count() !== $countBefore + 1) {
+            return redirect()
+                ->route('programs')
+                ->with('error', 'Something went wrong while saving. Existing programs were left unchanged.');
+        }
 
         if (Schema::hasTable('programimages')) {
             foreach ($request->file('gallery_images', []) as $galleryImage) {
@@ -61,20 +73,17 @@ class ProgramController extends Controller
 
     public function edit($id)
     {
-        $data = Program::find($id);
-        if (!$data) {
-            return redirect()->route('programs')->with('error', 'Program not found.');
-        }
+        $data = $this->findAdminRecord(Program::class, $id);
         $images = Schema::hasTable('programimages')
             ? $data->images()->latest()->get()
             : collect();
+
         return view('admin.programUpdate', [
             'data' => $data,
             'images' => $images,
             'totalImages' => $images->count(),
         ]);
     }
-
 
     public function update(Request $request, $id)
     {
@@ -84,20 +93,23 @@ class ProgramController extends Controller
             'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:3072'],
         ]);
 
-        $data = Program::findOrFail($id);
-        $data->title = $request->input('title');
+        $data = $this->findAdminRecord(Program::class, $id);
+        $targetId = (int) $data->id;
+        $newTitle = (string) $request->input('title');
+        $data->title = $newTitle;
         $data->description = $request->input('description');
-        if ($data->slug !== Str::slug($request->input('title'))) {
-            $data->slug = $this->uniqueSlug($request->input('title'), $data->id);
+        if ($data->slug !== Str::slug($newTitle)) {
+            $data->slug = $this->uniqueModelSlug(Program::class, $newTitle, $targetId, 'program');
         }
 
         if ($request->hasFile('image')) {
-            if (!empty($data->image) && Storage::disk('public')->exists($data->image)) {
+            if (! empty($data->image) && Storage::disk('public')->exists($data->image)) {
                 Storage::disk('public')->delete($data->image);
             }
             $data->image = $request->file('image')->storeOptimized('images/programs', 'public');
         }
 
+        $this->assertSameRecord($data, $targetId);
         $data->save();
 
         return redirect()->route('editProgram', $data->id)->with('success', 'Program has been updated');
@@ -105,7 +117,7 @@ class ProgramController extends Controller
 
     public function destroy($id)
     {
-        $data = Program::findOrFail($id);
+        $data = $this->findAdminRecord(Program::class, $id);
         $isSuperAdmin = (Auth::user()->email ?? null) === 'admin@iremetech.com';
         $isOwner = !Schema::hasColumn('programs', 'added_by')
             || ((int) ($data->added_by ?? 0) === (int) (Auth::id() ?? Auth::guard('admin')->id()));
@@ -191,22 +203,4 @@ class ProgramController extends Controller
         return redirect()->back()->with('warning', 'Image has been deleted');
     }
 
-    private function uniqueSlug(string $title, ?int $ignoreId = null): string
-    {
-        $baseSlug = Str::slug($title);
-        $slug = $baseSlug;
-        $i = 1;
-
-        while (
-            Program::query()
-                ->when($ignoreId, fn ($q) => $q->where('id', '!=', $ignoreId))
-                ->where('slug', $slug)
-                ->exists()
-        ) {
-            $slug = $baseSlug . '-' . $i;
-            $i++;
-        }
-
-        return $slug;
-    }
 }

@@ -31,31 +31,38 @@ class SlidesController extends Controller
     }
     public function store(Request $request)
     {
+        $this->forgetRequestRecordIds($request, ['slide_id']);
+
         $request->validate([
             'heading' => ['nullable', 'string', 'max:255'],
             'image' => ['required', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:4096'],
         ]);
+
+        $countBefore = Slide::query()->count();
+
         $data = new Slide();
         $data->heading = $request->input('heading', 'Default Heading');
-        $data->subheading = "Mercy Tides";
-    
+        $data->subheading = 'Mercy Tides';
+
         if ($request->hasFile('image')) {
             $data->image = $request->file('image')->storeOptimized('images/slides', 'public', ['preset' => 'hero']);
         }
-    
+
+        $this->assertCreatingNew($data);
         $stored = $data->save();
-    
-        if ($stored) {
+
+        if ($stored && Slide::query()->count() === $countBefore + 1) {
             return redirect('slides')->with('success', 'New Image has been added successfully');
         }
-    
-        return redirect()->back()->with('error', 'Failed to add new Image');
+
+        return redirect()->back()->with('error', 'Failed to add new Image. Existing slides were left unchanged.');
     }
-    
+
     public function edit($id)
     {
-        $data = Slide::findOrFail($id);
-        return view('admin.slideUpdate', ['data'=>$data]);
+        $data = $this->findAdminRecord(Slide::class, $id);
+
+        return view('admin.slideUpdate', ['data' => $data]);
     }
 
     public function update(Request $request, $id)
@@ -64,25 +71,26 @@ class SlidesController extends Controller
             'heading' => ['nullable', 'string', 'max:255'],
             'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:4096'],
         ]);
-        $data = Slide::findOrFail($id);
+        $data = $this->findAdminRecord(Slide::class, $id);
+        $targetId = (int) $data->id;
         $data->heading = $request->input('heading');
-        //$data->subheading = $request->input('subheading');
 
         if ($request->hasFile('image')) {
-            if (!empty($data->image) && Storage::disk('public')->exists($data->image)) {
+            if (! empty($data->image) && Storage::disk('public')->exists($data->image)) {
                 Storage::disk('public')->delete($data->image);
             }
             $data->image = $request->file('image')->storeOptimized('images/slides', 'public', ['preset' => 'hero']);
         }
 
+        $this->assertSameRecord($data, $targetId);
         $data->save();
 
-        return redirect('slides')->with('success','Image has been updated');
+        return redirect('slides')->with('success', 'Image has been updated');
     }
 
     public function destroy($id)
     {
-        $image = Slide::findOrFail($id);
+        $image = $this->findAdminRecord(Slide::class, $id);
         // delete the image file
         if (!empty($image->image) && Storage::disk('public')->exists($image->image)) {
             Storage::disk('public')->delete($image->image);

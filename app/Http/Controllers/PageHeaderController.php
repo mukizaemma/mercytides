@@ -33,12 +33,16 @@ class PageHeaderController extends Controller
 
     public function store(Request $request)
     {
+        $this->forgetRequestRecordIds($request, ['header_id', 'page_header_id']);
+
         $validated = $request->validate([
             'label' => ['required', 'string', 'max:255'],
             'page_key' => ['nullable', 'string', 'max:64', 'regex:/^[a-z0-9_\-]+$/', 'unique:page_headers,page_key'],
             'image' => ['required', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:8192'],
             'is_default' => ['nullable', 'boolean'],
         ]);
+
+        $countBefore = PageHeader::query()->count();
 
         $key = trim((string) ($validated['page_key'] ?? ''));
         if ($key === '') {
@@ -55,7 +59,15 @@ class PageHeaderController extends Controller
         $header->sort_order = ((int) PageHeader::query()->max('sort_order')) + 10;
         $header->image = $request->file('image')->storeOptimized('images/page-headers', 'public', ['preset' => 'hero']);
         $header->is_default = false;
+
+        $this->assertCreatingNew($header);
         $header->save();
+
+        if (PageHeader::query()->count() !== $countBefore + 1) {
+            return redirect()
+                ->route('pageHeaders.index')
+                ->with('error', 'Something went wrong while saving. Existing page headers were left unchanged.');
+        }
 
         if ($request->boolean('is_default')) {
             $this->markDefault($header);
@@ -67,7 +79,8 @@ class PageHeaderController extends Controller
 
     public function update(Request $request, $id)
     {
-        $header = PageHeader::query()->findOrFail($id);
+        $header = $this->findAdminRecord(PageHeader::class, $id);
+        $targetId = (int) $header->id;
 
         $isBuiltIn = array_key_exists($header->page_key, PageHeader::catalog());
 
@@ -100,6 +113,7 @@ class PageHeaderController extends Controller
             $header->image = $request->file('image')->storeOptimized('images/page-headers', 'public', ['preset' => 'hero']);
         }
 
+        $this->assertSameRecord($header, $targetId);
         $header->save();
 
         if ($request->boolean('is_default')) {
@@ -112,7 +126,7 @@ class PageHeaderController extends Controller
 
     public function clearImage($id)
     {
-        $header = PageHeader::query()->findOrFail($id);
+        $header = $this->findAdminRecord(PageHeader::class, $id);
         $this->deleteImageFile($header->image);
         $header->image = null;
         $header->save();
@@ -123,7 +137,7 @@ class PageHeaderController extends Controller
 
     public function setDefault($id)
     {
-        $header = PageHeader::query()->findOrFail($id);
+        $header = $this->findAdminRecord(PageHeader::class, $id);
         if (empty($header->image)) {
             return redirect()->route('pageHeaders.index')
                 ->with('error', 'Upload an image before setting this page header as the site default.');
@@ -137,7 +151,7 @@ class PageHeaderController extends Controller
 
     public function destroy($id)
     {
-        $header = PageHeader::query()->findOrFail($id);
+        $header = $this->findAdminRecord(PageHeader::class, $id);
 
         if (array_key_exists($header->page_key, PageHeader::catalog())) {
             return redirect()->route('pageHeaders.index')

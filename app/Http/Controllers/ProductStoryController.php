@@ -49,11 +49,14 @@ class ProductStoryController extends Controller
 
     public function store(Request $request)
     {
+        $this->forgetRequestRecordIds($request, ['point_id', 'product_story_point_id']);
+
         $data = $request->validate([
             'content' => ['required', 'string'],
             'sort_order' => ['nullable', 'integer', 'min:0'],
         ]);
 
+        $countBefore = ProductStoryPoint::query()->count();
         $baseSort = (int) ($data['sort_order'] ?? 0);
         $items = $this->parsePointItems($data['content']);
 
@@ -62,20 +65,29 @@ class ProductStoryController extends Controller
         }
 
         foreach ($items as $index => $item) {
-            ProductStoryPoint::create([
-                'content' => $item,
-                'sort_order' => $baseSort + $index,
-                'is_active' => true,
-            ]);
+            $point = new ProductStoryPoint();
+            $point->content = $item;
+            $point->sort_order = $baseSort + $index;
+            $point->is_active = true;
+            $this->assertCreatingNew($point);
+            $point->save();
+        }
+
+        if (ProductStoryPoint::query()->count() !== $countBefore + count($items)) {
+            return redirect()
+                ->route('productStory.index')
+                ->with('error', 'Something went wrong while saving. Existing story points were left unchanged.');
         }
 
         $msg = count($items) > 1 ? 'Points added from comma/newline list.' : 'Point added.';
+
         return redirect()->route('productStory.index')->with('success', $msg);
     }
 
     public function update(Request $request, $id)
     {
-        $point = ProductStoryPoint::findOrFail($id);
+        $point = $this->findAdminRecord(ProductStoryPoint::class, $id);
+        $targetId = (int) $point->id;
 
         $data = $request->validate([
             'content' => ['required', 'string'],
@@ -85,6 +97,8 @@ class ProductStoryController extends Controller
         $point->content = $data['content'];
         $point->sort_order = (int) ($data['sort_order'] ?? 0);
         $point->is_active = $request->has('is_active');
+
+        $this->assertSameRecord($point, $targetId);
         $point->save();
 
         return redirect()->route('productStory.index')->with('success', 'Point updated.');
@@ -92,7 +106,7 @@ class ProductStoryController extends Controller
 
     public function destroy($id)
     {
-        ProductStoryPoint::findOrFail($id)->delete();
+        $this->findAdminRecord(ProductStoryPoint::class, $id)->delete();
 
         return redirect()->route('productStory.index')->with('success', 'Point removed.');
     }

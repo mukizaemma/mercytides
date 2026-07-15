@@ -47,8 +47,7 @@ class SponsorshipController extends Controller
     public function store(Request $request)
     {
         // Create endpoint must never update an existing row.
-        $request->request->remove('sponsorship_id');
-        $request->request->remove('id');
+        $this->forgetRequestRecordIds($request, ['sponsorship_id']);
 
         $countBefore = Sponsorship::query()->count();
         $validated = $this->validateProfile($request, true);
@@ -66,12 +65,7 @@ class SponsorshipController extends Controller
             $profile->added_by = Auth::id() ?? Auth::guard('admin')->id();
         }
 
-        if ($profile->exists) {
-            return redirect()
-                ->route('sponsorship.index')
-                ->with('error', 'Could not add profile: the form tried to update an existing record. Please try Add again.');
-        }
-
+        $this->assertCreatingNew($profile);
         $profile->save();
 
         if (Sponsorship::query()->count() !== $countBefore + 1) {
@@ -91,14 +85,9 @@ class SponsorshipController extends Controller
             $profileId = (int) $request->input('sponsorship_id');
         }
 
-        if ($profileId < 1) {
-            return redirect()
-                ->route('sponsorship.index')
-                ->with('error', 'That sponsorship profile could not be found. It may have been deleted.');
-        }
-
-        $profile = Sponsorship::query()->find($profileId);
-        if (! $profile) {
+        try {
+            $profile = $this->findAdminRecord(Sponsorship::class, $profileId);
+        } catch (\Throwable $e) {
             return redirect()
                 ->route('sponsorship.index')
                 ->with('error', 'That sponsorship profile could not be found. It may have been deleted.');
@@ -117,12 +106,7 @@ class SponsorshipController extends Controller
         $this->syncVideoMedia($profile, $request);
 
         // Never allow an edit to change which row is being saved.
-        if ((int) $profile->id !== $targetId) {
-            return redirect()
-                ->route('sponsorship.index')
-                ->with('error', 'Update blocked to protect existing profiles. Please try again.');
-        }
-
+        $this->assertSameRecord($profile, $targetId);
         $profile->save();
 
         return redirect()->route('sponsorship.index')

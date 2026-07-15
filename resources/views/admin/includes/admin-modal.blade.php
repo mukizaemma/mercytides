@@ -1,5 +1,6 @@
 @php
-    $modalId = $modalId ?? ($id ?? 'adminModal');
+    // Never accept a generic $id — that leaks into nested forms and breaks update routes.
+    $modalId = $modalId ?? 'adminModal';
     $title = $title ?? 'Dialog';
     $sizeClass = $sizeClass ?? 'modal-lg';
     $scrollable = $scrollable ?? true;

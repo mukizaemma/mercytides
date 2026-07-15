@@ -7,7 +7,6 @@ use App\Models\ProductCategory;
 use App\Models\ProductImage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 class CatalogProductController extends Controller
 {
@@ -27,6 +26,8 @@ class CatalogProductController extends Controller
 
     public function store(Request $request)
     {
+        $this->forgetRequestRecordIds($request, ['product_id']);
+
         $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'product_category_id' => ['required', 'exists:product_categories,id'],
@@ -42,7 +43,8 @@ class CatalogProductController extends Controller
             'is_active' => ['boolean'],
         ]);
 
-        $slug = $this->uniqueSlug($request->input('title'));
+        $countBefore = Product::query()->count();
+        $slug = $this->uniqueModelSlug(Product::class, (string) $request->input('title'), null, 'product');
 
         $product = new Product();
         $product->title = $request->input('title');
@@ -61,7 +63,14 @@ class CatalogProductController extends Controller
             $product->image = $request->file('image')->storeOptimized('images/products', 'public');
         }
 
+        $this->assertCreatingNew($product);
         $product->save();
+
+        if (Product::query()->count() !== $countBefore + 1) {
+            return redirect()
+                ->route('catalogProducts.index')
+                ->with('error', 'Something went wrong while saving. Existing products were left unchanged.');
+        }
 
         $this->storeGalleryImages($product, $request);
 
@@ -70,7 +79,7 @@ class CatalogProductController extends Controller
 
     public function edit($id)
     {
-        $product = Product::with('images')->findOrFail($id);
+        $product = Product::with('images')->findOrFail((int) $id);
         $categories = ProductCategory::query()->orderBy('sort_order')->orderBy('name')->get();
 
         return view('admin.catalog-products.edit', compact('product', 'categories'));
@@ -78,7 +87,8 @@ class CatalogProductController extends Controller
 
     public function update(Request $request, $id)
     {
-        $product = Product::findOrFail($id);
+        $product = $this->findAdminRecord(Product::class, $id);
+        $targetId = (int) $product->id;
 
         $request->validate([
             'title' => ['required', 'string', 'max:255'],
@@ -95,9 +105,9 @@ class CatalogProductController extends Controller
             'is_active' => ['boolean'],
         ]);
 
-        $newTitle = $request->input('title');
+        $newTitle = (string) $request->input('title');
         if ($product->title !== $newTitle) {
-            $product->slug = $this->uniqueSlug($newTitle, $product->id);
+            $product->slug = $this->uniqueModelSlug(Product::class, $newTitle, $targetId, 'product');
         }
         $product->title = $newTitle;
         $product->product_category_id = (int) $request->input('product_category_id');
@@ -117,6 +127,7 @@ class CatalogProductController extends Controller
             $product->image = $request->file('image')->storeOptimized('images/products', 'public');
         }
 
+        $this->assertSameRecord($product, $targetId);
         $product->save();
 
         $this->storeGalleryImages($product, $request);
@@ -126,7 +137,7 @@ class CatalogProductController extends Controller
 
     public function destroy($id)
     {
-        $product = Product::with('images')->findOrFail($id);
+        $product = Product::with('images')->findOrFail((int) $id);
 
         if (! empty($product->image) && Storage::disk('public')->exists($product->image)) {
             Storage::disk('public')->delete($product->image);
@@ -178,22 +189,4 @@ class CatalogProductController extends Controller
         }
     }
 
-    private function uniqueSlug(string $title, ?int $ignoreId = null): string
-    {
-        $baseSlug = Str::slug($title);
-        $slug = $baseSlug;
-        $i = 1;
-
-        while (
-            Product::query()
-                ->when($ignoreId, fn ($q) => $q->where('id', '!=', $ignoreId))
-                ->where('slug', $slug)
-                ->exists()
-        ) {
-            $slug = $baseSlug . '-' . $i;
-            $i++;
-        }
-
-        return $slug;
-    }
 }

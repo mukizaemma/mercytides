@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Str;
 use App\Models\Event;
 class EventController extends Controller
 {
@@ -23,19 +21,20 @@ class EventController extends Controller
 
     public function store(Request $request)
     {
-        $slug = Str::of($request->input('title'))->slug();
+        $this->forgetRequestRecordIds($request, ['event_id']);
+
+        $countBefore = Event::query()->count();
 
         $data = new Event();
-        $data ->title = $request->title;
-        $data ->description = $request->description;
-        $data ->location = $request->location;
-        $data ->date = $request->date;
-        $data ->timeStart = $request->timeStart;
-        $data ->timeEnd = $request->timeEnd;
-        $data ->registerLink = $request->registerLink;
-        $data ->registerContact = $request->registerContact;
-        $data ->slug = $slug;
-        
+        $data->title = $request->title;
+        $data->description = $request->description;
+        $data->location = $request->location;
+        $data->date = $request->date;
+        $data->timeStart = $request->timeStart;
+        $data->timeEnd = $request->timeEnd;
+        $data->registerLink = $request->registerLink;
+        $data->registerContact = $request->registerContact;
+        $data->slug = $this->uniqueModelSlug(Event::class, (string) $request->input('title'), null, 'event');
 
         if ($request->hasFile('image')) {
             $data->image = $this->storeOptimizedImageBasename(
@@ -45,13 +44,14 @@ class EventController extends Controller
             );
         }
 
+        $this->assertCreatingNew($data);
         $stored = $data->save();
 
-        if($stored){
+        if ($stored && Event::query()->count() === $countBefore + 1) {
             return redirect('events')->with('success', 'New Event has been added successfuly');
         }
 
-        return redirect()->back()->with('error','Failed to add new Event');
+        return redirect()->back()->with('error', 'Failed to add new Event. Existing events were left unchanged.');
     }
 
     /**
@@ -73,8 +73,9 @@ class EventController extends Controller
      */
     public function edit($id)
     {
-        $data = Event::find($id);
-        return view('admin.eventUpdate', ['data'=>$data]);
+        $data = $this->findAdminRecord(Event::class, $id);
+
+        return view('admin.eventUpdate', ['data' => $data]);
     }
 
     /**
@@ -86,8 +87,15 @@ class EventController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $data = Event::find($id);
-        $data->title = $request->input('title');
+        $data = $this->findAdminRecord(Event::class, $id);
+        $targetId = (int) $data->id;
+
+        $newTitle = (string) $request->input('title');
+        if ($data->title !== $newTitle) {
+            $data->slug = $this->uniqueModelSlug(Event::class, $newTitle, $targetId, 'event');
+        }
+
+        $data->title = $newTitle;
         $data->location = $request->input('location');
         $data->date = $request->input('date');
         $data->timeStart = $request->input('timeStart');
@@ -97,10 +105,6 @@ class EventController extends Controller
         $data->status = $request->input('status');
         $data->description = $request->input('description');
 
-        if(!$data){
-            return back()->with('Error','Event Not Found');
-        }
-
         if ($request->hasFile('image') && request('image') != '') {
             $data->image = $this->storeOptimizedImageBasename(
                 $request->file('image'),
@@ -109,9 +113,10 @@ class EventController extends Controller
             );
         }
 
-        $data->update();
+        $this->assertSameRecord($data, $targetId);
+        $data->save();
 
-        return redirect('events')->with('success','Event has been updated');
+        return redirect('events')->with('success', 'Event has been updated');
     }
 
     /**
@@ -122,8 +127,9 @@ class EventController extends Controller
      */
     public function destroy($id)
     {
-        $data = Event::find($id);
-        $data->delete($id);
+        $data = $this->findAdminRecord(Event::class, $id);
+        $data->delete();
+
         return redirect()->back()->with('success', 'Item has been deleted');
     }
 }

@@ -19,6 +19,8 @@ class MothersController extends Controller
 
     public function store(Request $request)
     {
+        $this->forgetRequestRecordIds($request, ['mother_id']);
+
         $request->validate([
             'name' => ['nullable', 'string', 'max:255'],
             'age' => ['nullable', 'string', 'max:50'],
@@ -26,6 +28,8 @@ class MothersController extends Controller
             'vision' => ['nullable', 'string'],
             'image' => ['required', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:8192'],
         ]);
+
+        $countBefore = Mother::query()->count();
 
         $mother = new Mother();
         $mother->name = $request->input('name');
@@ -41,7 +45,14 @@ class MothersController extends Controller
             $mother->image = $request->file('image')->storeOptimized('images/mothers', 'public', ['preset' => 'portrait']);
         }
 
+        $this->assertCreatingNew($mother);
         $mother->save();
+
+        if (Mother::query()->count() !== $countBefore + 1) {
+            return redirect()
+                ->route('mothers.index')
+                ->with('error', 'Something went wrong while saving. Existing mother profiles were left unchanged.');
+        }
 
         return redirect()->route('mothers.index')->with('success', 'Mother profile has been added successfully.');
     }
@@ -56,7 +67,8 @@ class MothersController extends Controller
             'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:8192'],
         ]);
 
-        $mother = Mother::findOrFail($id);
+        $mother = $this->findAdminRecord(Mother::class, $id);
+        $targetId = (int) $mother->id;
         $mother->name = $request->input('name');
         $mother->age = $request->input('age');
         $mother->description = $request->input('description');
@@ -69,6 +81,7 @@ class MothersController extends Controller
             $mother->image = $request->file('image')->storeOptimized('images/mothers', 'public', ['preset' => 'portrait']);
         }
 
+        $this->assertSameRecord($mother, $targetId);
         $mother->save();
 
         return redirect()->route('mothers.index')->with('success', 'Mother profile has been updated.');
@@ -76,7 +89,7 @@ class MothersController extends Controller
 
     public function destroy($id)
     {
-        $mother = Mother::findOrFail($id);
+        $mother = $this->findAdminRecord(Mother::class, $id);
         $isSuperAdmin = (Auth::user()->email ?? null) === 'admin@iremetech.com';
         $isOwner = ! Schema::hasColumn('mothers', 'added_by')
             || ((int) ($mother->added_by ?? 0) === (int) (Auth::id() ?? Auth::guard('admin')->id()));

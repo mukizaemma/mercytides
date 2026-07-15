@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Partner;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 use Throwable;
 
 class PartnersController extends Controller
@@ -19,6 +18,8 @@ class PartnersController extends Controller
 
     public function store(Request $request)
     {
+        $this->forgetRequestRecordIds($request, ['partner_id']);
+
         $validated = $request->validate([
             'names' => ['required', 'string', 'max:255'],
             'website' => ['nullable', 'string', 'max:255'],
@@ -26,11 +27,13 @@ class PartnersController extends Controller
             'image' => ['required', 'image', 'mimes:jpeg,jpg,png,gif,webp', 'max:4096'],
         ]);
 
+        $countBefore = Partner::query()->count();
+
         $partner = new Partner();
         $partner->names = $validated['names'];
         $partner->website = $validated['website'] ?? null;
         $partner->description = $validated['description'] ?? null;
-        $partner->slug = Str::slug($validated['names']) ?: ('partner-'.Str::random(6));
+        $partner->slug = $this->uniqueModelSlug(Partner::class, $validated['names'], null, 'partner');
 
         try {
             $partner->image = $this->storePartnerLogo($request->file('image'));
@@ -43,7 +46,14 @@ class PartnersController extends Controller
                 ->with('error', 'Could not upload the partner logo. Please use a JPG, PNG, GIF, or WEBP image under 4MB.');
         }
 
+        $this->assertCreatingNew($partner);
         $partner->save();
+
+        if (Partner::query()->count() !== $countBefore + 1) {
+            return redirect()
+                ->route('partner')
+                ->with('error', 'Something went wrong while saving. Existing partners were left unchanged.');
+        }
 
         return redirect()
             ->route('partner')
@@ -52,14 +62,15 @@ class PartnersController extends Controller
 
     public function edit($id)
     {
-        $data = Partner::query()->findOrFail($id);
+        $data = $this->findAdminRecord(Partner::class, $id);
 
         return view('admin.partnerUpdate', ['data' => $data]);
     }
 
     public function update(Request $request, $id)
     {
-        $partner = Partner::query()->findOrFail($id);
+        $partner = $this->findAdminRecord(Partner::class, $id);
+        $targetId = (int) $partner->id;
 
         $validated = $request->validate([
             'names' => ['required', 'string', 'max:255'],
@@ -67,6 +78,10 @@ class PartnersController extends Controller
             'description' => ['nullable', 'string'],
             'image' => ['nullable', 'image', 'mimes:jpeg,jpg,png,gif,webp', 'max:4096'],
         ]);
+
+        if ($partner->names !== $validated['names']) {
+            $partner->slug = $this->uniqueModelSlug(Partner::class, $validated['names'], $targetId, 'partner');
+        }
 
         $partner->names = $validated['names'];
         $partner->website = $validated['website'] ?? null;
@@ -87,6 +102,7 @@ class PartnersController extends Controller
             }
         }
 
+        $this->assertSameRecord($partner, $targetId);
         $partner->save();
 
         return redirect()
@@ -96,7 +112,7 @@ class PartnersController extends Controller
 
     public function destroy($id)
     {
-        $partner = Partner::query()->findOrFail($id);
+        $partner = $this->findAdminRecord(Partner::class, $id);
         $this->deletePartnerLogo($partner->image);
         $partner->delete();
 

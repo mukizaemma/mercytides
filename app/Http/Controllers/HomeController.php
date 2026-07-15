@@ -259,7 +259,15 @@ class HomeController extends Controller
         $types = \App\Support\MercyTidesContent::sponsorshipTypes();
         $typeMeta = $types[$profile->type] ?? $types['child'];
 
-        return view('frontend.sponsorship-profile', compact('about', 'profile', 'typeMeta'));
+        $relatedProfiles = Sponsorship::query()
+            ->published()
+            ->ofType($profile->type)
+            ->where('id', '!=', $profile->id)
+            ->latest()
+            ->take(4)
+            ->get();
+
+        return view('frontend.sponsorship-profile', compact('about', 'profile', 'typeMeta', 'relatedProfiles'));
     }
 
     /**

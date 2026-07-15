@@ -75,7 +75,7 @@
 
         <div class="row mt-4">
             <div class="col-12 text-center">
-                <a class="tp-btn mothers-gallery-section__more-btn" href="{{ $viewMoreRoute }}">View more mothers</a>
+                <a class="tp-btn mothers-gallery-section__more-btn" href="{{ $viewMoreRoute }}">{{ $viewMoreLabel ?? 'View more mothers' }}</a>
             </div>
         </div>
 @if(!$embedded)

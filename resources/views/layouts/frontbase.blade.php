@@ -29,32 +29,51 @@
     <link rel="stylesheet" href="{{ asset('assets/css/theme-custom.css') }}">
 
     @php
-        /* Logo palette: medium blue accent, navy brand, light blue highlights */
-        $primary = $setting->primary_color ?? '#3386B5';
+        /* Lake-blue brand (Uganda / Pearl of Africa): navy depth, daylight blue, soft gold accent */
+        $primary = $setting->primary_color ?? '#2F84B5';
         $secondary = $setting->secondary_color ?? '#00205B';
-        $neutral = $setting->neutral_color ?? '#58A9C9';
-        $fontFamily = $setting->font_family ?? 'Poppins';
-        $googleFontParam = str_replace(' ', '+', $fontFamily);
+        $neutral = $setting->neutral_color ?? '#5AADC9';
+        $fontDisplay = 'Fraunces';
+        $fontBody = 'Source Sans 3';
     @endphp
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family={{ $googleFontParam }}:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
-        body {
-            font-family: "{{ $fontFamily }}", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        }
         :root {
             --brand-primary: {{ $primary }};
             --brand-secondary: {{ $secondary }};
             --brand-neutral: {{ $neutral }};
+            --brand-accent: #C9A24A;
             --brand-yellow: {{ $primary }};
             --brand-green: {{ $secondary }};
             --brand-blue: {{ $neutral }};
             --brand-dark: #00205B;
+            --brand-surface: #EEF5F9;
+            --brand-muted-text: #3F5566;
+            --font-display: "{{ $fontDisplay }}", Georgia, "Times New Roman", serif;
+            --font-body: "{{ $fontBody }}", "Segoe UI", sans-serif;
             --tp-theme-1: {{ $secondary }};
             --tp-theme-2: {{ $primary }};
+            --tp-ff-body: var(--font-body);
+            --tp-ff-heading: var(--font-display);
+            --tp-ff-p: var(--font-body);
+        }
+        body {
+            font-family: var(--font-body);
+            color: #243542;
+            background-color: #fff;
+        }
+        h1, h2, h3, h4, h5, h6,
+        .tp-section-title,
+        .tp-slider-3-title,
+        .tp-breadcrumb__title,
+        .home-partner-cta__title,
+        .about-home-title,
+        .about-home-pillar__title {
+            font-family: var(--font-display);
         }
     </style>
 

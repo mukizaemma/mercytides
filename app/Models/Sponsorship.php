@@ -30,6 +30,7 @@ class Sponsorship extends Model
         'challenges',
         'vision',
         'video_url',
+        'video_path',
         'monthly_need',
         'image',
         'added_by',
@@ -101,6 +102,40 @@ class Sponsorship extends Model
     public function typeLabel(): string
     {
         return \App\Support\MercyTidesContent::sponsorshipTypeLabel((string) ($this->type ?? 'child'));
+    }
+
+    public static function publicVideoUrl(?string $video): string
+    {
+        if (empty($video)) {
+            return '';
+        }
+
+        if (str_contains($video, '/')) {
+            return asset('storage/' . ltrim($video, '/'));
+        }
+
+        return asset('storage/videos/sponsorship/' . ltrim($video, '/'));
+    }
+
+    public function hasUploadedVideo(): bool
+    {
+        return trim((string) ($this->video_path ?? '')) !== '';
+    }
+
+    public function hasStoryVideo(): bool
+    {
+        return $this->hasUploadedVideo() || $this->youtubeEmbedUrl() !== null;
+    }
+
+    public function uploadedVideoUrl(): ?string
+    {
+        if (! $this->hasUploadedVideo()) {
+            return null;
+        }
+
+        $url = self::publicVideoUrl($this->video_path);
+
+        return $url !== '' ? $url : null;
     }
 
     public function youtubeEmbedUrl(): ?string

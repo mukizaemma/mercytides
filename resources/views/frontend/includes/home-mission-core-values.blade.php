@@ -1,6 +1,6 @@
 @include('frontend.includes.objectives-grid', [
     'sectionClass' => 'home-mv-strip mt-objectives--on-grey',
-    'caption' => 'Equipping unwed young mothers in Uganda for skills, enterprise, discipleship, and sustainable livelihoods.',
+    'caption' => 'From skills training to solar support, every objective keeps mothers and children in Uganda at the centre.',
 ])
 
 <section class="pb-4 grey-bg">

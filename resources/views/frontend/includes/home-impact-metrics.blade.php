@@ -33,9 +33,9 @@
 
             <div class="row mb-4 home-impact-unified__stats-head">
                 <div class="col-12 text-center wow tpfadeUp reveal-on-scroll" data-wow-duration=".9s" data-wow-delay=".1s">
-                    {{-- <span class="home-hero__eyebrow d-block mb-2">Measurable change</span> --}}
-                    <h2 id="home-impact-heading" class="about-core-values-parallax__title mb-2">Our impact in Uganda</h2>
-                    <p class="about-core-values-parallax__body mb-0">Lives transformed through vocational training, entrepreneurship, discipleship, and community care.</p>
+                    <span class="about-home-eyebrow d-block mb-2" style="color: rgba(255,255,255,0.85);">Our impact</span>
+                    <h2 id="home-impact-heading" class="about-core-values-parallax__title mb-2">Change you can measure in Uganda</h2>
+                    <p class="about-core-values-parallax__body mb-0">Mothers equipped, families strengthened, and communities renewed through skills, enterprise, and Christ-centered care.</p>
                 </div>
             </div>
             <div class="row g-4 justify-content-center impact-stats-hero__grid">

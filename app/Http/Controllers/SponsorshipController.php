@@ -39,6 +39,8 @@ class SponsorshipController extends Controller
             $profile->image = $request->file('image')->storeOptimized('images/sponsorship', 'public', ['preset' => 'portrait']);
         }
 
+        $this->syncVideoMedia($profile, $request);
+
         if (Schema::hasColumn('sponsorships', 'added_by')) {
             $profile->added_by = Auth::id() ?? Auth::guard('admin')->id();
         }
@@ -66,6 +68,8 @@ class SponsorshipController extends Controller
             $this->deleteStoredImage($profile->image);
             $profile->image = $request->file('image')->storeOptimized('images/sponsorship', 'public', ['preset' => 'portrait']);
         }
+
+        $this->syncVideoMedia($profile, $request);
 
         $profile->save();
 
@@ -103,7 +107,27 @@ class SponsorshipController extends Controller
             'testimany' => ['nullable', 'string'],
             'challenges' => ['nullable', 'string'],
             'vision' => ['nullable', 'string'],
-            'video_url' => ['nullable', 'string', 'max:500'],
+            'video_url' => [
+                'nullable',
+                'string',
+                'max:500',
+                function (string $attribute, mixed $value, \Closure $fail): void {
+                    $url = trim((string) $value);
+                    if ($url === '') {
+                        return;
+                    }
+                    if (! preg_match('/^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\//i', $url)) {
+                        $fail('Please enter a valid YouTube URL, or leave the field blank.');
+                    }
+                },
+            ],
+            'video_file' => [
+                'nullable',
+                'file',
+                'mimetypes:video/mp4,video/webm,video/quicktime',
+                'max:61440', // ~60 MB — keep under typical XAMPP upload_max_filesize (64M)
+            ],
+            'remove_video_file' => ['nullable', 'boolean'],
             'monthly_need' => ['nullable', 'string', 'max:64'],
             'image' => array_filter([
                 $creating ? 'required' : 'nullable',
@@ -136,8 +160,25 @@ class SponsorshipController extends Controller
         $profile->testimany = $validated['testimany'] ?? null;
         $profile->challenges = $validated['challenges'] ?? null;
         $profile->vision = $validated['vision'] ?? null;
-        $profile->video_url = $validated['video_url'] ?? null;
+        $profile->video_url = filled($validated['video_url'] ?? null) ? trim((string) $validated['video_url']) : null;
         $profile->monthly_need = $validated['monthly_need'] ?? null;
+    }
+
+    protected function syncVideoMedia(Sponsorship $profile, Request $request): void
+    {
+        if (! Schema::hasColumn('sponsorships', 'video_path')) {
+            return;
+        }
+
+        if ($request->boolean('remove_video_file') && ! $request->hasFile('video_file')) {
+            $this->deleteStoredVideo($profile->video_path);
+            $profile->video_path = null;
+        }
+
+        if ($request->hasFile('video_file')) {
+            $this->deleteStoredVideo($profile->video_path);
+            $profile->video_path = $request->file('video_file')->store('videos/sponsorship', 'public');
+        }
     }
 
     protected function deleteStoredImage(?string $image): void
@@ -150,6 +191,24 @@ class SponsorshipController extends Controller
             ltrim($image, '/'),
             'images/sponsorship/' . ltrim(basename($image), '/'),
             'images/mothers/' . ltrim(basename($image), '/'),
+        ]));
+
+        foreach ($candidates as $path) {
+            if (Storage::disk('public')->exists($path)) {
+                Storage::disk('public')->delete($path);
+            }
+        }
+    }
+
+    protected function deleteStoredVideo(?string $video): void
+    {
+        if (empty($video)) {
+            return;
+        }
+
+        $candidates = array_unique(array_filter([
+            ltrim($video, '/'),
+            'videos/sponsorship/' . ltrim(basename($video), '/'),
         ]));
 
         foreach ($candidates as $path) {

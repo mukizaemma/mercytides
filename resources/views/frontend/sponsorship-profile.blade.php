@@ -7,8 +7,11 @@
 
     $firstName = explode(' ', $profile->displayName())[0] ?? $profile->displayName();
     $supportOptions = MercyTidesContent::sponsorshipSupportFocusOptions();
-    $embedUrl = $profile->youtubeEmbedUrl();
+    $uploadedVideoUrl = $profile->uploadedVideoUrl();
+    $embedUrl = $uploadedVideoUrl ? null : $profile->youtubeEmbedUrl();
+    $hasVideo = $uploadedVideoUrl || $embedUrl;
     $hasStoryBlocks = !empty($profile->testimany) || !empty($profile->challenges) || !empty($profile->vision);
+    $posterUrl = \App\Models\Sponsorship::publicImageUrl($profile->image);
 @endphp
 
 @section('content')
@@ -22,9 +25,9 @@
     <div class="container">
         {{-- Media row: portrait + landscape video --}}
         <div class="row g-4 align-items-stretch sponsorship-profile-page__media-row">
-            <div class="{{ $embedUrl ? 'col-lg-5' : 'col-lg-6 mx-lg-auto' }}">
+            <div class="{{ $hasVideo ? 'col-lg-5' : 'col-lg-6 mx-lg-auto' }}">
                 <div class="sponsorship-profile-page__portrait">
-                    <img src="{{ \App\Models\Sponsorship::publicImageUrl($profile->image) }}" alt="{{ $profile->displayName() }}" class="w-100">
+                    <img src="{{ $posterUrl }}" alt="{{ $profile->displayName() }}" class="w-100">
                 </div>
                 <div class="sponsorship-profile-page__meta mt-3">
                     @if($profile->shouldShowStatusPublicly() && !empty($profile->status))
@@ -36,12 +39,33 @@
                 </div>
             </div>
 
-            @if($embedUrl)
+            @if($hasVideo)
                 <div class="col-lg-7">
                     <div class="sponsorship-profile-page__video">
                         <h2 class="sponsorship-profile-page__video-label">Hear from {{ $firstName }}</h2>
                         <div class="ratio ratio-16x9 rounded overflow-hidden shadow-sm sponsorship-profile-page__video-frame">
-                            <iframe src="{{ $embedUrl }}" title="Video about {{ $profile->displayName() }}" allowfullscreen loading="lazy"></iframe>
+                            @if($uploadedVideoUrl)
+                                @php
+                                    $videoExt = strtolower(pathinfo((string) $profile->video_path, PATHINFO_EXTENSION));
+                                    $videoMime = match ($videoExt) {
+                                        'webm' => 'video/webm',
+                                        'mov' => 'video/quicktime',
+                                        default => 'video/mp4',
+                                    };
+                                @endphp
+                                <video
+                                    class="sponsorship-profile-page__native-video"
+                                    controls
+                                    playsinline
+                                    preload="metadata"
+                                    @if($posterUrl) poster="{{ $posterUrl }}" @endif
+                                >
+                                    <source src="{{ $uploadedVideoUrl }}" type="{{ $videoMime }}">
+                                    Your browser does not support embedded video.
+                                </video>
+                            @else
+                                <iframe src="{{ $embedUrl }}" title="Video about {{ $profile->displayName() }}" allowfullscreen loading="lazy"></iframe>
+                            @endif
                         </div>
                     </div>
                 </div>

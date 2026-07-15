@@ -106,9 +106,64 @@
         <textarea class="form-control" name="vision" rows="3" data-editor="rich" placeholder="Their hopes for the future">{!! old('vision', $isEdit ? ($formProfile->vision ?? '') : '') !!}</textarea>
     </div>
 
-    <div class="mb-3">
-        <label class="form-label">Video URL</label>
-        <input type="url" class="form-control" name="video_url" value="{{ old('video_url', $isEdit ? ($formProfile->video_url ?? '') : '') }}" placeholder="YouTube link (optional)">
+    <div class="mb-3 p-3 border rounded bg-light">
+        <label class="form-label fw-semibold mb-2">Story video</label>
+        <p class="text-muted small mb-3">
+            Add a YouTube link, upload a file, or both. If a file is uploaded, it plays on the public page;
+            otherwise the YouTube video is used. Prefer <strong>landscape MP4 (H.264, 1080p)</strong> for uploads — max about 60&nbsp;MB on this server.
+            For larger films, upload to YouTube (unlisted) and paste the link.
+        </p>
+
+        <div class="mb-3">
+            <label class="form-label">YouTube URL</label>
+            <input
+                type="url"
+                class="form-control"
+                name="video_url"
+                value="{{ old('video_url', $isEdit ? ($formProfile->video_url ?? '') : '') }}"
+                placeholder="https://www.youtube.com/watch?v=… or https://youtu.be/…"
+            >
+            @error('video_url')
+                <div class="text-danger small mt-1">{{ $message }}</div>
+            @enderror
+        </div>
+
+        <div class="mb-0">
+            <label class="form-label">Upload video file</label>
+            <input
+                type="file"
+                class="form-control"
+                name="video_file"
+                accept="video/mp4,video/webm,video/quicktime,.mp4,.webm,.mov"
+            >
+            @error('video_file')
+                <div class="text-danger small mt-1">{{ $message }}</div>
+            @enderror
+            @if($isEdit && !empty($formProfile->video_path))
+                <div class="mt-2">
+                    <video
+                        class="rounded border w-100"
+                        style="max-height: 220px; background:#0a1628;"
+                        controls
+                        preload="metadata"
+                        src="{{ \App\Models\Sponsorship::publicVideoUrl($formProfile->video_path) }}"
+                    ></video>
+                    <div class="form-check mt-2">
+                        <input
+                            type="checkbox"
+                            class="form-check-input"
+                            id="remove_video_file_{{ $formProfile->id }}"
+                            name="remove_video_file"
+                            value="1"
+                            {{ old('remove_video_file') ? 'checked' : '' }}
+                        >
+                        <label class="form-check-label" for="remove_video_file_{{ $formProfile->id }}">
+                            Remove uploaded video
+                        </label>
+                    </div>
+                </div>
+            @endif
+        </div>
     </div>
 
     <div class="row">

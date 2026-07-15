@@ -3,9 +3,9 @@
             <div class="row">
                 <div class="col-xl-12 wow tpfadeUp reveal-on-scroll" data-wow-duration=".9s" data-wow-delay=".1s">
                     <div class="tp-blog-2__section-title pb-50 text-center">
-                        {{-- <span class="about-home-eyebrow d-block mb-2">What we offer</span> --}}
-                        <h4 class="tp-section-title">Our Programs</h4>
-                        <p class="text-muted mt-3 mb-0 mx-auto" style="max-width: 36rem;">Vocational training, entrepreneurship, discipleship, and community care for mothers and families across Uganda.</p>
+                        <span class="about-home-eyebrow d-block mb-2">How we serve</span>
+                        <h4 class="tp-section-title">Our programs in Uganda</h4>
+                        <p class="home-narrative-band__lead mt-3 mb-0 mx-auto">Vocational training, entrepreneurship, discipleship, and community care that turn barriers into sustainable livelihoods.</p>
                     </div>
                 </div>
             </div>

@@ -4,130 +4,108 @@
 
 @php use App\Support\MercyTidesContent; @endphp
 
-    <!-- slider-area-start -->
+    {{-- 1. Promise --}}
     @include('frontend.includes.slides')
-    <!-- slider-area-end -->
-    
-    <!-- about-area-start -->
-    <div class="tp-about-4__area tp-about-4__space p-relative fix grey-bg about-home-section">
+
+    {{-- 2. The gap & our response --}}
+    <section class="home-problem-solution-section home-narrative-band" aria-labelledby="home-gap-heading">
         <div class="container">
-            <div class="row">
-                <div class="col-12 wow tpfadeUp reveal-on-scroll" data-wow-duration=".9s" data-wow-delay=".2s">
-                    <div class="about-home-intro">
-                        {{-- <span class="about-home-eyebrow">Who we are</span> --}}
-                        <h4 class="tp-section-title about-home-title">About Mercy Tides Foundation</h4>
-                        @php
-                            $aboutDescRaw = $about->description ?? '';
-                            $aboutDescPlain = strip_tags(html_entity_decode($aboutDescRaw));
-                            $words = Str::limit($aboutDescPlain, 400, '...');
-                        @endphp
-                        <p class="about-home-lead">{{ $words }}</p>
-                        <div class="about-home-actions">
-                            <a class="tp-btn about-home-cta" href="{{ route('backgroundDetails') }}">
-                                View More <span class="about-home-cta-arrow" aria-hidden="true">→</span>
-                            </a>
-                        </div>
-                    </div>
+            <div class="row justify-content-center mb-4 mb-lg-5">
+                <div class="col-lg-9 text-center wow tpfadeUp reveal-on-scroll" data-wow-duration=".9s" data-wow-delay=".1s">
+                    <span class="about-home-eyebrow d-block mb-2">Uganda · The gap we close</span>
+                    <h2 id="home-gap-heading" class="tp-section-title mb-3">Barriers young mothers face — and how we respond</h2>
+                    <p class="home-narrative-band__lead mb-0">
+                        Across communities near Kampala, unwed and teenage mothers often lack skills, safety, and hope.
+                        Mercy Tides walks with them toward dignity, livelihood, and Christ-centered care.
+                    </p>
                 </div>
             </div>
-        </div>
-    </div>
-    <!-- about-area-end -->
-
-    <!-- problem-solution-area-start -->
-    <section class="home-problem-solution-section grey-bg pb-70">
-        <div class="container">
             <div class="row g-4">
                 <div class="col-lg-6 wow tpfadeUp reveal-on-scroll" data-wow-duration=".9s" data-wow-delay=".15s">
-                    <article class="about-home-pillar h-100">
+                    <article class="about-home-pillar about-home-pillar--gap h-100">
                         <div class="about-home-pillar__head">
                             <span class="about-home-pillar__icon" aria-hidden="true"><i class="fas fa-triangle-exclamation"></i></span>
-                            <h4 class="about-home-pillar__title">The Problem We Address</h4>
+                            <div>
+                                <span class="about-home-pillar__kicker">The gap</span>
+                                <h3 class="about-home-pillar__title">Why mothers need support</h3>
+                            </div>
                         </div>
                         <p class="about-home-pillar__text mb-0">
-                            {{ Str::limit(strip_tags(html_entity_decode($about->problem_statement ?? \App\Support\MercyTidesContent::problemStatement())), 420, '…') }}
+                            {{ Str::limit(strip_tags(html_entity_decode($about->problem_statement ?? MercyTidesContent::problemStatement())), 420, '…') }}
                         </p>
                     </article>
                 </div>
                 <div class="col-lg-6 wow tpfadeUp reveal-on-scroll" data-wow-duration=".9s" data-wow-delay=".25s">
-                    <article class="about-home-pillar h-100">
+                    <article class="about-home-pillar about-home-pillar--solution h-100">
                         <div class="about-home-pillar__head">
-                            <span class="about-home-pillar__icon" aria-hidden="true"><i class="fas fa-lightbulb-on"></i></span>
-                            <h4 class="about-home-pillar__title">Our Solution</h4>
+                            <span class="about-home-pillar__icon" aria-hidden="true"><i class="fas fa-hands-helping"></i></span>
+                            <div>
+                                <span class="about-home-pillar__kicker">Our response</span>
+                                <h3 class="about-home-pillar__title">Skills, enterprise &amp; care</h3>
+                            </div>
                         </div>
                         <p class="about-home-pillar__text mb-0">
-                            {{ Str::limit(strip_tags(html_entity_decode($about->solution_statement ?? \App\Support\MercyTidesContent::solutionStatement())), 420, '…') }}
+                            {{ Str::limit(strip_tags(html_entity_decode($about->solution_statement ?? MercyTidesContent::solutionStatement())), 420, '…') }}
                         </p>
                     </article>
                 </div>
             </div>
         </div>
     </section>
-    <!-- problem-solution-area-end -->
-     
-    <!-- service-area-start -->
-    @include('frontend.includes.services')
-    <!-- service-area-end -->
 
-    @include('frontend.includes.home-impact-metrics')
-
-    @include('frontend.includes.home-partner-cta')
-
-    @include('frontend.includes.home-mission-core-values')
-
-    @include('frontend.includes.mothers-gallery', ['mothers' => $mothers ?? collect(), 'limit' => 4])
-
-    @include('frontend.includes.home-partners')
-
-    @include('frontend.includes.home-news')
-
-    
-        <!-- event-area-start -->
-{{-- @if($event)
-<div class="tp-about-4__area tp-about-4__space p-relative fix grey-bg">
-<div class="row">
-    <div class="col-xl-12">
-        <div class="tp-event__section-title text-center">
-            <h4 class="tp-section-title">Upcoming Events </h4>
-        </div>
-    </div>
-</div>
-    <div class="tp-about-4__shape d-none d-xxl-block">
-        <img src="{{asset('storage/images/events') .$event->image}}" alt="">
-    </div>
-    <div class="container">
-        <div class="row">
-            <div class="offset-xl-6 offset-lg-6 col-xl-6 col-lg-6 wow tpfadeRight" data-wow-duration=".9s"
-            data-wow-delay=".5s">
-                <div class="tp-about-4__left-side">
-                    <div class="tp-about-4__section-title">
-                        <h4 class="tp-section-title">About the Event</h4>
-                    </div>
-                    <div class="tp-about-4__content">
-                        <div class="tp-about-4__text">
-                            <div class="postbox__text">{!! $event->description !!}</div>
-                        </div>
-                        <div class="tp-about-4__btn">
-                            <a class="tp-btn" href="{{ $event->registerLink }}">Discover More</a>
+    {{-- 3. Who we are --}}
+    <section class="tp-about-4__area p-relative fix grey-bg about-home-section" aria-labelledby="home-about-heading">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-10 text-center wow tpfadeUp reveal-on-scroll" data-wow-duration=".9s" data-wow-delay=".2s">
+                    <div class="about-home-intro about-home-intro--centered">
+                        <span class="about-home-eyebrow d-block mb-2">Who we are · Wakiso, Uganda</span>
+                        <h2 id="home-about-heading" class="tp-section-title about-home-title">About Mercy Tides Foundation</h2>
+                        @php
+                            $aboutDescRaw = $about->description ?? '';
+                            $aboutDescPlain = strip_tags(html_entity_decode($aboutDescRaw));
+                            $words = Str::limit($aboutDescPlain !== '' ? $aboutDescPlain : strip_tags(MercyTidesContent::overview()), 380, '...');
+                        @endphp
+                        <p class="about-home-lead mx-auto">{{ $words }}</p>
+                        <div class="about-home-actions justify-content-center">
+                            <a class="tp-btn about-home-cta" href="{{ route('backgroundDetails') }}">
+                                Our story <span class="about-home-cta-arrow" aria-hidden="true">→</span>
+                            </a>
+                            <a class="tp-btn tp-btn--outline about-home-cta-secondary" href="{{ route('ourModel') }}">
+                                Where we work
+                            </a>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</div>
-@else
-<div class="row">
-    <div class="col-xl-12">
-        <div class="tp-event__section-title text-center">
-            <h4 class="tp-section-title">Not Active Event Yet </h4>
-        </div>
-    </div>
-</div>
-@endif --}}
+    </section>
 
-        <!-- event-area-end -->
+    {{-- 4. Who we serve --}}
+    @include('frontend.includes.mothers-gallery', [
+        'mothers' => $mothers ?? collect(),
+        'limit' => 4,
+        'sectionEyebrow' => 'Who we serve',
+        'sectionTitle' => 'Young mothers in Uganda',
+        'sectionLead' => 'We walk with unwed and teenage mothers near Kampala — toward independence, dignity, and a brighter future for their children.',
+        'viewMoreRoute' => route('sponsorship.youngMother'),
+    ])
 
+    {{-- 5. How we serve --}}
+    @include('frontend.includes.services')
+
+    {{-- 6. Impact --}}
+    @include('frontend.includes.home-impact-metrics')
+
+    {{-- 7. Ways to get involved --}}
+    @include('frontend.includes.home-partner-cta')
+
+    {{-- 8. How we work day to day --}}
+    @include('frontend.includes.home-mission-core-values')
+
+    @include('frontend.includes.home-partners')
+
+    @include('frontend.includes.home-news')
 
     @if(($setting->show_products_publicly ?? false))
         @include('frontend.includes.home-products')

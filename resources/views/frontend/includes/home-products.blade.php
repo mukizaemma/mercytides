@@ -8,7 +8,7 @@
         <div class="row">
             <div class="col-xl-12">
                 <div class="tp-blog-2__section-title pb-45 text-center">
-                    <h4 class="tp-section-title">Made in Rwanda — our products</h4>
+                    <h4 class="tp-section-title">Made with skill — products from our programs</h4>
                     @if($productsIntro !== '')
                         <div class="text-muted mb-0 mx-auto" style="max-width: 52rem;">{!! $productsIntro !!}</div>
                     @else

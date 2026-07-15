@@ -77,26 +77,16 @@
         </div>
     </section>
 
-    {{-- 4. Who we serve — oldest 4 program mother portraits --}}
-    @include('frontend.includes.mothers-gallery', [
-        'mothers' => $mothers ?? collect(),
-        'limit' => 4,
-        'sectionTitle' => 'Mothers in our program',
-        'sectionLead' => 'Meet some of the young mothers we walk with — toward independence, dignity, and a brighter future for their children.',
-        'viewMoreRoute' => route('mothersGallery'),
-        'viewMoreLabel' => 'View more mothers',
-    ])
-
-    {{-- 5. How we serve --}}
+    {{-- 4. How we serve --}}
     @include('frontend.includes.services')
 
-    {{-- 6. Impact --}}
+    {{-- 5. Impact --}}
     @include('frontend.includes.home-impact-metrics')
 
-    {{-- 7. Ways to get involved --}}
+    {{-- 6. Ways to get involved --}}
     @include('frontend.includes.home-partner-cta')
 
-    {{-- 8. How we work day to day --}}
+    {{-- 7. How we work day to day --}}
     @include('frontend.includes.home-mission-core-values')
 
     @include('frontend.includes.home-news')
@@ -104,5 +94,15 @@
     @if(($setting->show_products_publicly ?? false))
         @include('frontend.includes.home-products')
     @endif
+
+    {{-- Mothers in our program — just above site-wide Partners --}}
+    @include('frontend.includes.mothers-gallery', [
+        'mothers' => $mothers ?? collect(),
+        'limit' => 4,
+        'sectionTitle' => 'Mothers in our program',
+        'sectionLead' => 'Meet some of the young mothers we walk with — toward independence, dignity, and a brighter future for their children.',
+        'viewMoreRoute' => route('sponsorship.youngMother'),
+        'viewMoreLabel' => 'View more mothers',
+    ])
 
 @endsection

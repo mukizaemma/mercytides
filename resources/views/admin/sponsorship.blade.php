@@ -12,9 +12,9 @@
             <div class="container-fluid px-4 py-4">
                 <div class="admin-page-header d-flex align-items-center justify-content-between flex-wrap gap-2">
                     <div>
-                        <h1>Sponsorship profiles</h1>
+                        <h1>Mothers &amp; sponsorship</h1>
                         <p class="text-muted mb-0">
-                            Manage children, young mothers, and families available for sponsorship.
+                            Manage young mothers (and children / families) shown on the website and sponsor pages.
                             <strong>{{ $totalCount ?? $profiles->count() }}</strong> profile{{ ($totalCount ?? $profiles->count()) === 1 ? '' : 's' }} in total
                             @if(!empty($typeFilter))
                                 · showing <strong>{{ $filteredCount ?? $profiles->count() }}</strong> for this type

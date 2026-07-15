@@ -142,7 +142,7 @@
                 'limit' => 4,
                 'showSectionHeader' => false,
                 'embedded' => true,
-                'viewMoreRoute' => route('mothersGallery'),
+                'viewMoreRoute' => route('sponsorship.youngMother'),
                 'viewMoreLabel' => 'View more mothers',
             ])
 

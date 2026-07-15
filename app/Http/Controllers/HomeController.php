@@ -21,7 +21,6 @@ use App\Models\Setting;
 use App\Models\Activity;
 use ReCaptcha\ReCaptcha;
 use App\Models\Testimony;
-use App\Models\Mother;
 use App\Models\Volunteer;
 use App\Mail\ReplyMessage;
 use App\Models\Background;
@@ -85,7 +84,7 @@ class HomeController extends Controller
         $homeGallery = Gallery::latest()->get();
         $slides = Slide::oldest()->get();
         $testimonials = Testimony::latest()->paginate(3);
-        $mothers = $this->programMothers(4);
+        $mothers = $this->publishedSponsorshipProfiles('young_mother', 4, 'oldest');
         $partners = Partner::latest()->get();
         $staff = Team::latest()->get();
 
@@ -169,39 +168,15 @@ class HomeController extends Controller
 
     public function mothersGallery()
     {
-        return view('frontend.mothers', [
-            'about' => Background::firstOrEmpty(),
-            'mothers' => $this->programMothers(),
-        ]);
-    }
-
-    /**
-     * Portrait gallery mothers from the Young Mothers admin list (oldest first).
-     *
-     * @return \Illuminate\Support\Collection<int, \App\Models\Mother>
-     */
-    protected function programMothers(?int $limit = null)
-    {
-        if (! Schema::hasTable('mothers')) {
-            return collect();
-        }
-
-        $query = Mother::query()
-            ->whereNotNull('image')
-            ->where('image', '!=', '')
-            ->oldest('id');
-
-        if ($limit !== null) {
-            $query->take($limit);
-        }
-
-        return $query->get();
+        // Single mother source: sponsorship young_mother profiles.
+        return redirect()->route('sponsorship.youngMother', [], 301);
     }
 
     public function motherProfile($slug)
     {
         $profile = Sponsorship::query()
             ->published()
+            ->ofType('young_mother')
             ->where(function ($q) use ($slug) {
                 $q->where('slug', $slug);
                 if (is_numeric($slug)) {
@@ -214,23 +189,22 @@ class HomeController extends Controller
             return redirect()->route('sponsorshipProfile', ['slug' => $profile->slug ?: $profile->id], 301);
         }
 
-        if (Schema::hasTable('mothers')) {
-            $mother = Mother::query()
-                ->where(function ($q) use ($slug) {
-                    $q->where('slug', $slug);
-                    if (is_numeric($slug)) {
-                        $q->orWhere('id', (int) $slug);
-                    }
-                })
-                ->firstOrFail();
+        // Fallback: any published sponsorship slug, then the mothers listing.
+        $any = Sponsorship::query()
+            ->published()
+            ->where(function ($q) use ($slug) {
+                $q->where('slug', $slug);
+                if (is_numeric($slug)) {
+                    $q->orWhere('id', (int) $slug);
+                }
+            })
+            ->first();
 
-            return view('frontend.mother', [
-                'about' => Background::firstOrEmpty(),
-                'mother' => $mother,
-            ]);
+        if ($any) {
+            return redirect()->route('sponsorshipProfile', ['slug' => $any->slug ?: $any->id], 301);
         }
 
-        abort(404);
+        return redirect()->route('sponsorship.youngMother', [], 301);
     }
 
     public function sponsorshipCategory(string $type)
@@ -299,7 +273,7 @@ class HomeController extends Controller
     /**
      * @return \Illuminate\Support\Collection<int, \App\Models\Sponsorship>
      */
-    protected function publishedSponsorshipProfiles(string $type, ?int $limit = null)
+    protected function publishedSponsorshipProfiles(string $type, ?int $limit = null, string $order = 'latest')
     {
         if (! Schema::hasTable('sponsorships')) {
             return collect();
@@ -307,8 +281,13 @@ class HomeController extends Controller
 
         $query = Sponsorship::query()
             ->published()
-            ->ofType($type)
-            ->latest();
+            ->ofType($type);
+
+        if ($order === 'oldest') {
+            $query->oldest('id');
+        } else {
+            $query->latest();
+        }
 
         if ($limit !== null) {
             $query->take($limit);
@@ -1109,7 +1088,7 @@ class HomeController extends Controller
             ->latest()
             ->take(8)
             ->get();
-        $mothers = $this->programMothers(4);
+        $mothers = $this->publishedSponsorshipProfiles('young_mother', 4, 'oldest');
         return view('frontend.impact', compact('about', 'initiatives', 'impacts', 'testimonials', 'mothers'));
     }
 

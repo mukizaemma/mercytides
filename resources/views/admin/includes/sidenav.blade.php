@@ -25,8 +25,8 @@
             <x-admin.nav-link :href="route('impacts.index')" icon="fa-chart-line" :active="request()->routeIs(['impacts.index', 'saveImpact', 'updateImpact', 'destroyImpact'])">
                 Impact metrics
             </x-admin.nav-link>
-            <x-admin.nav-link :href="route('sponsorship.index')" icon="fa-heart" :active="request()->routeIs(['sponsorship.index', 'saveSponsorship', 'updateSponsorship', 'destroySponsorship', 'sponsorship.supportOptions'])">
-                Sponsorship profiles
+            <x-admin.nav-link :href="route('sponsorship.index', ['type' => 'young_mother'])" icon="fa-heart" :active="request()->routeIs(['sponsorship.index', 'saveSponsorship', 'updateSponsorship', 'destroySponsorship', 'sponsorship.supportOptions', 'mothers.index', 'saveMother', 'updateMother', 'destroyMother'])">
+                Mothers &amp; sponsorship
             </x-admin.nav-link>
             <x-admin.nav-link :href="route('events')" icon="fa-calendar" :active="request()->routeIs(['events', 'saveEvent', 'updateEvent'])">
                 Events

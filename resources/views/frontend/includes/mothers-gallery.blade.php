@@ -1,24 +1,24 @@
 @php
-    $galleryMothers = ($mothers ?? collect())->take($limit ?? 4);
+    $galleryProfiles = collect($mothers ?? $profiles ?? [])->take($limit ?? 4);
     $showSectionHeader = $showSectionHeader ?? true;
     $embedded = $embedded ?? false;
-    $sectionTitle = $sectionTitle ?? 'Young Mothers We Support';
-    $sectionLead = $sectionLead ?? 'Each portrait represents a young mother walking toward independence, dignity, and a brighter future for her family.';
-    $viewMoreRoute = $viewMoreRoute ?? route('mothersGallery');
+    $sectionTitle = $sectionTitle ?? 'Mothers in our program';
+    $sectionLead = $sectionLead ?? 'Meet some of the young mothers we walk with — toward independence, dignity, and a brighter future for their children.';
+    $viewMoreRoute = $viewMoreRoute ?? route('sponsorship.youngMother');
     $viewMoreLabel = $viewMoreLabel ?? 'View more mothers';
     $showViewMore = $showViewMore ?? true;
 @endphp
 
-@if($galleryMothers->isNotEmpty())
+@if($galleryProfiles->isNotEmpty())
 @if(!$embedded)
-<section class="mothers-gallery-section tp-blog-2__area {{ $showSectionHeader ? 'tp-blog-2__spaces' : 'pb-0' }}">
+<section class="mothers-gallery-section tp-blog-2__area {{ $showSectionHeader ? 'tp-blog-2__spaces' : 'pb-0' }}" aria-labelledby="mothers-gallery-heading">
     <div class="container">
 @endif
         @if($showSectionHeader)
         <div class="row">
             <div class="col-xl-12 wow tpfadeUp reveal-on-scroll" data-wow-duration=".9s" data-wow-delay=".1s">
                 <div class="mothers-gallery-section__header pb-50 text-center">
-                    <h4 class="tp-section-title">{{ $sectionTitle }}</h4>
+                    <h2 id="mothers-gallery-heading" class="tp-section-title">{{ $sectionTitle }}</h2>
                     @if(!empty($sectionLead))
                         <p class="mothers-gallery-section__lead mx-auto mb-0">{{ $sectionLead }}</p>
                     @endif
@@ -27,38 +27,10 @@
         </div>
         @endif
 
-        <div class="row g-4 mothers-gallery-grid justify-content-center">
-            @foreach ($galleryMothers as $mother)
-                @php
-                    $imageUrl = $mother instanceof \App\Models\Sponsorship
-                        ? \App\Models\Sponsorship::publicImageUrl($mother->image)
-                        : \App\Models\Mother::publicImageUrl($mother->image);
-                    $displayName = method_exists($mother, 'displayName')
-                        ? $mother->displayName()
-                        : (trim((string) ($mother->names ?? $mother->name ?? '')) ?: 'Young mother');
-                    $profileUrl = method_exists($mother, 'profileRoute')
-                        ? $mother->profileRoute()
-                        : '#';
-                @endphp
+        <div class="row g-4 justify-content-center">
+            @foreach ($galleryProfiles as $profile)
                 <div class="col-6 col-md-4 col-lg-3 wow tpfadeUp reveal-on-scroll" data-wow-duration=".9s" data-wow-delay=".15s">
-                    <article class="mother-portrait-card h-100">
-                        <a href="{{ $profileUrl }}" class="mother-portrait-card__media d-block" aria-label="View details for {{ $displayName }}">
-                            <img src="{{ $imageUrl }}" alt="{{ $displayName }}" loading="lazy">
-                            <span class="mother-portrait-card__overlay">
-                                <span class="mother-portrait-card__cta">View details</span>
-                            </span>
-                        </a>
-
-                        <div class="mother-portrait-card__body">
-                            <h3 class="mother-portrait-card__name">{{ $displayName }}</h3>
-                            @if(!empty($mother->age))
-                                <p class="mother-portrait-card__age">Age {{ $mother->age }}</p>
-                            @endif
-                            <a href="{{ $profileUrl }}" class="tp-btn mother-portrait-card__btn">
-                                View details
-                            </a>
-                        </div>
-                    </article>
+                    @include('frontend.includes.sponsorship-card', ['profile' => $profile])
                 </div>
             @endforeach
         </div>

@@ -34,6 +34,9 @@
     };
 
     $sponsorCta = 'Sponsor ' . $firstName;
+    $commitmentWhy = $storyExcerpt !== ''
+        ? $storyExcerpt
+        : ('Your support helps '.$profile->displayName().' move toward skills, dignity, and a steadier path for her family.');
 @endphp
 
 @section('content')
@@ -162,6 +165,7 @@
                         data-support-focus="{{ $option['key'] }}"
                         data-support-label="{{ $option['label'] }}"
                         data-support-text="{{ $option['text'] }}"
+                        data-support-why="{{ $commitmentWhy }}"
                         data-support-icon="{{ $option['icon'] }}"
                     >
                         <span class="sp-support-card__icon" aria-hidden="true">
@@ -188,6 +192,7 @@
                         data-support-focus="{{ $primarySupport['key'] }}"
                         data-support-label="{{ $primarySupport['label'] }}"
                         data-support-text="{{ $primarySupport['text'] }}"
+                        data-support-why="{{ $commitmentWhy }}"
                         data-support-icon="{{ $primarySupport['icon'] }}"
                     >
                         {{ $sponsorCta }}
@@ -245,6 +250,7 @@
             data-support-focus="{{ $stickySupport['key'] }}"
             data-support-label="{{ $stickySupport['label'] }}"
             data-support-text="{{ $stickySupport['text'] }}"
+            data-support-why="{{ $commitmentWhy }}"
             data-support-icon="{{ $stickySupport['icon'] }}"
         >
             {{ $sponsorCta }}
@@ -253,14 +259,18 @@
 @endif
 
 <div class="modal fade" id="sponsorCommitmentModal" tabindex="-1" aria-labelledby="sponsorCommitmentModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-dialog modal-dialog-scrollable">
         <div class="modal-content sponsorship-commitment-modal">
             <div class="modal-header border-0 pb-0">
                 <h2 class="modal-title h5 visually-hidden" id="sponsorCommitmentModalLabel">{{ $sponsorCta }}</h2>
                 <button type="button" class="btn-close ms-auto" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body pt-2 px-4 px-lg-5 pb-4">
-                @include('frontend.includes.sponsor-inquiry-form', ['profile' => $profile])
+                @include('frontend.includes.sponsor-inquiry-form', [
+                    'profile' => $profile,
+                    'commitmentWhy' => $commitmentWhy,
+                    'storyExcerpt' => $storyExcerpt,
+                ])
             </div>
         </div>
     </div>

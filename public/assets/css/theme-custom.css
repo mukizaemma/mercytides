@@ -2836,6 +2836,34 @@ a.contact-stat-card__value:hover {
     padding-top: 0.25rem;
 }
 
+.sponsor-commitment-summary {
+    margin-bottom: 0.35rem;
+}
+
+.sponsor-commitment-summary__name {
+    margin: 0 0 0.4rem;
+    font-family: var(--font-display, "Fraunces", Georgia, serif);
+    font-size: clamp(1.55rem, 3vw, 1.9rem);
+    font-weight: 650;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    color: var(--brand-secondary, #00205b);
+}
+
+.sponsor-commitment-summary__way {
+    margin: 0 0 0.65rem;
+    font-size: 1.02rem;
+    font-weight: 700;
+    color: var(--brand-primary, #2f84b5);
+}
+
+.sponsor-commitment-summary__why {
+    margin: 0;
+    font-size: 0.98rem;
+    line-height: 1.6;
+    color: var(--brand-muted-text, #3f5566);
+}
+
 .sponsor-selected-focus {
     display: flex;
     gap: 1rem;

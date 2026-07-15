@@ -1,36 +1,50 @@
 (function () {
     'use strict';
 
-    function setSelectedFocus(form, focusKey, label, text, icon) {
+    var pendingFocus = null;
+
+    function readTriggerFocus(trigger) {
+        if (!trigger || !trigger.getAttribute) {
+            return null;
+        }
+
+        return {
+            key: trigger.getAttribute('data-support-focus') || '',
+            label: trigger.getAttribute('data-support-label') || '',
+            text: trigger.getAttribute('data-support-text') || '',
+            why: trigger.getAttribute('data-support-why') || '',
+            icon: trigger.getAttribute('data-support-icon') || 'fa-heart'
+        };
+    }
+
+    function setSelectedFocus(form, focus) {
+        if (!form || !focus) {
+            return;
+        }
+
         var valueInput = form.querySelector('.js-sponsor-focus-value');
-        var panel = form.querySelector('.js-sponsor-selected-focus');
-        var title = form.querySelector('.js-sponsor-modal-title');
-        var textEl = form.querySelector('.js-sponsor-selected-text');
-        var iconEl = form.querySelector('.js-sponsor-selected-icon');
+        var labelEl = form.querySelector('.js-sponsor-selected-label');
+        var whyEl = form.querySelector('.js-sponsor-why-message');
         var focusError = form.querySelector('.js-sponsor-focus-error');
+        var key = String(focus.key || '').trim();
+        var label = String(focus.label || '').trim();
+        var why = String(focus.why || focus.text || '').trim();
 
         if (valueInput) {
-            valueInput.value = focusKey || '';
+            valueInput.value = key;
         }
 
-        if (panel) {
-            panel.classList.toggle('d-none', !focusKey);
+        if (labelEl) {
+            labelEl.textContent = label;
+            labelEl.classList.toggle('d-none', !label);
         }
 
-        if (title && label) {
-            title.textContent = label;
-        }
-
-        if (textEl) {
-            textEl.textContent = text || '';
-        }
-
-        if (iconEl) {
-            iconEl.className = 'fas js-sponsor-selected-icon ' + (icon || 'fa-heart');
+        if (whyEl && why) {
+            whyEl.textContent = why;
         }
 
         if (focusError) {
-            focusError.hidden = !!focusKey;
+            focusError.hidden = !!key;
         }
     }
 
@@ -57,6 +71,21 @@
         return true;
     }
 
+    function bindTriggerButton(btn, modalEl) {
+        if (btn.dataset.sponsorTriggerBound === 'true') {
+            return;
+        }
+        btn.dataset.sponsorTriggerBound = 'true';
+
+        btn.addEventListener('click', function () {
+            pendingFocus = readTriggerFocus(btn);
+            var form = modalEl.querySelector('.js-sponsor-inquiry-form');
+            if (form && pendingFocus) {
+                setSelectedFocus(form, pendingFocus);
+            }
+        });
+    }
+
     function bindForm(form) {
         if (form.dataset.sponsorInquiryBound === 'true') {
             return;
@@ -81,45 +110,37 @@
         }
 
         document.querySelectorAll('.js-open-sponsor-commitment').forEach(function (btn) {
-            if (btn.dataset.sponsorTriggerBound === 'true') {
-                return;
-            }
-            btn.dataset.sponsorTriggerBound = 'true';
+            bindTriggerButton(btn, modalEl);
+        });
 
-            btn.addEventListener('click', function () {
+        if (modalEl.dataset.sponsorModalBound === 'true') {
+            return;
+        }
+        modalEl.dataset.sponsorModalBound = 'true';
+
+        ['show.bs.modal', 'shown.bs.modal'].forEach(function (eventName) {
+            modalEl.addEventListener(eventName, function (event) {
                 var form = modalEl.querySelector('.js-sponsor-inquiry-form');
                 if (!form) {
                     return;
                 }
-                setSelectedFocus(
-                    form,
-                    btn.getAttribute('data-support-focus') || '',
-                    btn.getAttribute('data-support-label') || '',
-                    btn.getAttribute('data-support-text') || '',
-                    btn.getAttribute('data-support-icon') || 'fa-heart'
-                );
+
+                var focus = pendingFocus || readTriggerFocus(event.relatedTarget);
+                if (focus && focus.key) {
+                    setSelectedFocus(form, focus);
+                }
+
+                if (eventName === 'shown.bs.modal') {
+                    var firstEmpty = form.querySelector('input[name="full_name"]');
+                    if (firstEmpty && !firstEmpty.value) {
+                        firstEmpty.focus();
+                    }
+                }
             });
         });
 
-        modalEl.addEventListener('shown.bs.modal', function (event) {
-            var trigger = event.relatedTarget;
-            var form = modalEl.querySelector('.js-sponsor-inquiry-form');
-            if (!form) {
-                return;
-            }
-            if (trigger && trigger.getAttribute) {
-                setSelectedFocus(
-                    form,
-                    trigger.getAttribute('data-support-focus') || '',
-                    trigger.getAttribute('data-support-label') || '',
-                    trigger.getAttribute('data-support-text') || '',
-                    trigger.getAttribute('data-support-icon') || 'fa-heart'
-                );
-            }
-            var firstEmpty = form.querySelector('input[name="full_name"]');
-            if (firstEmpty && !firstEmpty.value) {
-                firstEmpty.focus();
-            }
+        modalEl.addEventListener('hidden.bs.modal', function () {
+            pendingFocus = null;
         });
     }
 

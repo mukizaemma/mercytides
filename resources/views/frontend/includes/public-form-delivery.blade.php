@@ -23,7 +23,7 @@
             <i class="far fa-envelope me-1" aria-hidden="true"></i> {{ $emailLabel ?? 'Send via Email' }}
         </button>
     </div>
-    @if(!empty($whatsappFirst))
+    @if(!empty($whatsappFirst) && empty($hideWhatsappNote))
         <p class="public-form-delivery__whatsapp-note text-muted small mb-0 mt-2 d-md-none">Recommended on mobile — tap <strong>Send</strong> in WhatsApp to reach our team.</p>
     @endif
     <div class="public-form-delivery__alert alert mt-3 d-none" role="status"></div>

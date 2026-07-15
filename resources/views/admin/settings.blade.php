@@ -141,6 +141,20 @@
                                             <label class="form-label">Google map embed code</label>
                                             <textarea class="form-control font-monospace" rows="5" name="google_map_embed_code" data-editor="plain" placeholder='<iframe src="https://www.google.com/maps/embed?pb=..." width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe> OR https://www.google.com/maps/embed?pb=...'>{{ $data->google_map_embed_code }}</textarea>
                                             <small class="text-muted d-block mt-1">Paste either the full iframe code from Google Maps or just the embed URL.</small>
+                                            <div class="form-check mt-3">
+                                                <input
+                                                    type="checkbox"
+                                                    class="form-check-input"
+                                                    id="show_contact_map"
+                                                    name="show_contact_map"
+                                                    value="1"
+                                                    {{ old('show_contact_map', $data->show_contact_map ?? false) ? 'checked' : '' }}
+                                                >
+                                                <label class="form-check-label" for="show_contact_map">
+                                                    Show Google Map on the Contact page
+                                                </label>
+                                            </div>
+                                            <small class="text-muted d-block mt-1">Leave unchecked until your Uganda map embed is ready. The contact form will use the full width when the map is hidden.</small>
                                         </div>
                                     </div>
                                 </div>

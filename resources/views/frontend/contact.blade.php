@@ -8,6 +8,18 @@
         $location = 'Uganda';
     }
     $whatsappDigits = preg_replace('/\D+/', '', (string) ($contact->phone ?? $contact->phone1 ?? ''));
+
+    $mapEmbedRaw = trim((string) ($setting->google_map_embed_code ?? ''));
+    $showContactMap = (bool) ($setting->show_contact_map ?? false) && $mapEmbedRaw !== '';
+    $mapSrc = '';
+    $mapIframeHtml = '';
+    if ($showContactMap) {
+        if (stripos($mapEmbedRaw, '<iframe') !== false) {
+            $mapIframeHtml = $mapEmbedRaw;
+        } else {
+            $mapSrc = $mapEmbedRaw;
+        }
+    }
 @endphp
 
 @section('content')
@@ -79,8 +91,8 @@
             </div>
         @endif
 
-        <div class="row g-4 g-xl-5 align-items-stretch" id="contact-form">
-            <div class="col-lg-6">
+        <div class="row g-4 g-xl-5 align-items-stretch{{ $showContactMap ? '' : ' justify-content-center' }}" id="contact-form">
+            <div class="{{ $showContactMap ? 'col-lg-6' : 'col-lg-10 col-xl-9' }}">
                 <div class="card border-0 shadow-sm site-form-card contact-page__form-card h-100">
                     <div class="card-body p-4 p-lg-5">
                         <span class="about-home-eyebrow d-block mb-2">Support mothers</span>
@@ -102,7 +114,7 @@
 
                         @include('frontend.includes.get-involved-form', [
                             'singleSelect' => true,
-                            'compactLayout' => true,
+                            'compactLayout' => ! $showContactMap ? false : true,
                             'formPrefix' => 'contact',
                             'countriesListId' => 'contact-countries',
                             'waysLabel' => 'Ways to support mothers',
@@ -112,39 +124,24 @@
                 </div>
             </div>
 
-            <div class="col-lg-6">
-                <div class="contact-map-wrap h-100">
-                    @php
-                        $mapEmbedRaw = trim((string) ($setting->google_map_embed_code ?? ''));
-                        $mapSrc = '';
-                        $mapIframeHtml = '';
-
-                        if ($mapEmbedRaw !== '') {
-                            if (stripos($mapEmbedRaw, '<iframe') !== false) {
-                                $mapIframeHtml = $mapEmbedRaw;
-                            } else {
-                                $mapSrc = $mapEmbedRaw;
-                            }
-                        }
-
-                        $defaultMapSrc = 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3987.434670504606!2d30.1565774!3d-1.9806325999999996!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x19dca75ea871adfd%3A0x807deb18c1a0592f!2sImpact%20Life%20Mission!5e0!3m2!1sen!2srw!4v1755602240867!5m2!1sen!2srw';
-                        $resolvedMapSrc = $mapSrc !== '' ? $mapSrc : $defaultMapSrc;
-                    @endphp
-
-                    <div class="contact-map-wrap__header">
-                        <h2 class="h5 mb-1">Find us in Uganda</h2>
-                        <p class="text-muted small mb-0">Visit by appointment — message us to coordinate a time.</p>
-                    </div>
-
-                    @if($mapIframeHtml !== '')
-                        <div class="contact-map-wrap__frame">
-                            {!! $mapIframeHtml !!}
+            @if($showContactMap)
+                <div class="col-lg-6">
+                    <div class="contact-map-wrap h-100">
+                        <div class="contact-map-wrap__header">
+                            <h2 class="h5 mb-1">Find us in Uganda</h2>
+                            <p class="text-muted small mb-0">Visit by appointment — message us to coordinate a time.</p>
                         </div>
-                    @else
-                        <iframe src="{{ $resolvedMapSrc }}" width="100%" height="100%" class="contact-map-wrap__iframe" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Mercy Tides Foundation location map"></iframe>
-                    @endif
+
+                        @if($mapIframeHtml !== '')
+                            <div class="contact-map-wrap__frame">
+                                {!! $mapIframeHtml !!}
+                            </div>
+                        @else
+                            <iframe src="{{ $mapSrc }}" width="100%" height="100%" class="contact-map-wrap__iframe" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Mercy Tides Foundation location map"></iframe>
+                        @endif
+                    </div>
                 </div>
-            </div>
+            @endif
         </div>
     </div>
 </section>

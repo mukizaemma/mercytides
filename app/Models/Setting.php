@@ -17,6 +17,7 @@ class Setting extends Model
         'page_header_image' => 'string',
         'page_header_caption' => 'string',
         'google_map_embed_code' => 'string',
+        'show_contact_map' => 'boolean',
         'show_products_publicly' => 'boolean',
         'donation_payment_methods' => 'array',
         'donation_gateway_enabled' => 'boolean',

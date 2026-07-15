@@ -709,6 +709,9 @@ class HomeController extends Controller
         if (Schema::hasColumn('settings', 'google_map_embed_code')) {
             $data->google_map_embed_code = $request->input('google_map_embed_code');
         }
+        if (Schema::hasColumn('settings', 'show_contact_map')) {
+            $data->show_contact_map = $request->boolean('show_contact_map');
+        }
         if (Schema::hasColumn('settings', 'recaptcha_site_key')) {
             $data->recaptcha_site_key = $request->input('recaptcha_site_key');
         }

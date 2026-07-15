@@ -30,7 +30,7 @@ class FormSubmission extends Model
             'support_application' => 'Apply for support',
             'partnership' => 'Partnership inquiry',
             'get_involved' => 'Get involved',
-            'sponsor_inquiry' => 'Sponsorship inquiry',
+            'sponsor_inquiry' => 'Sponsorship commitment',
             'order_request' => 'Order request',
         ];
     }

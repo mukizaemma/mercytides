@@ -17,10 +17,10 @@
     </p> --}}
     <div class="d-flex flex-wrap gap-2 public-form-delivery__actions{{ !empty($whatsappFirst) ? ' public-form-delivery__actions--whatsapp-first' : '' }}">
         <button type="button" class="btn btn-success btn-lg public-form-delivery__btn" data-channel="whatsapp">
-            <i class="fab fa-whatsapp me-1" aria-hidden="true"></i> Send via WhatsApp
+            <i class="fab fa-whatsapp me-1" aria-hidden="true"></i> {{ $whatsappLabel ?? 'Send via WhatsApp' }}
         </button>
         <button type="button" class="btn btn-dark btn-lg public-form-delivery__btn" data-channel="email">
-            <i class="far fa-envelope me-1" aria-hidden="true"></i> Send via Email
+            <i class="far fa-envelope me-1" aria-hidden="true"></i> {{ $emailLabel ?? 'Send via Email' }}
         </button>
     </div>
     @if(!empty($whatsappFirst))

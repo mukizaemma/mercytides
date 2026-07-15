@@ -1,13 +1,21 @@
 (function () {
     'use strict';
 
-    function syncPreferenceCards(form) {
-        form.querySelectorAll('.sponsor-preference-card').forEach(function (card) {
-            var input = card.querySelector('.js-sponsor-preference');
+    function syncSelectableCards(form, cardSelector, inputSelector) {
+        form.querySelectorAll(cardSelector).forEach(function (card) {
+            var input = card.querySelector(inputSelector);
             if (input) {
                 card.classList.toggle('is-selected', input.checked);
             }
         });
+    }
+
+    function syncPreferenceCards(form) {
+        syncSelectableCards(form, '.sponsor-preference-card', '.js-sponsor-preference');
+    }
+
+    function syncFocusCards(form) {
+        syncSelectableCards(form, '.sponsor-focus-card', '.js-sponsor-focus');
     }
 
     function syncAmountPanel(form) {
@@ -18,11 +26,21 @@
         }
         var show = checked && ['monthly', 'one_time'].indexOf(checked.value) !== -1;
         panel.hidden = !show;
-        if (!show) {
-            var amountInput = form.querySelector('.js-sponsor-amount-input');
-            if (amountInput) {
-                amountInput.removeAttribute('required');
-            }
+    }
+
+    function setSupportFocus(form, focusKey) {
+        if (!focusKey) {
+            return;
+        }
+        var input = form.querySelector('.js-sponsor-focus[value="' + focusKey + '"]');
+        if (!input) {
+            return;
+        }
+        input.checked = true;
+        syncFocusCards(form);
+        var focusError = form.querySelector('.js-sponsor-focus-error');
+        if (focusError) {
+            focusError.hidden = true;
         }
     }
 
@@ -42,14 +60,11 @@
             var amount = chip.getAttribute('data-amount');
             if (amount === 'custom') {
                 customWrap.hidden = false;
-                amountInput.setAttribute('required', 'required');
                 amountInput.focus();
             } else {
                 customWrap.hidden = true;
                 amountInput.value = amount;
-                amountInput.removeAttribute('required');
             }
-            hideAmountError(form);
         }
 
         chips.forEach(function (chip) {
@@ -59,14 +74,15 @@
         });
     }
 
-    function hideAmountError(form) {
-        var error = form.querySelector('.js-sponsor-amount-error');
-        if (error) {
-            error.hidden = true;
-        }
-    }
-
     function validateForm(form) {
+        if (!form.querySelector('.js-sponsor-focus:checked')) {
+            var focusError = form.querySelector('.js-sponsor-focus-error');
+            if (focusError) {
+                focusError.hidden = false;
+            }
+            return false;
+        }
+
         if (!form.querySelector('.js-sponsor-preference:checked')) {
             var prefError = form.querySelector('.js-sponsor-preference-error');
             if (prefError) {
@@ -75,28 +91,13 @@
             return false;
         }
 
-        var preference = form.querySelector('.js-sponsor-preference:checked').value;
-        if (['monthly', 'one_time'].indexOf(preference) !== -1) {
-            var amountInput = form.querySelector('.js-sponsor-amount-input');
-            if (!amountInput || !amountInput.value || parseFloat(amountInput.value) < 1) {
-                var amountError = form.querySelector('.js-sponsor-amount-error');
-                if (amountError) {
-                    amountError.hidden = false;
-                }
-                var panel = form.querySelector('.js-sponsor-amount-panel');
-                if (panel) {
-                    panel.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }
-                return false;
-            }
-        }
-
         return true;
     }
 
     function bindForm(form) {
         if (form.dataset.sponsorInquiryBound === 'true') {
             syncPreferenceCards(form);
+            syncFocusCards(form);
             syncAmountPanel(form);
             return;
         }
@@ -113,8 +114,19 @@
             });
         });
 
+        form.querySelectorAll('.js-sponsor-focus').forEach(function (input) {
+            input.addEventListener('change', function () {
+                syncFocusCards(form);
+                var focusError = form.querySelector('.js-sponsor-focus-error');
+                if (focusError) {
+                    focusError.hidden = true;
+                }
+            });
+        });
+
         bindAmountChips(form);
         syncPreferenceCards(form);
+        syncFocusCards(form);
         syncAmountPanel(form);
 
         form.addEventListener('click', function (event) {
@@ -128,8 +140,52 @@
         }, true);
     }
 
+    function bindCommitmentTriggers() {
+        var modalEl = document.getElementById('sponsorCommitmentModal');
+        if (!modalEl) {
+            return;
+        }
+
+        document.querySelectorAll('.js-open-sponsor-commitment').forEach(function (btn) {
+            if (btn.dataset.sponsorTriggerBound === 'true') {
+                return;
+            }
+            btn.dataset.sponsorTriggerBound = 'true';
+
+            btn.addEventListener('click', function () {
+                var form = modalEl.querySelector('.js-sponsor-inquiry-form');
+                if (!form) {
+                    return;
+                }
+                var focus = btn.getAttribute('data-support-focus') || '';
+                if (focus) {
+                    setSupportFocus(form, focus);
+                }
+            });
+        });
+
+        modalEl.addEventListener('shown.bs.modal', function (event) {
+            var trigger = event.relatedTarget;
+            var form = modalEl.querySelector('.js-sponsor-inquiry-form');
+            if (!form) {
+                return;
+            }
+            if (trigger && trigger.getAttribute) {
+                var focus = trigger.getAttribute('data-support-focus') || '';
+                if (focus) {
+                    setSupportFocus(form, focus);
+                }
+            }
+            var firstEmpty = form.querySelector('input[name="full_name"]');
+            if (firstEmpty && !firstEmpty.value) {
+                firstEmpty.focus();
+            }
+        });
+    }
+
     function init(root) {
         (root || document).querySelectorAll('.js-sponsor-inquiry-form').forEach(bindForm);
+        bindCommitmentTriggers();
     }
 
     document.addEventListener('DOMContentLoaded', function () {

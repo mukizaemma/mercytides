@@ -60,23 +60,29 @@ class Mother extends Model
     protected static function booted(): void
     {
         static::saving(function (Mother $mother) {
-            if (! empty($mother->name) && empty($mother->slug)) {
-                $base = Str::slug($mother->name);
-                $slug = $base !== '' ? $base : 'mother-' . ($mother->id ?? 'new');
-                $suffix = 1;
-
-                while (
-                    static::query()
-                        ->where('slug', $slug)
-                        ->when($mother->exists, fn ($q) => $q->where('id', '!=', $mother->id))
-                        ->exists()
-                ) {
-                    $slug = $base . '-' . $suffix;
-                    $suffix++;
-                }
-
-                $mother->slug = $slug;
+            if (! empty($mother->slug)) {
+                return;
             }
+
+            $base = Str::slug((string) ($mother->name ?? ''));
+            if ($base === '') {
+                $base = 'mother-'.($mother->id ?: 'new');
+            }
+
+            $slug = $base;
+            $suffix = 1;
+
+            while (
+                static::query()
+                    ->where('slug', $slug)
+                    ->when($mother->exists, fn ($q) => $q->where('id', '!=', $mother->id))
+                    ->exists()
+            ) {
+                $slug = $base.'-'.$suffix;
+                $suffix++;
+            }
+
+            $mother->slug = $slug;
         });
     }
 }

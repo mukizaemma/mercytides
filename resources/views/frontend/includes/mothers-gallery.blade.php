@@ -33,40 +33,30 @@
                     $imageUrl = $mother instanceof \App\Models\Sponsorship
                         ? \App\Models\Sponsorship::publicImageUrl($mother->image)
                         : \App\Models\Mother::publicImageUrl($mother->image);
-                    $hasDetails = $mother->hasProfileDetails();
-                    $descriptionPlain = strip_tags(html_entity_decode($mother->testimany ?? $mother->description ?? ''));
-                    $displayName = method_exists($mother, 'displayName') ? $mother->displayName() : ($mother->name ?? 'Young mother');
+                    $displayName = method_exists($mother, 'displayName')
+                        ? $mother->displayName()
+                        : (trim((string) ($mother->names ?? $mother->name ?? '')) ?: 'Young mother');
+                    $profileUrl = method_exists($mother, 'profileRoute')
+                        ? $mother->profileRoute()
+                        : '#';
                 @endphp
                 <div class="col-6 col-md-4 col-lg-3 wow tpfadeUp reveal-on-scroll" data-wow-duration=".9s" data-wow-delay=".15s">
                     <article class="mother-portrait-card h-100">
-                        @if($hasDetails)
-                            <a href="{{ $mother->profileRoute() }}" class="mother-portrait-card__media d-block" aria-label="View {{ $displayName }}'s story">
-                                <img src="{{ $imageUrl }}" alt="{{ $displayName }}" loading="lazy">
-                                <span class="mother-portrait-card__overlay">
-                                    <span class="mother-portrait-card__cta">View story</span>
-                                </span>
-                            </a>
-                        @else
-                            <div class="mother-portrait-card__media">
-                                <img src="{{ $imageUrl }}" alt="Young mother supported by Mercy Tides" loading="lazy">
-                            </div>
-                        @endif
+                        <a href="{{ $profileUrl }}" class="mother-portrait-card__media d-block" aria-label="View details for {{ $displayName }}">
+                            <img src="{{ $imageUrl }}" alt="{{ $displayName }}" loading="lazy">
+                            <span class="mother-portrait-card__overlay">
+                                <span class="mother-portrait-card__cta">View details</span>
+                            </span>
+                        </a>
 
                         <div class="mother-portrait-card__body">
-                            @if(!empty($mother->names) || !empty($mother->name))
-                                <h3 class="mother-portrait-card__name">{{ $mother->names ?? $mother->name }}</h3>
-                            @endif
+                            <h3 class="mother-portrait-card__name">{{ $displayName }}</h3>
                             @if(!empty($mother->age))
                                 <p class="mother-portrait-card__age">Age {{ $mother->age }}</p>
                             @endif
-                            @if($descriptionPlain !== '')
-                                <p class="mother-portrait-card__excerpt">{{ \Illuminate\Support\Str::limit($descriptionPlain, 90, '…') }}</p>
-                            @endif
-                            @if($hasDetails)
-                                <a href="{{ $mother->profileRoute() }}" class="mother-portrait-card__link">
-                                    Read her story <i class="fas fa-arrow-right" aria-hidden="true"></i>
-                                </a>
-                            @endif
+                            <a href="{{ $profileUrl }}" class="tp-btn mother-portrait-card__btn">
+                                View details
+                            </a>
                         </div>
                     </article>
                 </div>

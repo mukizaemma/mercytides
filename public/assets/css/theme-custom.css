@@ -4780,42 +4780,32 @@ a.contact-stat-card__value:hover {
 }
 
 .mother-portrait-card__body {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
     padding: 1.1rem 1.15rem 1.25rem;
+    gap: 0.25rem;
 }
 
 .mother-portrait-card__name {
-    font-size: 1rem;
+    font-size: 1.05rem;
     font-weight: 700;
     color: var(--brand-dark, #00205b);
-    margin-bottom: 0.25rem;
+    margin: 0 0 0.15rem;
 }
 
 .mother-portrait-card__age {
     font-size: 0.82rem;
     font-weight: 600;
     color: var(--brand-blue, #58a9c9);
-    margin-bottom: 0.5rem;
+    margin: 0 0 0.35rem;
 }
 
-.mother-portrait-card__excerpt {
-    font-size: 0.92rem;
-    line-height: 1.6;
-    color: var(--brand-muted-text, #4a5f52);
-    margin-bottom: 0.75rem;
-}
-
-.mother-portrait-card__link {
-    font-weight: 600;
-    font-size: 0.9rem;
-    color: var(--brand-green, #00205b);
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-}
-
-.mother-portrait-card__link:hover {
-    color: var(--brand-blue, #58a9c9);
+.mother-portrait-card__btn {
+    margin-top: 0.55rem;
+    padding: 0.55rem 1.15rem;
+    font-size: 0.88rem;
+    line-height: 1.2;
 }
 
 .mothers-gallery-section__more-btn {

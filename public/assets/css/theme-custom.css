@@ -2620,6 +2620,25 @@ a.contact-stat-card__value:hover {
     outline: none;
 }
 
+.sp-support-card--static {
+    cursor: default;
+}
+
+.sp-support-card--static:hover,
+.sp-support-card--static:focus-visible {
+    transform: none;
+    border-color: rgba(0, 32, 91, 0.08);
+    box-shadow: 0 10px 28px rgba(0, 32, 91, 0.05);
+}
+
+.sp-support-card--static .sp-support-card__title {
+    padding-right: 0;
+}
+
+.sponsorship-type-page__ways {
+    border-top: 1px solid rgba(0, 32, 91, 0.08);
+}
+
 .sp-support-card--featured {
     border-color: rgba(47, 132, 181, 0.3);
     background:

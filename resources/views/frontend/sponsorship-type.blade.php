@@ -18,6 +18,9 @@
     $pillars = $meta['pillars'] ?? [];
     $gridTitle = $meta['grid_title'] ?? 'Choose someone to walk with';
     $gridLead = $meta['grid_lead'] ?? 'Each profile shares a real story — read theirs, pray, and begin a sponsorship journey.';
+    $supportOptions = $isYoungMother
+        ? \App\Support\SponsorshipSupportOptions::active()
+        : [];
 @endphp
 
 <section class="sponsorship-type-page pt-90 pb-90 grey-bg{{ $isYoungMother ? ' sponsorship-type-page--mothers' : '' }}">
@@ -68,6 +71,27 @@
                 </div>
             @endforelse
         </div>
+
+        @if($isYoungMother && $supportOptions !== [])
+            <section class="sponsorship-type-page__ways mt-5 pt-4" aria-labelledby="ways-to-support-mothers-heading">
+                <div class="sponsorship-type-page__grid-header mb-4">
+                    <h2 id="ways-to-support-mothers-heading">Ways to support our mothers</h2>
+                    <p>Practical paths you can choose when you walk with a mother — the same options shown on each mother’s profile.</p>
+                </div>
+
+                <div class="sp-support-grid sp-support-grid--info" role="list">
+                    @foreach($supportOptions as $option)
+                        <article class="sp-support-card sp-support-card--static" role="listitem">
+                            <span class="sp-support-card__icon" aria-hidden="true">
+                                <i class="fas {{ $option['icon'] }}"></i>
+                            </span>
+                            <h3 class="sp-support-card__title">{{ $option['label'] }}</h3>
+                            <p class="sp-support-card__text mb-0">{{ $option['text'] }}</p>
+                        </article>
+                    @endforeach
+                </div>
+            </section>
+        @endif
     </div>
 </section>
 @endsection

@@ -12,7 +12,6 @@
         <div class="container">
             <div class="row justify-content-center mb-5">
                 <div class="col-lg-8 text-center">
-                    <span class="about-home-eyebrow d-block mb-2">Faces of hope</span>
                     <h1 class="tp-section-title mb-3">Mothers in our program</h1>
                     <p class="mothers-gallery-section__lead mx-auto mb-0">
                         Meet the young mothers Mercy Tides walks alongside — each portrait is a story of resilience, faith, and new beginnings.

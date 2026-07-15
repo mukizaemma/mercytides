@@ -23,7 +23,6 @@
                     <header class="page-standalone-card__head">
                         <span class="page-standalone-card__icon"><i class="fas fa-map-marker-alt"></i></span>
                         <div>
-                            <p class="page-standalone-card__eyebrow">The Pearl of Africa</p>
                             <h2 class="page-standalone-card__title mb-0">Our location &amp; focus</h2>
                         </div>
                     </header>

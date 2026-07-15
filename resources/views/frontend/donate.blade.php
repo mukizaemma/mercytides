@@ -28,7 +28,6 @@
             <div class="col-lg-4 col-xl-3">
                 <div class="card border-0 shadow-sm site-form-card h-100 donate-page__aside">
                     <div class="card-body p-4">
-                        <span class="donate-page__eyebrow">Why give</span>
                         <h2 class="h5 mb-3">Your gift creates lasting change</h2>
                         <ul class="donate-page__benefits list-unstyled mb-0">
                             <li><i class="fas fa-graduation-cap" aria-hidden="true"></i> Vocational training &amp; mentorship</li>

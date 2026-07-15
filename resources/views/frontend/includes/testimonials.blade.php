@@ -3,7 +3,6 @@
             <div class="row">
                 <div class="col-xl-12 wow tpfadeUp reveal-on-scroll" data-wow-duration=".9s" data-wow-delay=".1s">
                     <div class="tp-blog-2__section-title pb-50 text-center">
-                        <span class="about-home-eyebrow d-block mb-2">Stories of hope</span>
                         <h4 class="tp-section-title">Testimonials</h4>
                     </div>
                 </div>

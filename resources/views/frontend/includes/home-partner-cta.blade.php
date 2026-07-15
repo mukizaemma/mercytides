@@ -2,7 +2,6 @@
     <div class="container home-partner-cta__inner">
         <div class="row align-items-center g-4 g-lg-5">
             <div class="col-lg-7 reveal-on-scroll" data-reveal-delay="0">
-                <span class="home-partner-cta__eyebrow">Get involved · Uganda</span>
                 <h2 id="home-partner-cta-heading" class="home-partner-cta__title">
                     Walk with mothers &amp; children through training, care, and sponsorship
                 </h2>

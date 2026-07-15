@@ -95,7 +95,6 @@
             <div class="{{ $showContactMap ? 'col-lg-6' : 'col-lg-10 col-xl-9' }}">
                 <div class="card border-0 shadow-sm site-form-card contact-page__form-card h-100">
                     <div class="card-body p-4 p-lg-5">
-                        <span class="about-home-eyebrow d-block mb-2">Support mothers</span>
                         <h2 class="h4 mb-2">Choose a way to support</h2>
                         <p class="text-muted mb-4">Pick one of the five support paths below, share your details, then send via WhatsApp or email.</p>
 

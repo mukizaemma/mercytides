@@ -132,7 +132,6 @@
 
             <div class="row mt-2 mb-4">
                 <div class="col-12 text-center">
-                    <span class="about-home-eyebrow d-block mb-2">Faces of hope</span>
                     <h3 class="tp-section-title mb-2">Young Mothers We Support</h3>
                     <p class="mothers-gallery-section__lead mx-auto mb-0">Real women. Real courage. Each portrait is part of a larger story of transformation.</p>
                 </div>

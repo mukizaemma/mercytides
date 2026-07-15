@@ -20,7 +20,6 @@
     <div class="container">
         <div class="row justify-content-center mb-4 mb-lg-5">
             <div class="col-lg-9 text-center">
-                <span class="about-home-eyebrow d-block mb-2">Ways to give &amp; serve</span>
                 <h2 class="h3 mb-3">Start your sponsorship journey</h2>
                 <p class="text-muted mb-0">Each path opens a dedicated page where you can meet the people we serve, read their stories, and take the next step.</p>
             </div>

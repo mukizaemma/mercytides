@@ -12,7 +12,6 @@
         <div class="container">
             <div class="row justify-content-center mb-4 mb-lg-5">
                 <div class="col-lg-9 text-center wow tpfadeUp reveal-on-scroll" data-wow-duration=".9s" data-wow-delay=".1s">
-                    <span class="about-home-eyebrow d-block mb-2">Uganda · The gap we close</span>
                     <h2 id="home-gap-heading" class="tp-section-title mb-3">Barriers young mothers face — and how we respond</h2>
                     <p class="home-narrative-band__lead mb-0">
                         Across communities near Kampala, unwed and teenage mothers often lack skills, safety, and hope.
@@ -26,7 +25,6 @@
                         <div class="about-home-pillar__head">
                             <span class="about-home-pillar__icon" aria-hidden="true"><i class="fas fa-triangle-exclamation"></i></span>
                             <div>
-                                <span class="about-home-pillar__kicker">The gap</span>
                                 <h3 class="about-home-pillar__title">Why mothers need support</h3>
                             </div>
                         </div>
@@ -40,7 +38,6 @@
                         <div class="about-home-pillar__head">
                             <span class="about-home-pillar__icon" aria-hidden="true"><i class="fas fa-hands-helping"></i></span>
                             <div>
-                                <span class="about-home-pillar__kicker">Our response</span>
                                 <h3 class="about-home-pillar__title">Skills, enterprise &amp; care</h3>
                             </div>
                         </div>
@@ -59,7 +56,6 @@
             <div class="row justify-content-center">
                 <div class="col-lg-10 text-center wow tpfadeUp reveal-on-scroll" data-wow-duration=".9s" data-wow-delay=".2s">
                     <div class="about-home-intro about-home-intro--centered">
-                        <span class="about-home-eyebrow d-block mb-2">Who we are · Wakiso, Uganda</span>
                         <h2 id="home-about-heading" class="tp-section-title about-home-title">About Mercy Tides Foundation</h2>
                         @php
                             $aboutDescRaw = $about->description ?? '';
@@ -85,7 +81,6 @@
     @include('frontend.includes.mothers-gallery', [
         'mothers' => $mothers ?? collect(),
         'limit' => 4,
-        'sectionEyebrow' => 'Who we serve',
         'sectionTitle' => 'Mothers in our program',
         'sectionLead' => 'Meet some of the young mothers we walk with — toward independence, dignity, and a brighter future for their children.',
         'viewMoreRoute' => route('mothersGallery'),

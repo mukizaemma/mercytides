@@ -34,7 +34,6 @@
             <div class="col-lg-10">
                 <div class="get-involved-page__intro card border-0 shadow-sm">
                     <div class="card-body p-4 p-lg-5">
-                        <span class="about-home-eyebrow d-block mb-2">Why get involved</span>
                         <h2 class="h3 mb-3">Your partnership changes lives</h2>
                         <div class="get-involved-page__intro-teaser postbox__text">{!! $introTeaserHtml !!}</div>
                         @if($hasMoreIntro)

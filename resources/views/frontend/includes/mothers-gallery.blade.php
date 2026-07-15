@@ -2,7 +2,6 @@
     $galleryMothers = ($mothers ?? collect())->take($limit ?? 4);
     $showSectionHeader = $showSectionHeader ?? true;
     $embedded = $embedded ?? false;
-    $sectionEyebrow = $sectionEyebrow ?? 'Faces of hope';
     $sectionTitle = $sectionTitle ?? 'Young Mothers We Support';
     $sectionLead = $sectionLead ?? 'Each portrait represents a young mother walking toward independence, dignity, and a brighter future for her family.';
     $viewMoreRoute = $viewMoreRoute ?? route('mothersGallery');
@@ -19,7 +18,6 @@
         <div class="row">
             <div class="col-xl-12 wow tpfadeUp reveal-on-scroll" data-wow-duration=".9s" data-wow-delay=".1s">
                 <div class="mothers-gallery-section__header pb-50 text-center">
-                    <span class="about-home-eyebrow d-block mb-2">{{ $sectionEyebrow }}</span>
                     <h4 class="tp-section-title">{{ $sectionTitle }}</h4>
                     @if(!empty($sectionLead))
                         <p class="mothers-gallery-section__lead mx-auto mb-0">{{ $sectionLead }}</p>

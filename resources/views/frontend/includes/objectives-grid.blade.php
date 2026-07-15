@@ -9,7 +9,6 @@
     <div class="container">
         <div class="row justify-content-center mb-4 mb-lg-5">
             <div class="col-12 col-lg-10 text-center wow tpfadeUp reveal-on-scroll" data-wow-duration=".9s" data-wow-delay=".1s">
-                <span class="mt-objectives__eyebrow">How we work</span>
                 <h4 class="tp-section-title mb-3">What guides our work every day</h4>
                 @if(!empty($caption))
                     <p class="mt-objectives__lead mb-0">{{ $caption }}</p>

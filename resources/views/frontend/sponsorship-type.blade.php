@@ -26,7 +26,6 @@
             <div class="col-lg-10">
                 <div class="card border-0 sponsorship-type-page__intro">
                     <div class="card-body p-4 p-lg-5">
-                        <span class="about-home-eyebrow d-block mb-2">{{ $isYoungMother ? 'Mothers & hope' : 'Sponsorship' }}</span>
                         <h2 class="about-home-title h3 mb-3">{{ $meta['intro_title'] ?? $meta['label'] }}</h2>
                         <div class="postbox__text sponsorship-type-page__intro-text">{!! $meta['intro'] !!}</div>
 
@@ -51,7 +50,6 @@
         </div>
 
         <div class="sponsorship-type-page__grid-header">
-            <span class="about-home-eyebrow d-block mb-2">{{ $isYoungMother ? 'Meet the mothers' : 'Open profiles' }}</span>
             <h2>{{ $gridTitle }}</h2>
             <p>{{ $gridLead }}</p>
         </div>

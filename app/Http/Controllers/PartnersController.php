@@ -2,109 +2,134 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\File;
 use App\Models\Partner;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Throwable;
 
 class PartnersController extends Controller
 {
     public function index()
     {
-
-        $data = DB::table('partners')->latest()->get();
-        return view('admin.partners', ['data'=>$data]);
+        return view('admin.partners', [
+            'data' => Partner::query()->latest()->get(),
+        ]);
     }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
 
     public function store(Request $request)
     {
-        $data = new Partner();
-        $data->names = $request->names;
-        $data ->facebook = $request->facebook;
-        $data ->instagram = $request->instagram;
-        $data ->twitter = $request->twitter;
-        $data ->website = $request->website;
-        $data ->description = $request->description;
+        $validated = $request->validate([
+            'names' => ['required', 'string', 'max:255'],
+            'website' => ['nullable', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
+            'image' => ['required', 'image', 'mimes:jpeg,jpg,png,gif,webp', 'max:4096'],
+        ]);
 
-        if ($request->hasFile('image')) {
-            $data->image = $this->storeOptimizedImageBasename(
-                $request->file('image'),
-                'images/partners',
-                'public',
-                ['preset' => 'logo']
-            );
+        $partner = new Partner();
+        $partner->names = $validated['names'];
+        $partner->website = $validated['website'] ?? null;
+        $partner->description = $validated['description'] ?? null;
+        $partner->slug = Str::slug($validated['names']) ?: ('partner-'.Str::random(6));
+
+        try {
+            $partner->image = $this->storePartnerLogo($request->file('image'));
+        } catch (Throwable $e) {
+            report($e);
+
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error', 'Could not upload the partner logo. Please use a JPG, PNG, GIF, or WEBP image under 4MB.');
         }
 
-        $stored = $data->save();
+        $partner->save();
 
-        if($stored){
-            return redirect('partner')->with('success', 'New Partner has been added successfuly');
-        }
-
-        return redirect()->back()->with('error','Failed to add new Partner');
-    }
-
-
-    public function show($id)
-    {
-        //
+        return redirect()
+            ->route('partner')
+            ->with('success', 'Partner has been added successfully.');
     }
 
     public function edit($id)
     {
-        $data = Partner::find($id);
-        return view('admin.partnerUpdate', ['data'=>$data]);
+        $data = Partner::query()->findOrFail($id);
+
+        return view('admin.partnerUpdate', ['data' => $data]);
     }
 
     public function update(Request $request, $id)
     {
-        $data = Partner::find($id);
-        $data->names = $request->input('names');
-        // $data->facebook = $request->input('facebook');
-        // $data->instagram = $request->input('instagram');
-        // $data->twitter = $request->input('twitter');
-        $data->website = $request->input('website');
-        $data->description = $request->input('description');
+        $partner = Partner::query()->findOrFail($id);
 
-        if(!$data){
-            return back()->with('Error','Partner Not Found');
+        $validated = $request->validate([
+            'names' => ['required', 'string', 'max:255'],
+            'website' => ['nullable', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
+            'image' => ['nullable', 'image', 'mimes:jpeg,jpg,png,gif,webp', 'max:4096'],
+        ]);
+
+        $partner->names = $validated['names'];
+        $partner->website = $validated['website'] ?? null;
+        $partner->description = $validated['description'] ?? null;
+
+        if ($request->hasFile('image')) {
+            try {
+                $oldImage = $partner->image;
+                $partner->image = $this->storePartnerLogo($request->file('image'));
+                $this->deletePartnerLogo($oldImage);
+            } catch (Throwable $e) {
+                report($e);
+
+                return redirect()
+                    ->back()
+                    ->withInput()
+                    ->with('error', 'Could not upload the partner logo. Please use a JPG, PNG, GIF, or WEBP image under 4MB.');
+            }
         }
 
-        if ($request->hasFile('image') && request('image') != '') {
-            $data->image = $this->storeOptimizedImageBasename(
-                $request->file('image'),
-                'images/partners',
-                'public',
-                ['preset' => 'logo']
-            );
-        }
+        $partner->save();
 
-        $data->update();
-
-        return redirect('partner')->with('success','Partner has been updated');
+        return redirect()
+            ->route('partner')
+            ->with('success', 'Partner has been updated.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function destroy($id)
     {
-        $data = Partner::find($id);
-        $data->delete($id);
-        return redirect()->back()->with('success', 'Item has been deleted');
+        $partner = Partner::query()->findOrFail($id);
+        $this->deletePartnerLogo($partner->image);
+        $partner->delete();
+
+        return redirect()
+            ->route('partner')
+            ->with('success', 'Partner has been deleted.');
+    }
+
+    protected function storePartnerLogo($file): string
+    {
+        $basename = $this->storeOptimizedImageBasename(
+            $file,
+            'images/partners',
+            'public',
+            ['preset' => 'logo']
+        );
+
+        return ltrim((string) $basename, '/');
+    }
+
+    protected function deletePartnerLogo(?string $image): void
+    {
+        if (empty($image)) {
+            return;
+        }
+
+        $path = ltrim($image, '/');
+        if (! str_contains($path, '/')) {
+            $path = 'images/partners/'.$path;
+        }
+
+        if (Storage::disk('public')->exists($path)) {
+            Storage::disk('public')->delete($path);
+        }
     }
 }

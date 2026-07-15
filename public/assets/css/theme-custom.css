@@ -4131,11 +4131,21 @@ a.contact-stat-card__value:hover {
 }
 
 .home-partners-section__logo {
-    max-height: 72px;
+    max-height: 88px;
+    max-width: 100%;
     width: auto;
+    height: auto;
     object-fit: contain;
-    filter: grayscale(20%);
-    opacity: 0.92;
+    filter: none;
+    opacity: 1;
+    background: #fff;
+    padding: 0.65rem 0.85rem;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 32, 91, 0.08);
+}
+
+.home-partners-section__link {
+    text-decoration: none;
 }
 
 .home-partners-section__name {

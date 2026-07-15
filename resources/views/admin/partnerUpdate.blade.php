@@ -1,100 +1,91 @@
 @extends('layouts.adminbase')
 
-@section('title', 'Edit Program')
-
-@section('sidebar')
-
-    @parent
-
-@endsection
+@section('title', 'Edit partner')
 
 @section('content')
+<div id="layoutSidenav">
+    <div id="layoutSidenav_nav" data-turbo-permanent>
+        @include('admin.includes.sidenav')
+    </div>
+    <div id="layoutSidenav_content">
+        <main>
+            <div class="container-fluid px-4 py-4">
+                <div class="admin-page-header d-flex align-items-center justify-content-between flex-wrap gap-2">
+                    <div>
+                        <h1>Edit partner</h1>
+                        <p class="text-muted mb-0">{{ $data->names }}</p>
+                    </div>
+                    <a href="{{ route('partner') }}" class="btn btn-outline-secondary">Back</a>
+                </div>
 
-    <div id="layoutSidenav">
-        <div id="layoutSidenav_nav">
-            @include('admin.includes.sidenav')
-        </div>
-        <div id="layoutSidenav_content">
-            <div class="card-header">
-                <a href="{{ route('partner') }}" class="btn btn-primary">Back</a>
                 @if (session()->has('success'))
-                    <div class="arlert alert-success">
-                        <button class="close" type="button" data-dismiss="alert">X</button>
-                        {{ session()->get('success') }}
+                    <div class="alert alert-success">{{ session()->get('success') }}</div>
+                @endif
+                @if (session()->has('error'))
+                    <div class="alert alert-danger">{{ session()->get('error') }}</div>
+                @endif
+                @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <ul class="mb-0 ps-3">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
                     </div>
                 @endif
-            </div>
-            <main>
-                <div class="container-fluid px-4">
-                    <div class="row">
 
-                    </div>
-
-                    <div class="card mb-4">
-
-                        <div class="card-body">
-                            <form class="form" action="{{ route('updatePartner',$data->id) }}" method="POST"
-                            enctype="multipart/form-data">
+                <div class="card">
+                    <div class="card-body">
+                        <form action="{{ route('updatePartner', $data->id, false) }}" method="POST" enctype="multipart/form-data" data-turbo="false">
                             @csrf
-                            <div class="form-body">
-                                <div class="row">
-                                    <div class="col-lg-6 col-sm-12">
-                                        <div class="form-group">
-                                            <label for="projectinput1">Names</label>
-                                            <input type="text" class="form-control" name="names" value="{{$data->names}}">
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-6 col-sm-12">
-                                        <div class="form-group">
-                                            <label for="projectinput1">Partner website</label>
-                                            <input type="text" class="form-control" name="website" value="{{$data->website}}">
-                                        </div>
-                                    </div>
-
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Name <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" name="names" required value="{{ old('names', $data->names) }}">
                                 </div>
-                                <div class="form-group">
-                                    <label for="projectinput8">Partnership Description</label>
-                                    <textarea id="ProgramDescription" rows="5" class="form-control" name="description" data-editor="rich"
-                                        placeholder="Partnership Description">{!! $data->description !!}</textarea>
+                                <div class="col-md-6">
+                                    <label class="form-label">Website</label>
+                                    <input type="text" class="form-control" name="website" value="{{ old('website', $data->website) }}">
                                 </div>
-
-                                <div class="row mt-5">
-
-                                    <div class="col-lg-6 col-sm-12">
-                                        <label>Select File</label>
-                                        <label id="projectinput7" class="file center-block">
-                                            <img src="{{ asset('storage/images/partners') . $data->image }}" alt="" width="120px">
-                                        </label>
-                                    </div>
-                                    <div class="col-lg-6 col-sm-12">
-                                        <label>Select File</label>
-                                        <label id="projectinput7" class="file center-block">
-                                            <input type="file" id="image" name="image" >
-                                            <span class="file-custom"></span>
-                                        </label>
+                                <div class="col-12">
+                                    <label class="form-label">Description</label>
+                                    <textarea class="form-control" name="description" rows="4" data-editor="rich">{{ old('description', $data->description) }}</textarea>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Current logo</label>
+                                    <div>
+                                        @if($data->hasLogo())
+                                            <img
+                                                src="{{ $data->logoUrl() }}"
+                                                alt="{{ $data->names }}"
+                                                class="rounded border bg-white p-2"
+                                                style="max-height: 120px; width: auto; object-fit: contain;"
+                                            >
+                                        @else
+                                            <span class="text-muted">No logo uploaded</span>
+                                        @endif
                                     </div>
                                 </div>
-
+                                <div class="col-md-6">
+                                    <label class="form-label">Replace logo</label>
+                                    <input type="file" class="form-control" name="image" accept="image/jpeg,image/png,image/gif,image/webp,.jpg,.jpeg,.png,.gif,.webp" data-image-preset="logo">
+                                    <small class="text-muted">Leave blank to keep the current logo. JPG, PNG, GIF, or WEBP.</small>
+                                </div>
                             </div>
-
-                            <div class="form-actions mt-5">
-                                <button type="submit" class="btn btn-primary text-black">
-                                    <i class="fa fa-save"></i> Save Changes
-                                </button>
-
+                            <div class="d-flex justify-content-end gap-2 mt-4">
+                                <a href="{{ route('partner') }}" class="btn btn-outline-secondary">Cancel</a>
+                                <button type="submit" class="btn btn-primary">Save changes</button>
                             </div>
                         </form>
-                        </div>
                     </div>
-
-
                 </div>
-            </main>
-            @include('admin.includes.footer')
-        </div>
+            </div>
+        </main>
+        @include('admin.includes.footer')
     </div>
+</div>
+@endsection
 
 @section('scripts')
-
     <script src="{{ asset('assets') }}/js/summernote.js"></script>
 @endsection

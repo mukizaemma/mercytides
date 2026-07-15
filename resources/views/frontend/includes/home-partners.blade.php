@@ -11,8 +11,20 @@
         <div class="row g-4 align-items-center justify-content-center">
             @foreach ($partners as $partner)
                 <div class="col-6 col-md-4 col-lg-3 text-center wow tpfadeUp reveal-on-scroll" data-wow-duration=".9s" data-wow-delay=".2s">
-                    @if(!empty($partner->image))
-                        <img src="{{ asset('storage/images/partners/' . $partner->image) }}" alt="{{ $partner->names ?? 'Partner' }}" class="home-partners-section__logo img-fluid" loading="lazy">
+                    @if($partner->hasLogo())
+                        @if(!empty($partner->website))
+                            <a
+                                href="{{ \Illuminate\Support\Str::startsWith($partner->website, ['http://', 'https://']) ? $partner->website : 'https://'.$partner->website }}"
+                                class="home-partners-section__link d-inline-block"
+                                target="_blank"
+                                rel="noopener"
+                                aria-label="{{ $partner->names ?? 'Partner' }}"
+                            >
+                                <img src="{{ $partner->logoUrl() }}" alt="{{ $partner->names ?? 'Partner' }}" class="home-partners-section__logo img-fluid" loading="lazy">
+                            </a>
+                        @else
+                            <img src="{{ $partner->logoUrl() }}" alt="{{ $partner->names ?? 'Partner' }}" class="home-partners-section__logo img-fluid" loading="lazy">
+                        @endif
                     @else
                         <span class="home-partners-section__name d-inline-block px-3 py-2">{{ $partner->names ?? 'Partner' }}</span>
                     @endif

@@ -299,7 +299,7 @@ class HomeController extends Controller
         return view('frontend.testimony',['testimony'=>$testimony, 'programs'=>$programs,'testimonials'=>$testimonials,'about'=>$about]);
     }
     public function showPrograms(){
-        $programs = Activity::with('images')->oldest()->get();
+        $programs = Program::query()->oldest()->get();
         $about = Background::firstOrEmpty();
         return view('frontend.programs',['programs'=>$programs, 'about'=>$about]);
     }

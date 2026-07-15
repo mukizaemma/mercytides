@@ -4151,16 +4151,17 @@ a.contact-stat-card__value:hover {
 
 .home-partners-section__grid {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: row;
+    flex-wrap: nowrap;
     justify-content: center;
     align-items: stretch;
-    gap: clamp(1.25rem, 3vw, 2rem);
+    gap: clamp(1.25rem, 3vw, 2.25rem);
 }
 
 .home-partners-section__item {
-    flex: 0 1 18rem;
-    max-width: 20rem;
-    width: min(100%, 20rem);
+    flex: 0 0 auto;
+    width: clamp(10.5rem, 28vw, 16rem);
+    max-width: 16rem;
 }
 
 .home-partners-section__link {
@@ -4168,8 +4169,8 @@ a.contact-stat-card__value:hover {
     align-items: center;
     justify-content: center;
     width: 100%;
-    min-height: 11rem;
-    padding: 1.35rem 1.5rem;
+    min-height: clamp(8.5rem, 18vw, 11rem);
+    padding: 1.25rem 1.35rem;
     background: #fff;
     border: 1px solid rgba(0, 32, 91, 0.08);
     border-radius: 18px;
@@ -4188,17 +4189,11 @@ a.contact-stat-card__value:hover {
 .home-partners-section__logo {
     display: block;
     width: 100%;
-    max-width: 15rem;
-    max-height: 8.5rem;
+    max-width: 12rem;
+    max-height: 7.5rem;
     height: auto;
     object-fit: contain;
     object-position: center;
-    filter: none;
-    opacity: 1;
-    background: transparent;
-    padding: 0;
-    border: 0;
-    border-radius: 0;
 }
 
 .home-partners-section__name {
@@ -4206,7 +4201,7 @@ a.contact-stat-card__value:hover {
     align-items: center;
     justify-content: center;
     width: 100%;
-    min-height: 11rem;
+    min-height: clamp(8.5rem, 18vw, 11rem);
     padding: 1.25rem;
     background: #fff;
     border-radius: 18px;
@@ -4214,6 +4209,17 @@ a.contact-stat-card__value:hover {
     font-weight: 600;
     text-align: center;
     color: var(--brand-secondary, #00205b);
+}
+
+@media (max-width: 575.98px) {
+    .home-partners-section__grid {
+        flex-wrap: wrap;
+    }
+
+    .home-partners-section__item {
+        width: calc(50% - 0.5rem);
+        max-width: none;
+    }
 }
 
 /* sponsor-card styles consolidated above in Sponsorship module */

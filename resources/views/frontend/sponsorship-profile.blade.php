@@ -40,9 +40,54 @@
 <section class="sp-profile">
     <div class="container sp-profile__container">
 
-        {{-- Hero: photo + story + CTA --}}
-        <div class="sp-profile__hero">
-            <div class="sp-profile__hero-media">
+        {{-- Identity + CTA above media --}}
+        <header class="sp-profile__intro">
+            <p class="sp-profile__eyebrow">{{ $profile->typeLabel() }}@if($profile->age) · Age {{ $profile->age }}@endif</p>
+            <h1 class="sp-profile__name">{{ $profile->displayName() }}</h1>
+
+            @if($profile->shouldShowStatusPublicly() && !empty($profile->status) || !empty($profile->monthly_need))
+                <div class="sp-profile__meta">
+                    @if($profile->shouldShowStatusPublicly() && !empty($profile->status))
+                        <span class="sp-profile__chip {{ $profile->isAvailable() ? 'sp-profile__chip--open' : 'sp-profile__chip--sponsored' }}">
+                            {{ $profile->status }}
+                        </span>
+                    @endif
+                    @if(!empty($profile->monthly_need))
+                        <span class="sp-profile__need">Suggested <strong>${{ $profile->monthly_need }}</strong>/month</span>
+                    @endif
+                </div>
+            @endif
+
+            @if($storyExcerpt !== '')
+                <p class="sp-profile__lede">{{ $storyExcerpt }}</p>
+            @endif
+
+            <div class="sp-profile__cta-group">
+                <button
+                    type="button"
+                    class="sp-profile__btn-primary js-open-sponsor-commitment"
+                    data-bs-toggle="modal"
+                    data-bs-target="#sponsorCommitmentModal"
+                    data-support-focus="full_care"
+                >
+                    {{ $sponsorCta }}
+                </button>
+
+                <div class="sp-profile__cta-secondary">
+                    <a href="#ways-to-support" class="sp-profile__link">See ways to help</a>
+                    @if($hasVideo)
+                        <span class="sp-profile__dot" aria-hidden="true">·</span>
+                        <a href="#her-video" class="sp-profile__link">Watch her story</a>
+                    @endif
+                </div>
+            </div>
+
+            <p class="sp-profile__trust">No payment is taken on this page. We’ll follow up with secure next steps.</p>
+        </header>
+
+        {{-- Photo + video, equal-height row --}}
+        <div class="sp-profile__media-row{{ $hasVideo ? '' : ' sp-profile__media-row--photo-only' }}">
+            <div class="sp-profile__media-col sp-profile__media-col--photo">
                 <figure class="sp-profile__portrait">
                     <img
                         src="{{ $posterUrl }}"
@@ -55,91 +100,43 @@
                 </figure>
             </div>
 
-            <div class="sp-profile__hero-copy">
-                <p class="sp-profile__eyebrow">{{ $profile->typeLabel() }}@if($profile->age) · Age {{ $profile->age }}@endif</p>
-                <h1 class="sp-profile__name">{{ $profile->displayName() }}</h1>
-
-                @if($profile->shouldShowStatusPublicly() && !empty($profile->status) || !empty($profile->monthly_need))
-                    <div class="sp-profile__meta">
-                        @if($profile->shouldShowStatusPublicly() && !empty($profile->status))
-                            <span class="sp-profile__chip {{ $profile->isAvailable() ? 'sp-profile__chip--open' : 'sp-profile__chip--sponsored' }}">
-                                {{ $profile->status }}
-                            </span>
-                        @endif
-                        @if(!empty($profile->monthly_need))
-                            <span class="sp-profile__need">Suggested <strong>${{ $profile->monthly_need }}</strong>/month</span>
-                        @endif
-                    </div>
-                @endif
-
-                @if($storyExcerpt !== '')
-                    <p class="sp-profile__lede">{{ $storyExcerpt }}</p>
-                @endif
-
-                <div class="sp-profile__cta-group">
-                    <button
-                        type="button"
-                        class="sp-profile__btn-primary js-open-sponsor-commitment"
-                        data-bs-toggle="modal"
-                        data-bs-target="#sponsorCommitmentModal"
-                        data-support-focus="full_care"
-                    >
-                        {{ $sponsorCta }}
-                    </button>
-
-                    <div class="sp-profile__cta-secondary">
-                        <a href="#ways-to-support" class="sp-profile__link">See ways to help</a>
-                        @if($hasVideo)
-                            <span class="sp-profile__dot" aria-hidden="true">·</span>
-                            <a href="#her-video" class="sp-profile__link">Watch her story</a>
-                        @endif
+            @if($hasVideo)
+                <div id="her-video" class="sp-profile__media-col sp-profile__media-col--video">
+                    <div class="sp-profile__video-card">
+                        <p class="sp-profile__video-label">Hear from {{ $firstName }}</p>
+                        <div class="sp-profile__video-frame">
+                            @if($uploadedVideoUrl)
+                                @php
+                                    $videoExt = strtolower(pathinfo((string) $profile->video_path, PATHINFO_EXTENSION));
+                                    $videoMime = match ($videoExt) {
+                                        'webm' => 'video/webm',
+                                        'mov' => 'video/quicktime',
+                                        default => 'video/mp4',
+                                    };
+                                @endphp
+                                <video
+                                    class="sp-profile__native-video"
+                                    controls
+                                    playsinline
+                                    preload="metadata"
+                                    @if($posterUrl) poster="{{ $posterUrl }}" @endif
+                                >
+                                    <source src="{{ $uploadedVideoUrl }}" type="{{ $videoMime }}">
+                                    Your browser does not support embedded video.
+                                </video>
+                            @else
+                                <iframe
+                                    src="{{ $embedUrl }}"
+                                    title="Video about {{ $profile->displayName() }}"
+                                    allowfullscreen
+                                    loading="lazy"
+                                ></iframe>
+                            @endif
+                        </div>
                     </div>
                 </div>
-
-                <p class="sp-profile__trust">No payment is taken on this page. We’ll follow up with secure next steps.</p>
-            </div>
+            @endif
         </div>
-
-        {{-- Optional video --}}
-        @if($hasVideo)
-            <section id="her-video" class="sp-profile__video-section" aria-labelledby="her-video-heading">
-                <div class="sp-profile__section-head sp-profile__section-head--left">
-                    <h2 id="her-video-heading" class="sp-profile__section-title">Hear from {{ $firstName }}</h2>
-                    <p class="sp-profile__section-lead">Watch her share her journey in her own words.</p>
-                </div>
-                <div class="sp-profile__video-card">
-                    <div class="ratio ratio-16x9 sp-profile__video-frame">
-                        @if($uploadedVideoUrl)
-                            @php
-                                $videoExt = strtolower(pathinfo((string) $profile->video_path, PATHINFO_EXTENSION));
-                                $videoMime = match ($videoExt) {
-                                    'webm' => 'video/webm',
-                                    'mov' => 'video/quicktime',
-                                    default => 'video/mp4',
-                                };
-                            @endphp
-                            <video
-                                class="sp-profile__native-video"
-                                controls
-                                playsinline
-                                preload="metadata"
-                                @if($posterUrl) poster="{{ $posterUrl }}" @endif
-                            >
-                                <source src="{{ $uploadedVideoUrl }}" type="{{ $videoMime }}">
-                                Your browser does not support embedded video.
-                            </video>
-                        @else
-                            <iframe
-                                src="{{ $embedUrl }}"
-                                title="Video about {{ $profile->displayName() }}"
-                                allowfullscreen
-                                loading="lazy"
-                            ></iframe>
-                        @endif
-                    </div>
-                </div>
-            </section>
-        @endif
 
         {{-- Longer story blocks only when filled --}}
         @if($storyHtml || $challengesHtml || $visionHtml)

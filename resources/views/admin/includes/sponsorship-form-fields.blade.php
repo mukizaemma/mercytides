@@ -2,14 +2,19 @@
     // Use formProfile only — never inherit a leftover $profile from a parent @forelse/@foreach.
     $formProfile = $formProfile ?? null;
     $isEdit = $formProfile instanceof \App\Models\Sponsorship;
+    $profileId = $isEdit ? (int) $formProfile->getKey() : null;
+    // Relative URLs so edits stay on the current host (APP_URL may differ from the public domain).
     $formAction = $isEdit
-        ? route('updateSponsorship', $formProfile->id, false)
+        ? route('updateSponsorship', ['id' => $profileId], false)
         : route('saveSponsorship', [], false);
     $types = $types ?? \App\Support\MercyTidesContent::sponsorshipTypes();
 @endphp
 
 <form action="{{ $formAction }}" method="POST" enctype="multipart/form-data" data-turbo="false" autocomplete="off">
     @csrf
+    @if($isEdit)
+        <input type="hidden" name="sponsorship_id" value="{{ $profileId }}">
+    @endif
     <div class="row">
         <div class="col-md-6 mb-3">
             <label class="form-label">Sponsorship type <span class="text-danger">*</span></label>
@@ -69,12 +74,12 @@
                 <input
                     type="checkbox"
                     class="form-check-input"
-                    id="show_status_publicly_{{ $isEdit ? $formProfile->id : 'new' }}"
+                    id="show_status_publicly_{{ $isEdit ? $profileId : 'new' }}"
                     name="show_status_publicly"
                     value="1"
                     {{ old('show_status_publicly', $isEdit ? ($formProfile->show_status_publicly ?? false) : false) ? 'checked' : '' }}
                 >
-                <label class="form-check-label" for="show_status_publicly_{{ $isEdit ? $formProfile->id : 'new' }}">
+                <label class="form-check-label" for="show_status_publicly_{{ $isEdit ? $profileId : 'new' }}">
                     Show this status on the public site
                 </label>
             </div>
@@ -123,9 +128,9 @@
                 value="{{ old('video_url', $isEdit ? ($formProfile->video_url ?? '') : '') }}"
                 placeholder="https://www.youtube.com/watch?v=… or https://youtu.be/…"
             >
-            @error('video_url')
-                <div class="text-danger small mt-1">{{ $message }}</div>
-            @enderror
+            @if(isset($errors) && $errors->has('video_url'))
+                <div class="text-danger small mt-1">{{ $errors->first('video_url') }}</div>
+            @endif
         </div>
 
         <div class="mb-0">
@@ -136,9 +141,9 @@
                 name="video_file"
                 accept="video/mp4,video/webm,video/quicktime,.mp4,.webm,.mov"
             >
-            @error('video_file')
-                <div class="text-danger small mt-1">{{ $message }}</div>
-            @enderror
+            @if(isset($errors) && $errors->has('video_file'))
+                <div class="text-danger small mt-1">{{ $errors->first('video_file') }}</div>
+            @endif
             @if($isEdit && !empty($formProfile->video_path))
                 <div class="mt-2">
                     <video
@@ -152,12 +157,12 @@
                         <input
                             type="checkbox"
                             class="form-check-input"
-                            id="remove_video_file_{{ $formProfile->id }}"
+                            id="remove_video_file_{{ $profileId }}"
                             name="remove_video_file"
                             value="1"
                             {{ old('remove_video_file') ? 'checked' : '' }}
                         >
-                        <label class="form-check-label" for="remove_video_file_{{ $formProfile->id }}">
+                        <label class="form-check-label" for="remove_video_file_{{ $profileId }}">
                             Remove uploaded video
                         </label>
                     </div>

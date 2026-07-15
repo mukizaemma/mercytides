@@ -23,6 +23,9 @@
                 @if (session()->has('success'))
                     <div class="alert alert-success">{{ session()->get('success') }}</div>
                 @endif
+                @if (session()->has('error'))
+                    <div class="alert alert-danger">{{ session()->get('error') }}</div>
+                @endif
 
                 <div class="card mb-3">
                     <div class="card-body py-3">
@@ -95,24 +98,42 @@
     </div>
 </div>
 
-@include('admin.includes.admin-modal', [
-    'id' => 'sponsorshipCreateModal',
-    'title' => 'Add sponsorship profile',
-    'body' => view('admin.includes.sponsorship-form-fields', [
-        'formProfile' => null,
-        'types' => $types,
-    ])->render(),
-])
+{{-- Create modal --}}
+<div class="modal fade admin-modal" id="sponsorshipCreateModal" tabindex="-1" aria-labelledby="sponsorshipCreateModalLabel" aria-hidden="true" data-bs-backdrop="true" data-bs-keyboard="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="sponsorshipCreateModalLabel">Add sponsorship profile</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                @include('admin.includes.sponsorship-form-fields', [
+                    'formProfile' => null,
+                    'types' => $types,
+                ])
+            </div>
+        </div>
+    </div>
+</div>
 
-@foreach($profiles as $profile)
-    @include('admin.includes.admin-modal', [
-        'id' => 'sponsorshipEditModal'.$profile->id,
-        'title' => 'Edit '.$profile->displayName(),
-        'body' => view('admin.includes.sponsorship-form-fields', [
-            'formProfile' => $profile,
-            'types' => $types,
-        ])->render(),
-    ])
+{{-- Edit modals: include forms directly to avoid id/variable collision from pre-rendered bodies --}}
+@foreach($profiles as $editProfile)
+    <div class="modal fade admin-modal" id="sponsorshipEditModal{{ $editProfile->id }}" tabindex="-1" aria-labelledby="sponsorshipEditModalLabel{{ $editProfile->id }}" aria-hidden="true" data-bs-backdrop="true" data-bs-keyboard="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="sponsorshipEditModalLabel{{ $editProfile->id }}">Edit {{ $editProfile->displayName() }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    @include('admin.includes.sponsorship-form-fields', [
+                        'formProfile' => $editProfile,
+                        'types' => $types,
+                    ])
+                </div>
+            </div>
+        </div>
+    </div>
 @endforeach
 @endsection
 

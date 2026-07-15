@@ -53,7 +53,12 @@ class SponsorshipController extends Controller
 
     public function update(Request $request, $id)
     {
-        $profile = Sponsorship::query()->find($id);
+        $profileId = (int) $id;
+        if ($request->filled('sponsorship_id')) {
+            $profileId = (int) $request->input('sponsorship_id');
+        }
+
+        $profile = Sponsorship::query()->find($profileId);
         if (! $profile) {
             return redirect()
                 ->route('sponsorship.index')

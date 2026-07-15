@@ -190,7 +190,7 @@ class Sponsorship extends Model
         $suffix = 1;
 
         while (
-            static::query()
+            static::withTrashed()
                 ->where('slug', $slug)
                 ->when($ignoreId, fn ($q) => $q->where('id', '!=', $ignoreId))
                 ->exists()

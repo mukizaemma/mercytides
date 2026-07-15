@@ -1,8 +1,16 @@
 @php
     // Use formProfile only — never inherit a leftover $profile from a parent @forelse/@foreach.
-    $formProfile = $formProfile ?? null;
-    $isEdit = $formProfile instanceof \App\Models\Sponsorship;
+    $forceCreate = (bool) ($forceCreate ?? false);
+    $formProfile = $forceCreate ? null : ($formProfile ?? null);
+    $isEdit = ! $forceCreate && $formProfile instanceof \App\Models\Sponsorship;
     $profileId = $isEdit ? (int) $formProfile->getKey() : null;
+    $formIntent = $isEdit ? 'edit-'.$profileId : 'create';
+    $errors = $errors ?? new \Illuminate\Support\ViewErrorBag();
+    $activeIntent = old('form_intent');
+    $useOld = $errors->any() && $activeIntent === $formIntent;
+    $field = static function (string $key, $fallback = '') use ($useOld) {
+        return $useOld ? old($key, $fallback) : $fallback;
+    };
     // Relative URLs so edits stay on the current host (APP_URL may differ from the public domain).
     $formAction = $isEdit
         ? route('updateSponsorship', ['id' => $profileId], false)
@@ -12,15 +20,17 @@
 
 <form action="{{ $formAction }}" method="POST" enctype="multipart/form-data" data-turbo="false" autocomplete="off">
     @csrf
+    <input type="hidden" name="form_intent" value="{{ $formIntent }}">
     @if($isEdit)
         <input type="hidden" name="sponsorship_id" value="{{ $profileId }}">
+        @method('PUT')
     @endif
     <div class="row">
         <div class="col-md-6 mb-3">
             <label class="form-label">Sponsorship type <span class="text-danger">*</span></label>
             <select name="type" class="form-select" required>
                 @foreach($types as $key => $meta)
-                    <option value="{{ $key }}" {{ old('type', $isEdit ? $formProfile->type : 'child') === $key ? 'selected' : '' }}>{{ $meta['label'] }}</option>
+                    <option value="{{ $key }}" {{ $field('type', $isEdit ? $formProfile->type : 'child') === $key ? 'selected' : '' }}>{{ $meta['label'] }}</option>
                 @endforeach
             </select>
         </div>
@@ -28,7 +38,7 @@
             <label class="form-label">Publish status <span class="text-danger">*</span></label>
             <select name="publish_status" class="form-select" required>
                 @foreach(['Published', 'Draft'] as $status)
-                    <option value="{{ $status }}" {{ old('publish_status', $isEdit ? ($formProfile->publish_status ?? 'Published') : 'Published') === $status ? 'selected' : '' }}>{{ $status }}</option>
+                    <option value="{{ $status }}" {{ $field('publish_status', $isEdit ? ($formProfile->publish_status ?? 'Published') : 'Published') === $status ? 'selected' : '' }}>{{ $status }}</option>
                 @endforeach
             </select>
         </div>
@@ -45,11 +55,11 @@
     <div class="row">
         <div class="col-md-8 mb-3">
             <label class="form-label">Name <span class="text-danger">*</span></label>
-            <input type="text" class="form-control" name="names" required value="{{ old('names', $isEdit ? $formProfile->names : '') }}">
+            <input type="text" class="form-control" name="names" required value="{{ $field('names', $isEdit ? $formProfile->names : '') }}">
         </div>
         <div class="col-md-4 mb-3">
             <label class="form-label">Age</label>
-            <input type="text" class="form-control" name="age" value="{{ old('age', $isEdit ? ($formProfile->age ?? '') : '') }}">
+            <input type="text" class="form-control" name="age" value="{{ $field('age', $isEdit ? ($formProfile->age ?? '') : '') }}">
         </div>
     </div>
 
@@ -59,7 +69,7 @@
             <select name="sex" class="form-select">
                 <option value="">—</option>
                 @foreach(['Male', 'Female'] as $sex)
-                    <option value="{{ $sex }}" {{ old('sex', $isEdit ? ($formProfile->sex ?? '') : '') === $sex ? 'selected' : '' }}>{{ $sex }}</option>
+                    <option value="{{ $sex }}" {{ $field('sex', $isEdit ? ($formProfile->sex ?? '') : '') === $sex ? 'selected' : '' }}>{{ $sex }}</option>
                 @endforeach
             </select>
         </div>
@@ -67,7 +77,7 @@
             <label class="form-label">Sponsorship status <span class="text-danger">*</span></label>
             <select name="status" class="form-select" required>
                 @foreach(['Not Sponsored', 'Sponsored'] as $status)
-                    <option value="{{ $status }}" {{ old('status', $isEdit ? ($formProfile->status ?? 'Not Sponsored') : 'Not Sponsored') === $status ? 'selected' : '' }}>{{ $status }}</option>
+                    <option value="{{ $status }}" {{ $field('status', $isEdit ? ($formProfile->status ?? 'Not Sponsored') : 'Not Sponsored') === $status ? 'selected' : '' }}>{{ $status }}</option>
                 @endforeach
             </select>
             <div class="form-check mt-2">
@@ -77,7 +87,7 @@
                     id="show_status_publicly_{{ $isEdit ? $profileId : 'new' }}"
                     name="show_status_publicly"
                     value="1"
-                    {{ old('show_status_publicly', $isEdit ? ($formProfile->show_status_publicly ?? false) : false) ? 'checked' : '' }}
+                    {{ ($useOld ? old('show_status_publicly') : ($isEdit ? ($formProfile->show_status_publicly ?? false) : false)) ? 'checked' : '' }}
                 >
                 <label class="form-check-label" for="show_status_publicly_{{ $isEdit ? $profileId : 'new' }}">
                     Show this status on the public site
@@ -87,29 +97,29 @@
         </div>
         <div class="col-md-4 mb-3">
             <label class="form-label">Monthly need (USD)</label>
-            <input type="text" class="form-control" name="monthly_need" value="{{ old('monthly_need', $isEdit ? ($formProfile->monthly_need ?? '') : '') }}" placeholder="e.g. 35">
+            <input type="text" class="form-control" name="monthly_need" value="{{ $field('monthly_need', $isEdit ? ($formProfile->monthly_need ?? '') : '') }}" placeholder="e.g. 35">
         </div>
     </div>
 
     <div class="mb-3">
         <label class="form-label">URL slug</label>
-        <input type="text" class="form-control" name="slug" value="{{ old('slug', $isEdit ? ($formProfile->slug ?? '') : '') }}" placeholder="Auto from name — updates when the name changes">
+        <input type="text" class="form-control" name="slug" value="{{ $field('slug', $isEdit ? ($formProfile->slug ?? '') : '') }}" placeholder="Auto from name — updates when the name changes">
         <small class="text-muted">Leave blank to generate from the name. Editing the name also refreshes this slug.</small>
     </div>
 
     <div class="mb-3">
         <label class="form-label">Story / testimonial</label>
-        <textarea class="form-control" name="testimany" rows="4" data-editor="rich" placeholder="Their story in their own words">{!! old('testimany', $isEdit ? ($formProfile->testimany ?? '') : '') !!}</textarea>
+        <textarea class="form-control" name="testimany" rows="4" data-editor="rich" placeholder="Their story in their own words">{!! $field('testimany', $isEdit ? ($formProfile->testimany ?? '') : '') !!}</textarea>
     </div>
 
     <div class="mb-3">
         <label class="form-label">Challenges</label>
-        <textarea class="form-control" name="challenges" rows="3" data-editor="rich" placeholder="What they are facing today">{!! old('challenges', $isEdit ? ($formProfile->challenges ?? '') : '') !!}</textarea>
+        <textarea class="form-control" name="challenges" rows="3" data-editor="rich" placeholder="What they are facing today">{!! $field('challenges', $isEdit ? ($formProfile->challenges ?? '') : '') !!}</textarea>
     </div>
 
     <div class="mb-3">
         <label class="form-label">Vision / hopes</label>
-        <textarea class="form-control" name="vision" rows="3" data-editor="rich" placeholder="Their hopes for the future">{!! old('vision', $isEdit ? ($formProfile->vision ?? '') : '') !!}</textarea>
+        <textarea class="form-control" name="vision" rows="3" data-editor="rich" placeholder="Their hopes for the future">{!! $field('vision', $isEdit ? ($formProfile->vision ?? '') : '') !!}</textarea>
     </div>
 
     <div class="mb-3 p-3 border rounded bg-light">
@@ -126,10 +136,10 @@
                 type="url"
                 class="form-control"
                 name="video_url"
-                value="{{ old('video_url', $isEdit ? ($formProfile->video_url ?? '') : '') }}"
+                value="{{ $field('video_url', $isEdit ? ($formProfile->video_url ?? '') : '') }}"
                 placeholder="https://www.youtube.com/watch?v=… or https://youtu.be/…"
             >
-            @if(isset($errors) && $errors->has('video_url'))
+            @if($useOld && $errors->has('video_url'))
                 <div class="text-danger small mt-1">{{ $errors->first('video_url') }}</div>
             @endif
         </div>
@@ -142,7 +152,7 @@
                 name="video_file"
                 accept="video/mp4,video/webm,video/quicktime,.mp4,.webm,.mov"
             >
-            @if(isset($errors) && $errors->has('video_file'))
+            @if($useOld && $errors->has('video_file'))
                 <div class="text-danger small mt-1">{{ $errors->first('video_file') }}</div>
             @endif
             @if($isEdit && !empty($formProfile->video_path))
@@ -161,7 +171,7 @@
                             id="remove_video_file_{{ $profileId }}"
                             name="remove_video_file"
                             value="1"
-                            {{ old('remove_video_file') ? 'checked' : '' }}
+                            {{ ($useOld && old('remove_video_file')) ? 'checked' : '' }}
                         >
                         <label class="form-check-label" for="remove_video_file_{{ $profileId }}">
                             Remove uploaded video
@@ -175,11 +185,11 @@
     <div class="row">
         <div class="col-md-6 mb-3">
             <label class="form-label">Location / address</label>
-            <input type="text" class="form-control" name="address" value="{{ old('address', $isEdit ? ($formProfile->address ?? '') : '') }}">
+            <input type="text" class="form-control" name="address" value="{{ $field('address', $isEdit ? ($formProfile->address ?? '') : '') }}">
         </div>
         <div class="col-md-6 mb-3">
             <label class="form-label">Internal contact phone</label>
-            <input type="text" class="form-control" name="phone" value="{{ old('phone', $isEdit ? ($formProfile->phone ?? '') : '') }}">
+            <input type="text" class="form-control" name="phone" value="{{ $field('phone', $isEdit ? ($formProfile->phone ?? '') : '') }}">
         </div>
     </div>
 

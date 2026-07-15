@@ -213,6 +213,7 @@ Route::middleware(['auth', 'admin.role'
             ->with('error', 'Please use the Edit form to update a sponsorship profile.');
     });
     Route::get('/destroySponsorship/{id}', [App\Http\Controllers\SponsorshipController::class, 'destroy'])->name('destroySponsorship');
+    Route::post('/sponsorships/support-options', [App\Http\Controllers\SponsorshipController::class, 'saveSupportOptions'])->name('sponsorship.supportOptions');
 
     // Emails
     Route::get('/webMessages',[App\Http\Controllers\HomeController::class,'webMessages'])->name('webMessages');

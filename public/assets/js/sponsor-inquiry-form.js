@@ -1,81 +1,42 @@
 (function () {
     'use strict';
 
-    function syncSelectableCards(form, cardSelector, inputSelector) {
-        form.querySelectorAll(cardSelector).forEach(function (card) {
-            var input = card.querySelector(inputSelector);
-            if (input) {
-                card.classList.toggle('is-selected', input.checked);
-            }
-        });
-    }
-
-    function syncPreferenceCards(form) {
-        syncSelectableCards(form, '.sponsor-preference-card', '.js-sponsor-preference');
-    }
-
-    function syncFocusCards(form) {
-        syncSelectableCards(form, '.sponsor-focus-card', '.js-sponsor-focus');
-    }
-
-    function syncAmountPanel(form) {
-        var checked = form.querySelector('.js-sponsor-preference:checked');
-        var panel = form.querySelector('.js-sponsor-amount-panel');
-        if (!panel) {
-            return;
-        }
-        var show = checked && ['monthly', 'one_time'].indexOf(checked.value) !== -1;
-        panel.hidden = !show;
-    }
-
-    function setSupportFocus(form, focusKey) {
-        if (!focusKey) {
-            return;
-        }
-        var input = form.querySelector('.js-sponsor-focus[value="' + focusKey + '"]');
-        if (!input) {
-            return;
-        }
-        input.checked = true;
-        syncFocusCards(form);
+    function setSelectedFocus(form, focusKey, label, text, icon) {
+        var valueInput = form.querySelector('.js-sponsor-focus-value');
+        var panel = form.querySelector('.js-sponsor-selected-focus');
+        var title = form.querySelector('.js-sponsor-modal-title');
+        var textEl = form.querySelector('.js-sponsor-selected-text');
+        var iconEl = form.querySelector('.js-sponsor-selected-icon');
         var focusError = form.querySelector('.js-sponsor-focus-error');
+
+        if (valueInput) {
+            valueInput.value = focusKey || '';
+        }
+
+        if (panel) {
+            panel.classList.toggle('d-none', !focusKey);
+        }
+
+        if (title && label) {
+            title.textContent = label;
+        }
+
+        if (textEl) {
+            textEl.textContent = text || '';
+        }
+
+        if (iconEl) {
+            iconEl.className = 'fas js-sponsor-selected-icon ' + (icon || 'fa-heart');
+        }
+
         if (focusError) {
-            focusError.hidden = true;
+            focusError.hidden = !!focusKey;
         }
-    }
-
-    function bindAmountChips(form) {
-        var panel = form.querySelector('.js-sponsor-amount-panel');
-        if (!panel) {
-            return;
-        }
-        var amountInput = panel.querySelector('.js-sponsor-amount-input');
-        var customWrap = panel.querySelector('.js-sponsor-custom-wrap');
-        var chips = panel.querySelectorAll('.js-sponsor-amount-chip');
-
-        function selectChip(chip) {
-            chips.forEach(function (c) {
-                c.classList.toggle('is-active', c === chip);
-            });
-            var amount = chip.getAttribute('data-amount');
-            if (amount === 'custom') {
-                customWrap.hidden = false;
-                amountInput.focus();
-            } else {
-                customWrap.hidden = true;
-                amountInput.value = amount;
-            }
-        }
-
-        chips.forEach(function (chip) {
-            chip.addEventListener('click', function () {
-                selectChip(chip);
-            });
-        });
     }
 
     function validateForm(form) {
-        if (!form.querySelector('.js-sponsor-focus:checked')) {
+        var valueInput = form.querySelector('.js-sponsor-focus-value');
+        if (!valueInput || !String(valueInput.value || '').trim()) {
             var focusError = form.querySelector('.js-sponsor-focus-error');
             if (focusError) {
                 focusError.hidden = false;
@@ -83,12 +44,14 @@
             return false;
         }
 
-        if (!form.querySelector('.js-sponsor-preference:checked')) {
-            var prefError = form.querySelector('.js-sponsor-preference-error');
-            if (prefError) {
-                prefError.hidden = false;
-            }
+        var message = form.querySelector('textarea[name="message"]');
+        if (message && !String(message.value || '').trim()) {
+            message.setCustomValidity('Please describe your commitment.');
+            message.reportValidity();
             return false;
+        }
+        if (message) {
+            message.setCustomValidity('');
         }
 
         return true;
@@ -96,38 +59,9 @@
 
     function bindForm(form) {
         if (form.dataset.sponsorInquiryBound === 'true') {
-            syncPreferenceCards(form);
-            syncFocusCards(form);
-            syncAmountPanel(form);
             return;
         }
         form.dataset.sponsorInquiryBound = 'true';
-
-        form.querySelectorAll('.js-sponsor-preference').forEach(function (input) {
-            input.addEventListener('change', function () {
-                syncPreferenceCards(form);
-                syncAmountPanel(form);
-                var prefError = form.querySelector('.js-sponsor-preference-error');
-                if (prefError) {
-                    prefError.hidden = true;
-                }
-            });
-        });
-
-        form.querySelectorAll('.js-sponsor-focus').forEach(function (input) {
-            input.addEventListener('change', function () {
-                syncFocusCards(form);
-                var focusError = form.querySelector('.js-sponsor-focus-error');
-                if (focusError) {
-                    focusError.hidden = true;
-                }
-            });
-        });
-
-        bindAmountChips(form);
-        syncPreferenceCards(form);
-        syncFocusCards(form);
-        syncAmountPanel(form);
 
         form.addEventListener('click', function (event) {
             if (!event.target.closest('.public-form-delivery__btn')) {
@@ -157,10 +91,13 @@
                 if (!form) {
                     return;
                 }
-                var focus = btn.getAttribute('data-support-focus') || '';
-                if (focus) {
-                    setSupportFocus(form, focus);
-                }
+                setSelectedFocus(
+                    form,
+                    btn.getAttribute('data-support-focus') || '',
+                    btn.getAttribute('data-support-label') || '',
+                    btn.getAttribute('data-support-text') || '',
+                    btn.getAttribute('data-support-icon') || 'fa-heart'
+                );
             });
         });
 
@@ -171,10 +108,13 @@
                 return;
             }
             if (trigger && trigger.getAttribute) {
-                var focus = trigger.getAttribute('data-support-focus') || '';
-                if (focus) {
-                    setSupportFocus(form, focus);
-                }
+                setSelectedFocus(
+                    form,
+                    trigger.getAttribute('data-support-focus') || '',
+                    trigger.getAttribute('data-support-label') || '',
+                    trigger.getAttribute('data-support-text') || '',
+                    trigger.getAttribute('data-support-icon') || 'fa-heart'
+                );
             }
             var firstEmpty = form.querySelector('input[name="full_name"]');
             if (firstEmpty && !firstEmpty.value) {

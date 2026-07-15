@@ -2836,6 +2836,38 @@ a.contact-stat-card__value:hover {
     padding-top: 0.25rem;
 }
 
+.sponsor-selected-focus {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    padding: 1rem 1.1rem;
+    border-radius: 14px;
+    background: rgba(47, 132, 181, 0.08);
+    border: 1px solid rgba(47, 132, 181, 0.18);
+}
+
+.sponsor-selected-focus__icon {
+    flex: 0 0 auto;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    color: var(--brand-primary, #2f84b5);
+    font-size: 1.15rem;
+    box-shadow: 0 8px 18px rgba(0, 32, 91, 0.08);
+}
+
+.sponsor-selected-focus__eyebrow {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--brand-primary, #2f84b5);
+}
+
 .sponsor-card {
     border-radius: 18px;
     overflow: hidden;

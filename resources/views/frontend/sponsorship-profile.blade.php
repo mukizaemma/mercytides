@@ -155,15 +155,15 @@
                 @foreach($supportOptions as $option)
                     <button
                         type="button"
-                        class="sp-support-card js-open-sponsor-commitment{{ $option['key'] === 'full_care' ? ' sp-support-card--featured' : '' }}"
+                        class="sp-support-card js-open-sponsor-commitment"
                         role="listitem"
                         data-bs-toggle="modal"
                         data-bs-target="#sponsorCommitmentModal"
                         data-support-focus="{{ $option['key'] }}"
+                        data-support-label="{{ $option['label'] }}"
+                        data-support-text="{{ $option['text'] }}"
+                        data-support-icon="{{ $option['icon'] }}"
                     >
-                        @if($option['key'] === 'full_care')
-                            <span class="sp-support-card__badge">Most complete</span>
-                        @endif
                         <span class="sp-support-card__icon" aria-hidden="true">
                             <i class="fas {{ $option['icon'] }}"></i>
                         </span>
@@ -177,17 +177,23 @@
                 @endforeach
             </div>
 
-            <div class="sp-profile__support-footer">
-                <button
-                    type="button"
-                    class="sp-profile__btn-primary js-open-sponsor-commitment"
-                    data-bs-toggle="modal"
-                    data-bs-target="#sponsorCommitmentModal"
-                    data-support-focus="full_care"
-                >
-                    {{ $sponsorCta }}
-                </button>
-            </div>
+            @if($supportOptions !== [])
+                @php $primarySupport = $supportOptions[0]; @endphp
+                <div class="sp-profile__support-footer">
+                    <button
+                        type="button"
+                        class="sp-profile__btn-primary js-open-sponsor-commitment"
+                        data-bs-toggle="modal"
+                        data-bs-target="#sponsorCommitmentModal"
+                        data-support-focus="{{ $primarySupport['key'] }}"
+                        data-support-label="{{ $primarySupport['label'] }}"
+                        data-support-text="{{ $primarySupport['text'] }}"
+                        data-support-icon="{{ $primarySupport['icon'] }}"
+                    >
+                        {{ $sponsorCta }}
+                    </button>
+                </div>
+            @endif
         </section>
 
         {{-- Related profiles --}}
@@ -228,17 +234,23 @@
 </section>
 
 {{-- Mobile sticky primary CTA --}}
-<div class="sp-profile__sticky d-md-none">
-    <button
-        type="button"
-        class="sp-profile__btn-primary sp-profile__btn-primary--block js-open-sponsor-commitment"
-        data-bs-toggle="modal"
-        data-bs-target="#sponsorCommitmentModal"
-        data-support-focus="full_care"
-    >
-        {{ $sponsorCta }}
-    </button>
-</div>
+@if(($supportOptions[0] ?? null))
+    @php $stickySupport = $supportOptions[0]; @endphp
+    <div class="sp-profile__sticky d-md-none">
+        <button
+            type="button"
+            class="sp-profile__btn-primary sp-profile__btn-primary--block js-open-sponsor-commitment"
+            data-bs-toggle="modal"
+            data-bs-target="#sponsorCommitmentModal"
+            data-support-focus="{{ $stickySupport['key'] }}"
+            data-support-label="{{ $stickySupport['label'] }}"
+            data-support-text="{{ $stickySupport['text'] }}"
+            data-support-icon="{{ $stickySupport['icon'] }}"
+        >
+            {{ $sponsorCta }}
+        </button>
+    </div>
+@endif
 
 <div class="modal fade" id="sponsorCommitmentModal" tabindex="-1" aria-labelledby="sponsorCommitmentModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-scrollable">

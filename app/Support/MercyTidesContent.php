@@ -253,59 +253,17 @@ class MercyTidesContent
     /**
      * Ways a donor can commit to support a sponsorship profile.
      *
-     * @return list<array{key: string, icon: string, label: string, text: string}>
+     * @return list<array{key: string, icon: string, label: string, text: string, sort?: int, active?: bool}>
      */
     public static function sponsorshipSupportFocusOptions(): array
     {
-        return [
-            [
-                'key' => 'schooling',
-                'icon' => 'fa-book-open',
-                'label' => 'Schooling support',
-                'text' => 'Help her continue her education',
-            ],
-            [
-                'key' => 'vocational',
-                'icon' => 'fa-cut',
-                'label' => 'Vocational training',
-                'text' => 'Fund skills training for lasting income',
-            ],
-            [
-                'key' => 'shelter',
-                'icon' => 'fa-home',
-                'label' => 'Home shelter',
-                'text' => 'Contribute toward safe housing',
-            ],
-            [
-                'key' => 'health',
-                'icon' => 'fa-heartbeat',
-                'label' => 'Health insurance',
-                'text' => 'Support healthcare for mother & child',
-            ],
-            [
-                'key' => 'kids',
-                'icon' => 'fa-child',
-                'label' => "Kid’s support",
-                'text' => 'Help care for her child',
-            ],
-            [
-                'key' => 'full_care',
-                'icon' => 'fa-hands-helping',
-                'label' => 'Full care',
-                'text' => 'Sponsor mother & child together',
-            ],
-        ];
+        return SponsorshipSupportOptions::active();
     }
 
     /** @return array<string, string> */
     public static function sponsorshipSupportFocusLabels(): array
     {
-        $labels = [];
-        foreach (self::sponsorshipSupportFocusOptions() as $option) {
-            $labels[$option['key']] = $option['label'];
-        }
-
-        return $labels;
+        return SponsorshipSupportOptions::activeLabels();
     }
 
     /**

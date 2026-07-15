@@ -205,12 +205,12 @@ class FormSubmissionService
                 'full_name' => ['required', 'string', 'max:255'],
                 'phone' => ['required', 'string', 'max:64'],
                 'email' => ['required', 'email', 'max:255'],
-                'country' => ['required', 'string', 'max:120'],
+                'country' => ['nullable', 'string', 'max:120'],
                 'sponsorship_id' => ['required', 'integer', 'exists:sponsorships,id'],
-                'support_focus' => ['required', 'string', Rule::in(array_keys(\App\Support\MercyTidesContent::sponsorshipSupportFocusLabels()))],
-                'donation_preference' => ['required', 'string', Rule::in(array_keys(\App\Support\MercyTidesContent::sponsorshipDonationPreferences()))],
+                'support_focus' => ['required', 'string', Rule::in(array_keys(\App\Support\SponsorshipSupportOptions::labels()))],
+                'donation_preference' => ['nullable', 'string', Rule::in(array_keys(\App\Support\MercyTidesContent::sponsorshipDonationPreferences()))],
                 'donation_amount' => ['nullable', 'numeric', 'min:1'],
-                'message' => ['nullable', 'string', 'max:2000'],
+                'message' => ['required', 'string', 'max:2000'],
             ],
             'order_request' => [
                 'full_name' => ['required', 'string', 'max:255'],
@@ -263,6 +263,11 @@ class FormSubmissionService
                     'partnership_details' => 'Please describe the partnership you are looking for and the impact you hope to make.',
                 ]);
             }
+        }
+
+        if ($formType === 'sponsor_inquiry') {
+            $validated['donation_preference'] = $validated['donation_preference'] ?? 'pledge';
+            $validated['country'] = filled($validated['country'] ?? null) ? $validated['country'] : 'Uganda';
         }
 
         $this->rejectSuspiciousText($validated, $formType);
@@ -452,17 +457,17 @@ class FormSubmissionService
                         $lines[] = 'Suggested monthly need (USD): ' . $profile->monthly_need;
                     }
                 }
-                $focusLabels = \App\Support\MercyTidesContent::sponsorshipSupportFocusLabels();
+                $focusLabels = \App\Support\SponsorshipSupportOptions::labels();
                 $focusKey = (string) ($payload['support_focus'] ?? '');
                 $lines[] = 'Way to support: ' . ($focusLabels[$focusKey] ?? $focusKey);
                 $preferences = \App\Support\MercyTidesContent::sponsorshipDonationPreferences();
-                $prefKey = (string) ($payload['donation_preference'] ?? '');
+                $prefKey = (string) ($payload['donation_preference'] ?? 'pledge');
                 $lines[] = 'How they want to support: ' . ($preferences[$prefKey] ?? $prefKey);
                 if (! empty($payload['donation_amount'])) {
                     $lines[] = 'Estimated amount (USD): ' . $payload['donation_amount'];
                 }
                 if (! empty($payload['message'])) {
-                    $lines[] = 'Message: ' . $payload['message'];
+                    $lines[] = 'Commitment description: ' . $payload['message'];
                 }
                 break;
 

@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Sponsorship;
+use App\Models\Setting;
 use App\Support\MercyTidesContent;
+use App\Support\SponsorshipSupportOptions;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
@@ -15,21 +17,40 @@ class SponsorshipController extends Controller
     public function index(Request $request)
     {
         $typeFilter = $request->input('type');
-        $query = Sponsorship::query()->latest();
+        $types = MercyTidesContent::sponsorshipTypes();
+        $query = Sponsorship::query()->latest('id');
 
-        if ($typeFilter && array_key_exists($typeFilter, MercyTidesContent::sponsorshipTypes())) {
+        // Optional filter only — default is every profile.
+        if ($typeFilter && array_key_exists($typeFilter, $types)) {
             $query->ofType($typeFilter);
+        } else {
+            $typeFilter = null;
         }
 
+        $profiles = $query->get();
+        $typeCounts = Sponsorship::query()
+            ->selectRaw('type, COUNT(*) as aggregate')
+            ->groupBy('type')
+            ->pluck('aggregate', 'type');
+
         return view('admin.sponsorship', [
-            'profiles' => $query->get(),
-            'types' => MercyTidesContent::sponsorshipTypes(),
+            'profiles' => $profiles,
+            'types' => $types,
             'typeFilter' => $typeFilter,
+            'totalCount' => Sponsorship::query()->count(),
+            'filteredCount' => $profiles->count(),
+            'typeCounts' => $typeCounts,
+            'supportOptions' => SponsorshipSupportOptions::all(),
         ]);
     }
 
     public function store(Request $request)
     {
+        // Create endpoint must never update an existing row.
+        $request->request->remove('sponsorship_id');
+        $request->request->remove('id');
+
+        $countBefore = Sponsorship::query()->count();
         $validated = $this->validateProfile($request, true);
 
         $profile = new Sponsorship();
@@ -45,10 +66,22 @@ class SponsorshipController extends Controller
             $profile->added_by = Auth::id() ?? Auth::guard('admin')->id();
         }
 
+        if ($profile->exists) {
+            return redirect()
+                ->route('sponsorship.index')
+                ->with('error', 'Could not add profile: the form tried to update an existing record. Please try Add again.');
+        }
+
         $profile->save();
 
-        return redirect()->route('sponsorship.index', ['type' => $profile->type])
-            ->with('success', 'Sponsorship profile has been added successfully.');
+        if (Sponsorship::query()->count() !== $countBefore + 1) {
+            return redirect()
+                ->route('sponsorship.index')
+                ->with('error', 'Something went wrong while saving. Existing profiles were left unchanged — please try adding again.');
+        }
+
+        return redirect()->route('sponsorship.index')
+            ->with('success', 'Sponsorship profile has been added successfully. Showing all '.$this->profileCountLabel().'.');
     }
 
     public function update(Request $request, $id)
@@ -56,6 +89,12 @@ class SponsorshipController extends Controller
         $profileId = (int) $id;
         if ($request->filled('sponsorship_id')) {
             $profileId = (int) $request->input('sponsorship_id');
+        }
+
+        if ($profileId < 1) {
+            return redirect()
+                ->route('sponsorship.index')
+                ->with('error', 'That sponsorship profile could not be found. It may have been deleted.');
         }
 
         $profile = Sponsorship::query()->find($profileId);
@@ -66,6 +105,7 @@ class SponsorshipController extends Controller
         }
 
         $validated = $this->validateProfile($request, false);
+        $targetId = (int) $profile->id;
 
         $this->fillProfile($profile, $validated, $request);
 
@@ -76,10 +116,17 @@ class SponsorshipController extends Controller
 
         $this->syncVideoMedia($profile, $request);
 
+        // Never allow an edit to change which row is being saved.
+        if ((int) $profile->id !== $targetId) {
+            return redirect()
+                ->route('sponsorship.index')
+                ->with('error', 'Update blocked to protect existing profiles. Please try again.');
+        }
+
         $profile->save();
 
-        return redirect()->route('sponsorship.index', ['type' => $profile->type])
-            ->with('success', 'Sponsorship profile has been updated.');
+        return redirect()->route('sponsorship.index')
+            ->with('success', 'Sponsorship profile has been updated. Showing all '.$this->profileCountLabel().'.');
     }
 
     public function destroy($id)
@@ -87,7 +134,41 @@ class SponsorshipController extends Controller
         $profile = Sponsorship::findOrFail($id);
         $profile->delete();
 
-        return redirect()->back()->with('success', 'Sponsorship profile has been deleted.');
+        return redirect()->route('sponsorship.index')->with('success', 'Sponsorship profile has been deleted.');
+    }
+
+    public function saveSupportOptions(Request $request)
+    {
+        $validated = $request->validate([
+            'support_options' => ['required', 'array', 'min:1'],
+            'support_options.*.key' => ['nullable', 'string', 'max:64'],
+            'support_options.*.label' => ['nullable', 'string', 'max:120'],
+            'support_options.*.text' => ['nullable', 'string', 'max:500'],
+            'support_options.*.icon' => ['nullable', 'string', 'max:64'],
+            'support_options.*.sort' => ['nullable', 'integer', 'min:0', 'max:9999'],
+            'support_options.*.active' => ['nullable'],
+        ]);
+
+        $options = SponsorshipSupportOptions::fromAdminInput($validated['support_options'] ?? []);
+
+        $setting = Setting::query()->first();
+        if (! $setting) {
+            $setting = new Setting();
+            $setting->save();
+        }
+
+        if (! Schema::hasColumn('settings', 'sponsorship_support_options')) {
+            return redirect()
+                ->route('sponsorship.index')
+                ->with('error', 'Please run migrations so support options can be saved.');
+        }
+
+        $setting->sponsorship_support_options = $options;
+        $setting->save();
+
+        return redirect()
+            ->route('sponsorship.index')
+            ->with('success', 'Ways to support have been updated.');
     }
 
     /**
@@ -227,5 +308,12 @@ class SponsorshipController extends Controller
                 Storage::disk('public')->delete($path);
             }
         }
+    }
+
+    protected function profileCountLabel(): string
+    {
+        $count = Sponsorship::query()->count();
+
+        return $count === 1 ? '1 profile' : $count.' profiles';
     }
 }

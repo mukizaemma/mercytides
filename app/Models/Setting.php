@@ -20,6 +20,7 @@ class Setting extends Model
         'show_products_publicly' => 'boolean',
         'donation_payment_methods' => 'array',
         'donation_gateway_enabled' => 'boolean',
+        'sponsorship_support_options' => 'array',
     ];
 
     public static function firstOrEmpty(): self

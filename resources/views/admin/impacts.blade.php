@@ -1,11 +1,9 @@
 @extends('layouts.adminbase')
 
-@section('title', 'Impacts')
+@section('title', 'Impact metrics')
 
 @section('sidebar')
-
     @parent
-
 @endsection
 
 @section('content')
@@ -17,160 +15,153 @@
     <div id="layoutSidenav_content">
         <main>
             <div class="container-fluid px-4">
-                {{-- <h1 class="mt-4">Dashboard</h1> --}}
                 <ol class="breadcrumb mb-4">
-                    <li class="breadcrumb-item active">Mercy Tides Impacts</li>
+                    <li class="breadcrumb-item active">Impact metrics</li>
                 </ol>
-                <div class="row">
-                    @if(session()->has('success'))
-                    <div class="arlert alert-success">
-                        <button class="close" type="button" data-dismiss="alert">X</button>
-                        {{ session()->get('success') }}
-                    </div>
 
-                    @endif
+                @if(session()->has('success'))
+                    <div class="alert alert-success">{{ session()->get('success') }}</div>
+                @endif
+                @if(session()->has('error'))
+                    <div class="alert alert-danger">{{ session()->get('error') }}</div>
+                @endif
+
+                <div class="alert alert-light border mb-4">
+                    These numbers appear on the home page, Impact page, and Get Involved page.
+                    Add as many stats as you need — each item needs a <strong>label</strong> (title) and a <strong>value</strong>.
                 </div>
 
                 <div class="card mb-4">
-                    <div class="card-header">
-                        <button class="btn btn-primary float-right" data-bs-toggle="modal"
-                            data-bs-target="#myModal"><i class="fa fa-plus"></i> Add New Impact</button>
-
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span>Current stats</span>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal">
+                            <i class="fa fa-plus"></i> Add metric
+                        </button>
                     </div>
                     <div class="card-body">
-                        <table class="table table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Title</th>
-                                    <th>Value</th>
-                                    <th>Impact Description</th>
-                                    {{-- <th>Gallery</th> --}}
-                                    <th>Image</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-
-                            <tbody>
-                                @foreach($impacts as $rs)
-                                <tr>
-                                    <td>{{$rs->title}}</td>
-                                    <td>{{ $rs->value ?? '-' }}</td>
-                                    <td>{!!$rs->description!!}</td>
-                                    <td><img src="{{ asset('storage/images/impacts/' . $rs->image) }}" alt="" width="150px"></td>
-                                    {{-- <td>
-                                        <a href="{{route('image.index', ['pid' =>$rs->id])}}" onclick="return !window.open(this.href, '', 'top=50 left=100 width=1100, height=700')">
-                                        <img src="assets/admin/assets/img/gallery.png" alt="" width="90px">
-                                        </a>
-                                    </td> --}}
-                                    <td>
-                                        <div class="btn-btn-group ">
-                                        <a type="button" href="{{ route('editImpact', $rs->id) }}"
-                                            class="btn btn-primary text-black">Edit</a>
-                                        <a type="button" href="{{ route('destroyImpact', $rs->id) }}"
-                                            class="btn btn-danger text-black" onclick="return confirm('Are you sure to delete this item?')">Delete</a>
-                                    </div>
-                                </td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                        @if($impacts->isEmpty())
+                            <p class="text-muted mb-0">No impact metrics yet. Add your first one to replace the default site numbers.</p>
+                        @else
+                            <table class="table table-hover align-middle">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 80px;">Order</th>
+                                        <th>Value</th>
+                                        <th>Label</th>
+                                        <th>Status</th>
+                                        <th style="width: 180px;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($impacts as $rs)
+                                        <tr>
+                                            <td>{{ $rs->sort_order }}</td>
+                                            <td><strong>{{ $rs->value ?? '—' }}</strong></td>
+                                            <td>{{ $rs->title }}</td>
+                                            <td>
+                                                @if($rs->isActive())
+                                                    <span class="badge bg-success">Active</span>
+                                                @else
+                                                    <span class="badge bg-secondary">Inactive</span>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                <a href="{{ route('editImpact', $rs->id) }}" class="btn btn-sm btn-primary">Edit</a>
+                                                <a href="{{ route('destroyImpact', $rs->id) }}"
+                                                    class="btn btn-sm btn-danger"
+                                                    onclick="return confirm('Delete this impact metric?')">Delete</a>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        @endif
                     </div>
                 </div>
-                        <!-- The Modal for adding new Event -->
-                        <div class="modal fade" id="myModal">
-                            <div class="modal-dialog modal-lg">
-                                <div class="modal-content">
 
-                                    <!-- Modal Header -->
-                                    <div class="modal-header">
-                                        <h4 class="modal-title">Adding New Impact</h4>
-                                        <button type="button" class="btn-close text-black"
-                                            data-bs-dismiss="modal">X</button>
+                <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="addImpactLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title" id="addImpactLabel">Add impact metric</h4>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form action="{{ route('saveImpact') }}" method="POST" enctype="multipart/form-data">
+                                    @csrf
+                                    <div class="row g-3">
+                                        <div class="col-md-4">
+                                            <label class="form-label" for="impact_value">Value <span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control @error('value') is-invalid @enderror"
+                                                id="impact_value" name="value" value="{{ old('value') }}"
+                                                placeholder="e.g. 6" required>
+                                            @error('value')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                        <div class="col-md-8">
+                                            <label class="form-label" for="title">Label <span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control @error('title') is-invalid @enderror"
+                                                id="title" name="title" value="{{ old('title') }}"
+                                                placeholder="e.g. Mothers empowered" required>
+                                            @error('title')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label" for="sort_order">Display order</label>
+                                            <input type="number" min="0" class="form-control @error('sort_order') is-invalid @enderror"
+                                                id="sort_order" name="sort_order" value="{{ old('sort_order', $impacts->count()) }}">
+                                            @error('sort_order')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                            <div class="form-text">Lower numbers appear first.</div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label" for="status">Status</label>
+                                            <select class="form-select @error('status') is-invalid @enderror" id="status" name="status">
+                                                <option value="Active" @selected(old('status', 'Active') === 'Active')>Active</option>
+                                                <option value="Inactive" @selected(old('status') === 'Inactive')>Inactive</option>
+                                            </select>
+                                            @error('status')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="form-label" for="ProgramDescription">Optional note</label>
+                                            <textarea id="ProgramDescription" rows="3"
+                                                class="form-control @error('description') is-invalid @enderror"
+                                                name="description">{{ old('description') }}</textarea>
+                                            @error('description')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label" for="image">Optional image</label>
+                                            <input type="file" class="form-control @error('image') is-invalid @enderror"
+                                                id="image" name="image" accept="image/*">
+                                            @error('image')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
                                     </div>
-
-                                    <!-- Modal body -->
-                                    <div class="modal-body">
-                                        <form class="form" action="{{ route('saveImpact') }}" method="POST"
-                                            enctype="multipart/form-data">
-                                            @csrf
-                                            <div class="form-body">
-                                                <div class="row">
-                                                    <div class="col-md-8">
-                                                        <div class="form-group">
-                                                            <label for="projectinput1">Impact Title</label>
-                                                                <input type="text" class="form-control @error('title') is-invalid @enderror" id="title" name="title" value="{{ old('title') }}">
-                                                                @error('title')
-                                                                    <span class="invalid-feedback" role="alert">
-                                                                        <strong>{{ $message }}</strong>
-                                                                    </span>
-                                                                @enderror
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-4">
-                                                        <div class="form-group">
-                                                            <label for="impact_value">Impact Value</label>
-                                                            <input type="text" class="form-control @error('value') is-invalid @enderror" id="impact_value" name="value" value="{{ old('value') }}" placeholder="e.g. 270+ artisans">
-                                                            @error('value')
-                                                                <span class="invalid-feedback" role="alert">
-                                                                    <strong>{{ $message }}</strong>
-                                                                </span>
-                                                            @enderror
-                                                        </div>
-                                                    </div>
-
-                                                </div>
-                                                <div class="form-group">
-                                                    <label for="projectinput8">Program Description</label>
-                                                    <textarea id="ProgramDescription" rows="5" class="form-control @error('description') is-invalid @enderror" name="description" data-editor="rich" value="{{ old('description')}}"></textarea>
-                                                    @error('description')
-                                                    <span class="invalid-feedback" role="alert">
-                                                        <strong>{{ $message }}</strong>
-                                                    </span>
-                                                @enderror
-                                                </div>
-
-                                                <div class="row mt-5">
-
-                                                    <div class="col-lg-6 col-sm-12">
-                                                        <label>Cover Image</label>
-                                                        <input type="file" class="form-control-file @error('image') is-invalid @enderror" id="image" name="image">
-                                                        @error('image')
-                                                            <span class="invalid-feedback" role="alert">
-                                                                <strong>{{ $message }}</strong>
-                                                            </span>
-                                                        @enderror
-                                                    </div>
-                                                </div>
-
-                                            </div>
-
-                                            <div class="form-actions mt-5">
-                                                <button type="submit" class="btn btn-primary text-black">
-                                                    <i class="fa fa-save"></i> Save
-                                                </button>
-
-                                            </div>
-                                        </form>
+                                    <div class="mt-4">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fa fa-save"></i> Save metric
+                                        </button>
                                     </div>
-
-                                    <!-- Modal footer -->
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-danger text-black"
-                                            data-bs-dismiss="modal">Close</button>
-                                    </div>
-
-                                </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                             </div>
                         </div>
-
+                    </div>
+                </div>
             </div>
         </main>
         @include('admin.includes.footer')
     </div>
 </div>
-
-@section('scripts')
-
-<script src="{{asset('assets')}}/js/summernote.js"></script>
 
 @endsection

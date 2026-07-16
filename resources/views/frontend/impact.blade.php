@@ -61,11 +61,8 @@
         </div>
 
         @php
-            $coreImpactStats = collect([
-                ['label' => 'Families impacted', 'value' => $about->families_impacted ?? null],
-                ['label' => 'Jobs created', 'value' => $about->jobs_created ?? null],
-                ['label' => 'Hours of vocational training', 'value' => $about->training_hours ?? null],
-            ])->filter(fn ($item) => trim((string) ($item['value'] ?? '')) !== '');
+            $coreImpactStats = $impactStats ?? \App\Support\ImpactMetrics::forPublic();
+            $impactStatsColClass = \App\Support\ImpactMetrics::columnClass($coreImpactStats->count());
 
             $impactStatsBgFile = $about->core_values_background ?? $about->image2 ?? $about->image1 ?? $about->image ?? '';
             $impactStatsParallaxUrl = $impactStatsBgFile !== ''
@@ -92,7 +89,7 @@
                                     $digits = preg_replace('/[^\d]/', '', $rawValue);
                                     $counterTarget = $digits !== '' ? (int) $digits : 0;
                                 @endphp
-                                <div class="col-sm-6 col-lg-4">
+                                <div class="{{ $impactStatsColClass }}">
                                     <article class="impact-stats-hero__stat">
                                         <p
                                             class="impact-stats-hero__value"
@@ -110,9 +107,14 @@
         @endif
 
         <div class="container">
-            @if(($impacts ?? collect())->isNotEmpty())
-                <div class="row g-4 mb-5">
-                    @foreach ($impacts as $item)
+            @php
+                $storyImpacts = ($impacts ?? collect())->filter(function ($item) {
+                    return trim(strip_tags((string) ($item->description ?? ''))) !== '';
+                });
+            @endphp
+            @if($storyImpacts->isNotEmpty())
+                <div class="row g-4 mb-5 mt-4">
+                    @foreach ($storyImpacts as $item)
                         <div class="col-md-6 col-lg-4">
                             <article class="card border-0 shadow-sm h-100 impact-number-card impact-number-card--item">
                                 <div class="card-body p-4">
@@ -120,9 +122,7 @@
                                         <p class="impact-number-card__value mb-1">{{ $item->value }}</p>
                                     @endif
                                     <h4 class="h5 mb-2">{{ $item->title }}</h4>
-                                    @if(!empty($item->description))
-                                        <p class="text-muted mb-0">{{ \Illuminate\Support\Str::limit(strip_tags($item->description), 120, '…') }}</p>
-                                    @endif
+                                    <p class="text-muted mb-0">{{ \Illuminate\Support\Str::limit(strip_tags($item->description), 120, '…') }}</p>
                                 </div>
                             </article>
                         </div>

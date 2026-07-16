@@ -199,31 +199,17 @@
                             </div>
 
                             <div class="tab-pane fade" id="impact-pane" role="tabpanel" aria-labelledby="impact-tab">
-                                <form action="{{ route('saveBackg', $background->id ?? '') }}" method="POST" enctype="multipart/form-data">
-                                    @csrf
-                                    <div class="row g-3">
-                                        <div class="col-lg-4">
-                                            <label class="form-label">Families Impacted</label>
-                                            <input type="text" class="form-control" name="families_impacted" value="{{ $background->families_impacted }}">
-                                        </div>
-                                        <div class="col-lg-4">
-                                            <label class="form-label">Jobs Created</label>
-                                            <input type="text" class="form-control" name="jobs_created" value="{{ $background->jobs_created }}">
-                                        </div>
-                                        <div class="col-lg-4">
-                                            <label class="form-label">Hours of Continuous Vocational Training</label>
-                                            <input type="text" class="form-control" name="training_hours" value="{{ $background->training_hours }}">
-                                        </div>
-                                        <input type="hidden" name="description" value="{{ $background->description }}">
-                                        <input type="hidden" name="donations" value="{{ $background->donations }}">
-                                        <input type="hidden" name="approach_content" value="{{ $background->approach_content }}">
-                                        <input type="hidden" name="model_content" value="{{ $background->model_content }}">
-                                        <div class="col-12">
-                                            <p class="text-muted mb-2">For item-based impact metrics (title + value), use the <a href="{{ route('impacts.index') }}">Impact Items</a> page.</p>
-                                            <button type="submit" class="btn btn-primary"><i class="fa fa-save me-1"></i> Save impact stats</button>
+                                <div class="row g-3">
+                                    <div class="col-12">
+                                        <div class="alert alert-light border mb-0">
+                                            <p class="mb-2">Impact numbers on the public site are managed as editable items.</p>
+                                            <p class="mb-3 text-muted">Add, edit, reorder, or remove stats (for example Mothers empowered, Communities, and any new metrics) from the Impact metrics page.</p>
+                                            <a href="{{ route('impacts.index') }}" class="btn btn-primary">
+                                                <i class="fa fa-chart-line me-1"></i> Manage impact metrics
+                                            </a>
                                         </div>
                                     </div>
-                                </form>
+                                </div>
                             </div>
                         </div>
                     </div>

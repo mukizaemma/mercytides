@@ -57,9 +57,12 @@
         </div>
 
         @if(($impactStats ?? collect())->isNotEmpty())
+            @php
+                $giStatsCol = \App\Support\ImpactMetrics::columnClass(($impactStats ?? collect())->count());
+            @endphp
             <div class="row g-3 g-md-4 mb-4 mb-lg-5 justify-content-center get-involved-stats">
                 @foreach($impactStats as $stat)
-                    <div class="col-sm-4 col-lg-3">
+                    <div class="{{ $giStatsCol }}">
                         <div class="get-involved-stat text-center h-100">
                             <p class="get-involved-stat__value mb-1">{{ $stat['value'] }}</p>
                             <p class="get-involved-stat__label mb-0">{{ $stat['label'] }}</p>

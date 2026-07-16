@@ -108,11 +108,7 @@ class HomeController extends Controller
 
         $impacts = collect();
         if (Schema::hasTable('impacts')) {
-            $impactQuery = Impact::query()->latest();
-            if (Schema::hasColumn('impacts', 'status')) {
-                $impactQuery->where('status', 'Active');
-            }
-            $impacts = $impactQuery->take(6)->get();
+            $impacts = Impact::query()->active()->ordered()->get();
         }
 
         $latestNews = collect();
@@ -971,11 +967,7 @@ class HomeController extends Controller
             \App\Support\MercyTidesContent::getInvolvedWhy()
         );
 
-        $impactStats = collect([
-            ['label' => 'Families impacted', 'value' => $about->families_impacted ?? null],
-            ['label' => 'Jobs created', 'value' => $about->jobs_created ?? null],
-            ['label' => 'Training hours', 'value' => $about->training_hours ?? null],
-        ])->filter(fn ($item) => trim((string) ($item['value'] ?? '')) !== '');
+        $impactStats = \App\Support\ImpactMetrics::forPublic();
 
         return view('frontend.get-involved', compact('about', 'introHtml', 'impactStats'));
     }
@@ -1078,7 +1070,8 @@ class HomeController extends Controller
             ->latest()
             ->take(9)
             ->get();
-        $impacts = Impact::query()->where('status', 'Active')->latest()->get();
+        $impacts = Impact::query()->active()->ordered()->get();
+        $impactStats = \App\Support\ImpactMetrics::forPublic();
         $testimonials = Testimony::query()
             ->where(function ($q) {
                 $q->whereNull('status')
@@ -1089,7 +1082,7 @@ class HomeController extends Controller
             ->take(8)
             ->get();
         $mothers = $this->publishedSponsorshipProfiles('young_mother', 4, 'oldest');
-        return view('frontend.impact', compact('about', 'initiatives', 'impacts', 'testimonials', 'mothers'));
+        return view('frontend.impact', compact('about', 'initiatives', 'impacts', 'impactStats', 'testimonials', 'mothers'));
     }
 
     public function handoverPage()

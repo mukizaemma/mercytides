@@ -95,7 +95,7 @@
                                             class="impact-stats-hero__value"
                                             data-impact-counter-target="{{ $counterTarget }}"
                                             data-impact-counter-final="{{ $rawValue }}"
-                                        >{{ $counterTarget > 0 ? '0' : $rawValue }}</p>
+                                        >{{ $rawValue !== '' ? $rawValue : '—' }}</p>
                                         <p class="impact-stats-hero__label">{{ $stat['label'] }}</p>
                                     </article>
                                 </div>
@@ -264,13 +264,15 @@
                 return;
             }
 
+            function showFinal(el) {
+                var fin = el.getAttribute('data-impact-counter-final');
+                if (fin !== null && fin !== '') {
+                    el.textContent = fin;
+                }
+            }
+
             if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-                els.forEach(function (el) {
-                    var fin = el.getAttribute('data-impact-counter-final');
-                    if (fin !== null) {
-                        el.textContent = fin;
-                    }
-                });
+                els.forEach(showFinal);
                 return;
             }
 
@@ -285,6 +287,7 @@
                     el.textContent = finalText;
                     return;
                 }
+                el.textContent = '0';
                 var start = null;
                 function frame(ts) {
                     if (start === null) {
@@ -304,23 +307,50 @@
             }
 
             var started = false;
-            var io = new IntersectionObserver(function (entries) {
-                entries.forEach(function (entry) {
-                    if (!entry.isIntersecting || started) {
-                        return;
-                    }
-                    started = true;
-                    io.disconnect();
-                    var duration = 1900;
-                    els.forEach(function (el, i) {
-                        window.setTimeout(function () {
-                            animateOne(el, duration);
-                        }, i * 90);
-                    });
+            function startCounters() {
+                if (started) {
+                    return;
+                }
+                started = true;
+                var duration = 1900;
+                els.forEach(function (el, i) {
+                    window.setTimeout(function () {
+                        animateOne(el, duration);
+                    }, i * 90);
                 });
-            }, { threshold: 0.22, rootMargin: '0px 0px -10% 0px' });
+            }
 
-            io.observe(section);
+            function sectionIsInView() {
+                var rect = section.getBoundingClientRect();
+                var vh = window.innerHeight || document.documentElement.clientHeight;
+                return rect.bottom > vh * 0.1 && rect.top < vh * 0.9;
+            }
+
+            if (sectionIsInView()) {
+                startCounters();
+                return;
+            }
+
+            if ('IntersectionObserver' in window) {
+                var io = new IntersectionObserver(function (entries) {
+                    entries.forEach(function (entry) {
+                        if (!entry.isIntersecting) {
+                            return;
+                        }
+                        io.disconnect();
+                        startCounters();
+                    });
+                }, { threshold: 0.15, rootMargin: '0px 0px -5% 0px' });
+                io.observe(section);
+            }
+
+            // If the observer never fires, keep the real numbers visible.
+            window.setTimeout(function () {
+                if (!started) {
+                    els.forEach(showFinal);
+                    started = true;
+                }
+            }, 3000);
         });
     </script>
 

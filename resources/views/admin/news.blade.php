@@ -1,6 +1,6 @@
 @extends('layouts.adminbase')
 
-@section('title', 'Blog Management')
+@section('title', 'Updates')
 
 @section('sidebar')
     @parent
@@ -16,8 +16,8 @@
             <div class="container-fluid px-4 py-4">
                 <div class="admin-page-header d-flex align-items-center justify-content-between flex-wrap gap-2">
                     <div>
-                        <h1>Blog Management</h1>
-                        <p class="text-muted mb-0">Create updates from workshops, events, and community visits. New posts are saved as drafts.</p>
+                        <h1>Updates</h1>
+                        <p class="text-muted mb-0">Share recent activities and community stories. New posts are saved as drafts.</p>
                     </div>
                     <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createBlogModal">
                         <i class="fa fa-plus me-1"></i> New Update
@@ -56,7 +56,7 @@
                                             <td><span class="badge bg-light text-dark border">{{ $rs->blogimages_count }}</span></td>
                                             <td>
                                                 @if(!empty($rs->image))
-                                                    <img src="{{ asset('storage/' . $rs->image) }}" alt="{{ $rs->title }}" width="90" class="rounded border">
+                                                    <img src="{{ asset('storage/' . ltrim($rs->image, '/')) }}" alt="{{ $rs->title }}" width="90" class="rounded border">
                                                 @else
                                                     <span class="text-muted">No image</span>
                                                 @endif
@@ -78,7 +78,7 @@
                                             <td colspan="6" class="border-0">
                                                 <div class="admin-empty-state">
                                                     <i class="fas fa-newspaper d-block"></i>
-                                                    <p class="mb-0">No blog updates yet.</p>
+                                                    <p class="mb-0">No updates yet.</p>
                                                 </div>
                                             </td>
                                         </tr>
@@ -102,7 +102,7 @@
     <div class="modal-dialog modal-xl modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Create Blog Update (Draft)</h5>
+                <h5 class="modal-title">Create Update (Draft)</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
@@ -118,16 +118,25 @@
                             <input type="text" name="author" class="form-control" placeholder="e.g. Communications Team">
                         </div>
                         <div class="col-12">
-                            <label class="form-label">Story / body</label>
-                            <textarea rows="10" class="form-control" name="body" data-editor="rich" placeholder="Write the session update..."></textarea>
+                            <label class="form-label">Story</label>
+                            <textarea rows="10" class="form-control" name="body" data-editor="rich" placeholder="Write what happened — one clear story update…"></textarea>
                         </div>
-                        <div class="col-lg-6">
-                            <label class="form-label">Cover image</label>
-                            <input type="file" name="image" class="form-control">
+                        <div class="col-12">
+                            <x-admin.image-field
+                                label="Cover image"
+                                name="image"
+                                library-name="image_path"
+                                help="Upload a new cover or reuse an image from the media library."
+                            />
                         </div>
-                        <div class="col-lg-6">
-                            <label class="form-label">Gallery images (multiple)</label>
-                            <input type="file" class="form-control" name="gallery[]" multiple>
+                        <div class="col-12">
+                            <x-admin.image-field
+                                label="Activity photos"
+                                name="gallery[]"
+                                library-name="gallery_paths"
+                                :multiple="true"
+                                help="Add more photos from the activity — upload new ones or select existing images."
+                            />
                         </div>
                     </div>
                     <div class="mt-4">

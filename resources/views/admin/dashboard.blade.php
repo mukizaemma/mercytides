@@ -107,19 +107,21 @@
                     </div>
                     <div class="col-lg-6">
                         <div class="card h-100">
-                            <div class="card-header">Upcoming events</div>
+                            <div class="card-header">Recent updates</div>
                             <ul class="list-group list-group-flush">
-                                @forelse($upcomingEvents as $event)
-                                    <li class="list-group-item d-flex justify-content-between">
-                                        <span>{{ $event->title }}</span>
-                                        <span class="text-muted small">{{ $event->date }}</span>
+                                @forelse($recentUpdates as $update)
+                                    <li class="list-group-item d-flex justify-content-between align-items-start gap-2">
+                                        <span class="fw-semibold">{{ \Illuminate\Support\Str::limit($update->title, 48) }}</span>
+                                        <span class="badge {{ $update->published_at ? 'bg-success' : 'bg-secondary' }}">
+                                            {{ $update->published_at ? 'Published' : 'Draft' }}
+                                        </span>
                                     </li>
                                 @empty
-                                    <li class="list-group-item text-muted">No upcoming events.</li>
+                                    <li class="list-group-item text-muted">No updates yet.</li>
                                 @endforelse
                             </ul>
                             <div class="card-footer bg-white">
-                                <a href="{{ route('events') }}" class="small">Manage events →</a>
+                                <a href="{{ route('blog.index') }}" class="small">Manage updates →</a>
                             </div>
                         </div>
                     </div>

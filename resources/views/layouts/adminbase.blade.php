@@ -98,6 +98,7 @@
             window.MercyTidesImageUpload = @json($imageUploadConfig);
         </script>
         <script src="{{ asset('assets/admin/js/image-upload-preview.js') }}"></script>
+        <script src="{{ asset('assets/admin/js/media-picker.js') }}"></script>
         <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" crossorigin="anonymous"></script>
         <script src="{{ asset('assets/admin/js/datatables-simple-demo.js') }}"></script>
 

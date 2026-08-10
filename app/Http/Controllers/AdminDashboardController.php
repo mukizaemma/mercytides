@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Donate;
-use App\Models\Event;
 use App\Models\Member;
 use App\Models\Message;
+use App\Models\News;
 use App\Models\PartnershipInquiry;
 use App\Models\Program;
 use App\Models\Sponsorship;
@@ -52,13 +52,8 @@ class AdminDashboardController extends Controller
             ? FormSubmissionService::aggregateStats()
             : ['total' => 0, 'by_channel' => ['whatsapp' => 0, 'email' => 0], 'by_form' => []];
 
-        $upcomingEvents = Schema::hasTable('events')
-            ? Event::query()
-                ->where('status', 'Active')
-                ->where('date', '>=', Carbon::today()->toDateString())
-                ->orderBy('date')
-                ->take(5)
-                ->get()
+        $recentUpdates = Schema::hasTable('news')
+            ? News::query()->latest()->take(5)->get()
             : collect();
 
         $recentApplications = Schema::hasTable('members')
@@ -73,6 +68,6 @@ class AdminDashboardController extends Controller
             ? Donate::query()->latest()->take(5)->get()
             : collect();
 
-        return view('admin.dashboard', compact('stats', 'upcomingEvents', 'recentApplications', 'recentDonations', 'formSubmissionStats'));
+        return view('admin.dashboard', compact('stats', 'recentUpdates', 'recentApplications', 'recentDonations', 'formSubmissionStats'));
     }
 }

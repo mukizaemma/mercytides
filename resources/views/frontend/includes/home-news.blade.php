@@ -4,7 +4,7 @@
         <div class="row">
             <div class="col-xl-12">
                 <div class="tp-blog-2__section-title pb-50 text-center wow tpfadeUp reveal-on-scroll" data-wow-duration=".9s" data-wow-delay=".1s">
-                    <h4 class="tp-section-title">Latest news &amp; events</h4>
+                    <h4 class="tp-section-title">Recent updates</h4>
                 </div>
             </div>
         </div>

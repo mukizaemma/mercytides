@@ -182,7 +182,7 @@
                                         </ul>
                                     </li>
                                     <li><a href="{{ route('impactPage') }}">Impact</a></li>
-                                    <li><a href="{{ route('upcomingEvents') }}">Events</a></li>
+                                    <li><a href="{{ route('posts') }}">Updates</a></li>
                                     <li><a href="{{ route('gallery') }}">Gallery</a></li>
                                     <li><a href="{{ route('contacts') }}">Contact us</a></li>
                                 </ul>
@@ -274,6 +274,7 @@
                             <li><a href="{{ route('backgroundDetails') }}">About us</a></li>
                             <li><a href="{{ route('showPrograms') }}">Programs</a></li>
                             <li><a href="{{ route('impactPage') }}">Impact</a></li>
+                            <li><a href="{{ route('posts') }}">Updates</a></li>
                             <li><a href="{{ route('gallery') }}">Gallery</a></li>
                             <li><a href="{{ route('sponsorship.hub') }}">Sponsorship</a></li>
                             <li><a href="{{ route('getInvolved') }}">Get involved</a></li>

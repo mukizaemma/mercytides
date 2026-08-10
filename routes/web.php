@@ -134,6 +134,7 @@ Route::middleware(['auth', 'admin.role'
     Route::get('/editGallery/{id}', [App\Http\Controllers\GalleryController::class, 'edit'])->name('editGallery');
     Route::post('/updateGallery/{id}', [App\Http\Controllers\GalleryController::class, 'update'])->name('updateGallery');
     Route::get('/destroyGallery/{id}', [App\Http\Controllers\GalleryController::class, 'destroy'])->name('destroyGallery');
+    Route::get('/media-library', [App\Http\Controllers\MediaLibraryController::class, 'index'])->name('mediaLibrary.index');
 
     // Gallery
     Route::get('/slides', [App\Http\Controllers\SlidesController::class, 'index'])->name('slides');

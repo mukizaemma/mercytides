@@ -1,60 +1,60 @@
 @extends('layouts.frontbase')
 
-@section('title', 'Home Page')
+@section('title', 'Updates')
 
 @section('content')
 
-
         @include('frontend.includes.page-header', [
-            'title' => 'Our Recent Updates',
+            'title' => 'Recent Updates',
             'pageKey' => 'blog',
         ])
 
-    <!-- service-area-start -->
-
-    
     <div class="tp-blog-2__area pt-120 pb-90">
         <div class="container">
-            {{-- <div class="row">
-                <div class="col-xl-12">
-                    <div class="tp-blog-2__section-title pb-50 text-center">
-                        <h4 class="tp-section-title">Recent Updates</h4>
-                    </div>
-                </div>
-            </div> --}}
             <div class="row">
-                @foreach ($news as $blog)
+                @forelse ($news as $blog)
+                @php
+                    $cover = $blog->image ? ltrim((string) $blog->image, '/') : '';
+                    if ($cover !== '' && ! str_contains($cover, '/')) {
+                        $cover = 'images/news/'.$cover;
+                    }
+                    $coverUrl = $cover !== '' ? asset('storage/'.$cover) : null;
+                @endphp
                 <div class="col-xl-4 col-lg-4 col-md-6 mb-30 wow tpfadeUp" data-wow-duration=".9s"
                 data-wow-delay=".3s">
                     <div class="tp-blog-2__item">
-                        <a href="{{route('postSingle',$blog->slug)}}">
+                        <a href="{{ route('postSingle', $blog->slug) }}">
                             <div class="tp-blog-2__thumb p-relative">
-                                <img src="{{ asset('storage/images/news/' . $blog->image) }}" alt="">
+                                @if($coverUrl)
+                                    <img src="{{ $coverUrl }}" alt="{{ $blog->title }}">
+                                @endif
                             </div>
                         </a>
                         <div class="tp-blog-2__content">
-                            <div class="{{route('postSingle',$blog->slug)}}">
-                            </div>
-                            <a href="{{route('postSingle',$blog->slug)}}"><h4 class="tp-blog-2__title-sm">{{$blog->title}}</h4></a>
-                            <span class="tp-blog-2__meta-3">{{$blog->created_at->format('d M,Y')}}</span>
-                            <a href="{{route('postSingle',$blog->slug)}}">
+                            <a href="{{ route('postSingle', $blog->slug) }}"><h4 class="tp-blog-2__title-sm">{{ $blog->title }}</h4></a>
+                            <span class="tp-blog-2__meta-3">{{ optional($blog->created_at)->format('d M, Y') }}</span>
+                            <a href="{{ route('postSingle', $blog->slug) }}">
                                 <div class="tp-blog-2__link text-center">
-                                    <span>Read More<i class="flaticon-arrow-right"></i><span>
-                                </span></span></div>
+                                    <span>Read More<i class="flaticon-arrow-right"></i></span>
+                                </div>
                             </a>
                         </div>
                     </div>
                 </div>
-                @endforeach
-
+                @empty
+                <div class="col-12 text-center py-5">
+                    <p class="text-muted mb-0">Updates from our community will appear here soon.</p>
+                </div>
+                @endforelse
             </div>
+            @if(method_exists($news, 'hasPages') && $news->hasPages())
+                <div class="d-flex justify-content-center mt-4">
+                    {{ $news->links('pagination::bootstrap-5') }}
+                </div>
+            @endif
         </div>
     </div>
-    <!-- service-area-end -->
 
-        <!-- cta-area-start -->
     @include('frontend.includes.backImage')
-        <!-- cta-area-end -->
-
 
 @endsection

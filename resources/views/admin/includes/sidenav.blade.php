@@ -28,11 +28,8 @@
             <x-admin.nav-link :href="route('sponsorship.index', ['type' => 'young_mother'])" icon="fa-heart" :active="request()->routeIs(['sponsorship.index', 'saveSponsorship', 'updateSponsorship', 'destroySponsorship', 'sponsorship.supportOptions', 'mothers.index', 'saveMother', 'updateMother', 'destroyMother'])">
                 Mothers &amp; sponsorship
             </x-admin.nav-link>
-            <x-admin.nav-link :href="route('events')" icon="fa-calendar" :active="request()->routeIs(['events', 'saveEvent', 'updateEvent'])">
-                Events
-            </x-admin.nav-link>
             <x-admin.nav-link :href="route('blog.index')" icon="fa-newspaper" :active="request()->routeIs('blog.*')">
-                News &amp; updates
+                Updates
             </x-admin.nav-link>
             <x-admin.nav-link :href="route('getTestimonials')" icon="fa-quote-right" :active="request()->routeIs(['getTestimonials', 'saveTestimony', 'updateTestimony'])">
                 Testimonials

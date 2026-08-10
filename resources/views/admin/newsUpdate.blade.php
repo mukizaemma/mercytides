@@ -1,6 +1,6 @@
 @extends('layouts.adminbase')
 
-@section('title', 'Edit Blog')
+@section('title', 'Edit Update')
 
 @section('sidebar')
     @parent
@@ -16,10 +16,10 @@
             <div class="container-fluid px-4 py-4">
                 <div class="admin-page-header d-flex align-items-center justify-content-between flex-wrap gap-2">
                     <div>
-                        <h1>Edit Blog Update</h1>
-                        <p class="text-muted mb-0">Refine content and media, then publish when reviewed.</p>
+                        <h1>Edit Update</h1>
+                        <p class="text-muted mb-0">Refine the story and photos, then publish when ready.</p>
                     </div>
-                    <a href="{{ route('blog.index') }}" class="btn btn-outline-primary">Back to Blog Management</a>
+                    <a href="{{ route('blog.index') }}" class="btn btn-outline-primary">Back to Updates</a>
                 </div>
 
                 <div class="card mb-4">
@@ -36,23 +36,26 @@
                                     <input type="text" name="author" class="form-control" value="{{ $blog->author }}">
                                 </div>
                                 <div class="col-12">
-                                    <label class="form-label">Body</label>
+                                    <label class="form-label">Story</label>
                                     <textarea class="form-control" rows="10" name="body" data-editor="rich">{!! $blog->body !!}</textarea>
                                 </div>
-                                <div class="col-lg-6">
-                                    <label class="form-label">Current cover</label>
-                                    <div class="mb-2">
-                                        @if(!empty($blog->image))
-                                            <img src="{{ asset('storage/' . $blog->image) }}" alt="{{ $blog->title }}" width="120" class="rounded border">
-                                        @else
-                                            <span class="text-muted">No cover image</span>
-                                        @endif
-                                    </div>
-                                    <input type="file" name="image" class="form-control">
+                                <div class="col-12">
+                                    <x-admin.image-field
+                                        label="Cover image"
+                                        name="image"
+                                        library-name="image_path"
+                                        :current="$blog->image"
+                                        help="Replace the cover by uploading a new image or choosing one from the library."
+                                    />
                                 </div>
-                                <div class="col-lg-6">
-                                    <label class="form-label">Add more gallery images</label>
-                                    <input type="file" class="form-control" name="gallery[]" multiple>
+                                <div class="col-12">
+                                    <x-admin.image-field
+                                        label="Add more activity photos"
+                                        name="gallery[]"
+                                        library-name="gallery_paths"
+                                        :multiple="true"
+                                        help="Upload new photos or select existing ones to append to this update’s gallery."
+                                    />
                                 </div>
                             </div>
                             <div class="mt-4 d-flex flex-wrap gap-2">
@@ -68,20 +71,20 @@
                 </div>
 
                 <div class="card">
-                    <div class="card-header">Gallery Images ({{ $blog->blogimages->count() }})</div>
+                    <div class="card-header">Activity photos ({{ $blog->blogimages->count() }})</div>
                     <div class="card-body">
                         @if($blog->blogimages->isEmpty())
                             <div class="admin-empty-state py-4">
                                 <i class="fas fa-images d-block"></i>
-                                <p class="mb-0">No gallery images yet.</p>
+                                <p class="mb-0">No activity photos yet.</p>
                             </div>
                         @else
                             <div class="row g-3">
                                 @foreach($blog->blogimages as $image)
                                     <div class="col-md-3 col-sm-6">
                                         <div class="border rounded p-2 h-100">
-                                            <img src="{{ asset('storage/' . $image->gallery) }}" class="img-fluid rounded mb-2" alt="Blog gallery image">
-                                            <a href="{{ route('deleteBlogImage', $image->id) }}" class="btn btn-outline-danger btn-sm w-100" onclick="return confirm('Delete this gallery image?')">Delete image</a>
+                                            <img src="{{ asset('storage/' . ltrim($image->gallery, '/')) }}" class="img-fluid rounded mb-2" alt="Activity photo">
+                                            <a href="{{ route('deleteBlogImage', $image->id) }}" class="btn btn-outline-danger btn-sm w-100" onclick="return confirm('Delete this photo?')">Delete photo</a>
                                         </div>
                                     </div>
                                 @endforeach

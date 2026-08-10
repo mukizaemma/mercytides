@@ -21,35 +21,10 @@ class NewsController extends Controller
         ]);
     }
 
-    // public function showAll()
-    // {
-    //     $blogs = News::latest()->paginate(10);
-    //     return view('pages.blogs.home', [
-    //         'blogs' => $blogs
-    //     ]);
-    // }
-
-    // public function showSingle($slug)
-    // {
-    //     $blog = Blog::where('slug', $slug)->first();
-    //     return view('pages.blogs.blog', compact('blog'));
-    // }
-
-    // public function show($id)
-    // {
-    //     $blog = News::find($id);
-    //     return view('pages.blogs.blog', compact('blog'));
-    // }
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return Response
-     */
     public function create()
     {
         //
     }
-
 
     public function store(Request $request)
     {
@@ -60,21 +35,26 @@ class NewsController extends Controller
             'author' => ['nullable', 'string', 'max:255'],
             'body' => ['nullable', 'string'],
             'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:4096'],
+            'image_path' => ['nullable', 'string', 'max:500'],
             'gallery.*' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:4096'],
+            'gallery_paths' => ['nullable', 'array'],
+            'gallery_paths.*' => ['nullable', 'string', 'max:500'],
         ]);
 
         $countBefore = News::query()->count();
 
-        $fileName = '';
+        $fileName = null;
         if ($request->hasFile('image')) {
             $fileName = $request->file('image')->storeOptimized('images/news', 'public');
+        } else {
+            $fileName = $this->resolveLibraryPath($request->input('image_path'));
         }
 
         $blog = new News();
         $blog->title = $request->input('title');
         $blog->author = $request->input('author');
         $blog->body = $request->input('body');
-        $blog->image = $fileName ?: null;
+        $blog->image = $fileName;
         $blog->slug = $this->uniqueModelSlug(News::class, (string) $request->input('title'), null, 'news');
         $blog->published_at = null; // explicit draft
         $blog->published_by = null;
@@ -89,17 +69,10 @@ class NewsController extends Controller
             return redirect('blogs')->with('error', 'Something went wrong while saving. Existing posts were left unchanged.');
         }
 
-        if ($request->hasFile('gallery')) {
-            foreach ($request->file('gallery') as $gallery) {
-                $path = $gallery->storeOptimized('images/news/gallery', 'public');
-                $blog->blogimages()->create([
-                    'gallery' => $path,
-                    'news_id' => $blog->id,
-                ]);
-            }
-        }
+        $this->attachGalleryUploads($blog, $request);
+        $this->attachGalleryLibraryPaths($blog, $request->input('gallery_paths', []));
 
-        return redirect('blogs')->with('success', 'Blog saved as draft successfully');
+        return redirect('blogs')->with('success', 'Update saved as draft successfully');
     }
 
     public function edit($id)
@@ -116,7 +89,10 @@ class NewsController extends Controller
             'author' => ['nullable', 'string', 'max:255'],
             'body' => ['nullable', 'string'],
             'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:4096'],
+            'image_path' => ['nullable', 'string', 'max:500'],
             'gallery.*' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:4096'],
+            'gallery_paths' => ['nullable', 'array'],
+            'gallery_paths.*' => ['nullable', 'string', 'max:500'],
         ]);
 
         $blog = $this->findAdminRecord(News::class, $id);
@@ -124,22 +100,21 @@ class NewsController extends Controller
         $targetId = (int) $blog->id;
 
         if ($request->hasFile('image')) {
-            if (! empty($blog->image) && Storage::disk('public')->exists($blog->image)) {
-                Storage::disk('public')->delete($blog->image);
-            }
+            $this->deleteOwnedNewsImage($blog->image);
             $blog->image = $request->file('image')->storeOptimized('images/news', 'public');
+        } else {
+            $libraryPath = $this->resolveLibraryPath($request->input('image_path'));
+            if ($libraryPath && $libraryPath !== $blog->image) {
+                // Don't delete a shared library asset when swapping covers.
+                if ($this->isOwnedNewsUpload($blog->image)) {
+                    $this->deleteOwnedNewsImage($blog->image);
+                }
+                $blog->image = $libraryPath;
+            }
         }
 
-        // Append gallery images (don't erase existing)
-        if ($request->hasFile('gallery')) {
-            foreach ($request->file('gallery') as $gallery) {
-                $path = $gallery->storeOptimized('images/news/gallery', 'public');
-                $blog->blogimages()->create([
-                    'gallery' => $path,
-                    'news_id' => $blog->id,
-                ]);
-            }
-        }
+        $this->attachGalleryUploads($blog, $request);
+        $this->attachGalleryLibraryPaths($blog, $request->input('gallery_paths', []));
 
         $newTitle = (string) $request->input('title');
         if ($blog->title !== $newTitle) {
@@ -152,11 +127,8 @@ class NewsController extends Controller
         $this->assertSameRecord($blog, $targetId);
         $blog->save();
 
-        return redirect('blogs')->with('success', 'News post has been updated successfully');
+        return redirect('blogs')->with('success', 'Update has been saved successfully');
     }
-
-
-
 
     public function destroy($id)
     {
@@ -165,24 +137,18 @@ class NewsController extends Controller
         $isOwner = !Schema::hasColumn('news', 'added_by')
             || ((int) ($blog->added_by ?? 0) === (int) (Auth::id() ?? Auth::guard('admin')->id()));
         if (! $isSuperAdmin && ! $isOwner) {
-            return redirect()->back()->with('error', 'You can only delete blog posts that you created.');
+            return redirect()->back()->with('error', 'You can only delete updates that you created.');
         }
         $galleries = $blog->blogimages;
-        // delete the image file
-        if (!empty($blog->image) && Storage::disk('public')->exists($blog->image)) {
-            Storage::disk('public')->delete($blog->image);
-        }
-        // delete the gallery files
-        foreach($galleries as $gallery) {
-            if (!empty($gallery->gallery) && Storage::disk('public')->exists($gallery->gallery)) {
-                Storage::disk('public')->delete($gallery->gallery);
-            }
+        $this->deleteOwnedNewsImage($blog->image);
+        foreach ($galleries as $gallery) {
+            $this->deleteOwnedNewsImage($gallery->gallery);
         }
         $blog->blogimages()->delete();
         $blog->delete();
 
         return back()
-            ->with('success', 'News deleted successfully');
+            ->with('success', 'Update deleted successfully');
     }
 
     public function publish(News $blog): RedirectResponse
@@ -191,7 +157,7 @@ class NewsController extends Controller
         $blog->published_by = auth()->id();
         $blog->save();
 
-        return back()->with('success', 'News published successfully');
+        return back()->with('success', 'Update published successfully');
     }
 
     public function unpublish(News $blog): RedirectResponse
@@ -200,17 +166,103 @@ class NewsController extends Controller
         $blog->published_by = null;
         $blog->save();
 
-        return back()->with('warning', 'News moved back to draft');
+        return back()->with('warning', 'Update moved back to draft');
     }
 
     public function deleteBlogImage($id): RedirectResponse
     {
         $image = Blogimages::findOrFail($id);
-        if (!empty($image->gallery) && Storage::disk('public')->exists($image->gallery)) {
-            Storage::disk('public')->delete($image->gallery);
-        }
+        $this->deleteOwnedNewsImage($image->gallery);
         $image->delete();
-        return back()->with('warning', 'Blog gallery image deleted');
+        return back()->with('warning', 'Activity photo deleted');
     }
 
+    private function attachGalleryUploads(News $blog, Request $request): void
+    {
+        if (! $request->hasFile('gallery')) {
+            return;
+        }
+
+        foreach ($request->file('gallery') as $gallery) {
+            if (! $gallery) {
+                continue;
+            }
+            $path = $gallery->storeOptimized('images/news/gallery', 'public');
+            $blog->blogimages()->create([
+                'gallery' => $path,
+                'news_id' => $blog->id,
+            ]);
+        }
+    }
+
+    /**
+     * @param  array<int, string|null>|mixed  $paths
+     */
+    private function attachGalleryLibraryPaths(News $blog, mixed $paths): void
+    {
+        if (! is_array($paths)) {
+            return;
+        }
+
+        $existing = $blog->blogimages()->pluck('gallery')->map(fn ($p) => ltrim((string) $p, '/'))->all();
+
+        foreach ($paths as $raw) {
+            $path = $this->resolveLibraryPath($raw);
+            if ($path === null || in_array($path, $existing, true)) {
+                continue;
+            }
+            $blog->blogimages()->create([
+                'gallery' => $path,
+                'news_id' => $blog->id,
+            ]);
+            $existing[] = $path;
+        }
+    }
+
+    private function resolveLibraryPath(mixed $raw): ?string
+    {
+        if (! is_string($raw) || trim($raw) === '') {
+            return null;
+        }
+
+        $path = ltrim(str_replace('\\', '/', $raw), '/');
+        if (str_starts_with($path, 'storage/')) {
+            $path = substr($path, strlen('storage/'));
+        }
+        if (! str_starts_with($path, 'images/')) {
+            return null;
+        }
+        if (str_contains($path, '..')) {
+            return null;
+        }
+        if (! Storage::disk('public')->exists($path)) {
+            return null;
+        }
+
+        return $path;
+    }
+
+    /**
+     * Only remove files that were uploaded for news (not shared media-library assets).
+     */
+    private function isOwnedNewsUpload(?string $path): bool
+    {
+        if (! is_string($path) || $path === '') {
+            return false;
+        }
+        $path = ltrim(str_replace('\\', '/', $path), '/');
+
+        return str_starts_with($path, 'images/news/');
+    }
+
+    private function deleteOwnedNewsImage(?string $path): void
+    {
+        if (! $this->isOwnedNewsUpload($path)) {
+            return;
+        }
+        $path = ltrim(str_replace('\\', '/', (string) $path), '/');
+        if (Storage::disk('public')->exists($path)) {
+            Storage::disk('public')->delete($path);
+        }
+    }
 }

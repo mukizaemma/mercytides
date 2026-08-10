@@ -386,20 +386,31 @@ class HomeController extends Controller
         return view('frontend.event',['event'=>$event]);
     }
     public function posts(){
-        $news = News::latest()->paginate(20);
+        $newsQuery = News::query()->latest();
+        if (\Illuminate\Support\Facades\Schema::hasColumn('news', 'published_at')) {
+            $newsQuery->whereNotNull('published_at');
+        }
+        $news = $newsQuery->paginate(20);
         $programs = Program::latest()->get();
         $about = Background::firstOrEmpty();
         return view('frontend.blogs',['news'=>$news,'programs'=>$programs, 'about'=>$about]);
     }
 
     public function postSingle($slug){
-        $blogs = News::latest()->get();
-        $blog = News::where('slug',$slug)->firstOrFail();
+        $blogQuery = News::where('slug',$slug);
+        if (\Illuminate\Support\Facades\Schema::hasColumn('news', 'published_at')) {
+            $blogQuery->whereNotNull('published_at');
+        }
+        $blog = $blogQuery->firstOrFail();
         $images = $blog->blogimages ?? collect();
-        $relatedBlogs = News::where('id','!=',$blog->id)->latest()->take(9);
+        $relatedQuery = News::where('id','!=',$blog->id)->latest();
+        if (\Illuminate\Support\Facades\Schema::hasColumn('news', 'published_at')) {
+            $relatedQuery->whereNotNull('published_at');
+        }
+        $relatedBlogs = $relatedQuery->take(9)->get();
         $programs = Program::latest()->get();
         $about = Background::firstOrEmpty();
-        return view('frontend.blog',['blog'=>$blog,'blogs'=>$blogs,'relatedBlogs'=>$relatedBlogs,
+        return view('frontend.blog',['blog'=>$blog,'relatedBlogs'=>$relatedBlogs,
         'programs'=>$programs,'about'=>$about,'images'=>$images]);
     }
 

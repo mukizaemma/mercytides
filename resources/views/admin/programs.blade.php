@@ -56,9 +56,9 @@
                                             <td><span class="badge bg-light text-dark border">{{ $rs->activities_count }}</span></td>
                                             <td class="text-end">
                                                 <div class="btn-group btn-group-sm">
-                                                    <a href="{{ route('editProgram', $rs->id) }}" class="btn btn-outline-primary">Edit</a>
-                                                    <a href="{{ route('editProgram', $rs->id) }}" class="btn btn-outline-secondary">Gallery</a>
-                                                    <form action="{{ route('destroyProgram', $rs->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete this program?')">
+                                                    <a href="{{ route('editProgram', $rs->id) }}" class="btn btn-outline-primary" data-turbo="false">Edit</a>
+                                                    <a href="{{ route('editProgram', $rs->id) }}" class="btn btn-outline-secondary" data-turbo="false">Gallery</a>
+                                                    <form action="{{ route('destroyProgram', $rs->id) }}" method="POST" class="d-inline" data-turbo="false" onsubmit="return confirm('Delete this program?')">
                                                         @csrf
                                                         <button type="submit" class="btn btn-outline-danger">Delete</button>
                                                     </form>

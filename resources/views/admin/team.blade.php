@@ -1,6 +1,6 @@
 @extends('layouts.adminbase')
 
-@section('title', 'Home Page')
+@section('title', 'Leadership Team')
 
 @section('sidebar')
 
@@ -32,13 +32,14 @@
                 </div>
 
                 <div class="card mb-4">
-                    <div class="card-header">
-                        <button class="btn btn-primary float-right" data-bs-toggle="modal"
+                    <div class="card-header d-flex align-items-center justify-content-between">
+                        <span>Leadership team</span>
+                        <button class="btn btn-primary" data-bs-toggle="modal"
                             data-bs-target="#myModal"><i class="fa fa-plus"></i> Add Team</button>
-
                     </div>
-                    <div class="card-body">
-                        <table class="table table-hover">
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
                             <thead>
                                 <tr>
                                     <th>Image</th>
@@ -47,32 +48,42 @@
                                     <th>Phone</th>
                                     <th>Email</th>
                                     <th>Biography</th>
-                                    <th>Action</th>
+                                    <th class="text-end">Action</th>
                                 </tr>
                             </thead>
 
                             <tbody>
-                                @foreach($team as $rs)
+                                @forelse($members as $rs)
                                 <tr>
-
-                                    <td><img src="{{asset('storage/images/staff').$rs->image}}" alt="" width="150px"></td>
-                                    <td>{{$rs->names}}</td>
-                                    <td>{{$rs->position}}</td>
-                                    <td>{{$rs->phone}}</td>
-                                    <td>{{$rs->facebook}}</td>
-                                    <td>{!!$rs->bio!!}</td>
-
-                                    <td> <div class="btn-btn-group ">
-                                        <a type="button" href="{{ route('editStaff', $rs->id) }}"
-                                            class="btn btn-primary text-black">Edit</a>
-                                        <a type="button" href="{{ route('destroyStaff', $rs->id) }}"
-                                            class="btn btn-danger text-black" onclick="return confirm('Are you sure to delete this Staff from the Database?')">Delete</a>
-                                    </div>
-                                </td>
+                                    <td>
+                                        @if(!empty($rs->image))
+                                            <img src="{{ asset('storage/images/staff' . $rs->image) }}" alt="{{ $rs->names }}" width="72" class="rounded border">
+                                        @else
+                                            <span class="text-muted small">No photo</span>
+                                        @endif
+                                    </td>
+                                    <td class="fw-semibold">{{ $rs->names }}</td>
+                                    <td>{{ $rs->position }}</td>
+                                    <td>{{ $rs->phone ?: '—' }}</td>
+                                    <td>{{ $rs->facebook ?: ($rs->email ?: '—') }}</td>
+                                    <td>
+                                        <span class="d-inline-block" style="max-width: 280px;">{{ \Illuminate\Support\Str::limit(strip_tags($rs->bio), 90) }}</span>
+                                    </td>
+                                    <td class="text-end">
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="{{ route('editStaff', $rs->id) }}" class="btn btn-outline-primary" data-turbo="false">Edit</a>
+                                            <x-admin.delete-button :action="route('destroyStaff', $rs->id)" confirm="Delete this staff member?" />
+                                        </div>
+                                    </td>
                                 </tr>
-                                @endforeach
+                                @empty
+                                <tr>
+                                    <td colspan="7" class="text-center text-muted py-5">No leadership members yet.</td>
+                                </tr>
+                                @endforelse
                             </tbody>
                         </table>
+                        </div>
                     </div>
                 </div>
                         <!-- The Modal for adding new Event -->
@@ -181,9 +192,4 @@
         @include('admin.includes.footer')
     </div>
 </div>
-
-@section('scripts')
-
-<script src="{{asset('assets')}}/js/summernote.js"></script>
-
 @endsection

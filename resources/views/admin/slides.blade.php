@@ -41,7 +41,7 @@
                                             <td class="text-end">
                                                 <div class="btn-group btn-group-sm">
                                                     <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#slideEditModal{{ $rs->id }}">Edit</button>
-                                                    <a href="{{ route('destroySlide', $rs->id) }}" class="btn btn-outline-danger" onclick="return confirm('Delete this slide?')">Delete</a>
+                                                    <x-admin.delete-button :action="route('destroySlide', $rs->id)" confirm="Delete this slide?" />
                                                 </div>
                                             </td>
                                         </tr>

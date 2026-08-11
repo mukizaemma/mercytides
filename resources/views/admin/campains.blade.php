@@ -120,8 +120,8 @@
                                     </td>
                                     <td>
                                         <div class="btn-group">
-                                            <a type="button" href="{{ route('editCampain', $rs->id) }}" class="btn btn-primary" style="color:black">Edit</a>
-                                            <a type="button" href="{{ route('deleteCampain', $rs->id) }}" class="btn btn-danger" onclick="return confirm('Are you sure to delete this item?')" style="color:black">Delete</a>
+                                            <a type="button" href="{{ route('editCampain', $rs->id) }}" class="btn btn-outline-primary btn-sm" data-turbo="false">Edit</a>
+                                            <x-admin.delete-button :action="route('deleteCampain', $rs->id)" confirm="Delete this campaign?" class="btn btn-outline-danger btn-sm" />
                                         </div>
                                     </td>
                                 </tr>

@@ -3,8 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\File;
 use App\Models\Team;
 
 class StaffController extends Controller
@@ -16,8 +14,11 @@ class StaffController extends Controller
      */
     public function index()
     {
-        $team = DB::table('teams')->latest()->get();
-        return view('admin.team', ['team'=>$team]);
+        Team::ensureLeadershipSeeded();
+
+        $members = Team::query()->orderBy('id')->get();
+
+        return view('admin.team', ['members' => $members]);
     }
 
     /**

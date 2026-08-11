@@ -97,7 +97,7 @@
                                     <div class="col-6 col-md-3">
                                         <div class="border rounded p-2 position-relative">
                                             <img src="{{ asset('storage/' . $img->image) }}" class="img-fluid rounded" alt="">
-                                            <a href="{{ route('catalogProducts.deleteImage', $img->id) }}" class="btn btn-sm btn-danger mt-2 w-100" onclick="return confirm('Remove?')">Remove</a>
+                                            <x-admin.delete-button :action="route('catalogProducts.deleteImage', $img->id)" confirm="Remove this image?" class="btn btn-sm btn-danger mt-2 w-100" label="Remove" />
                                         </div>
                                     </div>
                                 @endforeach

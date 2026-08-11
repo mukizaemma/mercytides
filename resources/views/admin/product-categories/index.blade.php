@@ -90,7 +90,7 @@
                                                     </div>
                                                     <div class="col-md-2 text-end">
                                                         <button type="submit" class="btn btn-sm btn-primary me-1">Save</button>
-                                                        <a href="{{ route('productCategories.destroy', $cat->id) }}" class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this category?')">Delete</a>
+                                                        <x-admin.delete-button :action="route('productCategories.destroy', $cat->id)" confirm="Delete this category?" class="btn btn-sm btn-outline-danger" />
                                                     </div>
                                                 </form>
                                             </td>

@@ -150,6 +150,7 @@ class HomeController extends Controller
     }
     public function team(){
         $programs = Program::latest()->get();
+        Team::ensureLeadershipSeeded();
         $team = Team::where('category','Administration')->oldest()->get();
         $advisors = Team::where('category','Advisors')->oldest()->get();
         $about = Background::firstOrEmpty();

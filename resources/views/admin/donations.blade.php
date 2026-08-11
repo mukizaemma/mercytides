@@ -72,11 +72,10 @@
                                     <td>{{$rs->period}}</td>
                                     <td>{{$rs->message}}</td>
                                     <td>
-                                        <div class="btn-btn-group ">
+                                        <div class="btn-group btn-group-sm">
                                         <a type="button" href="{{ route('mailDonation', $rs->id) }}"
-                                            class="btn btn-primary text-black">Mail</a>
-                                        <a type="button" href="{{ route('deleteDonation', $rs->id) }}"
-                                            class="btn btn-danger text-black" onclick="return confirm('Are you sure to delete this item?')">Delete</a>
+                                            class="btn btn-outline-primary btn-sm">Mail</a>
+                                        <x-admin.delete-button :action="route('deleteDonation', $rs->id)" confirm="Delete this donation record?" />
                                     </div>
                                 </td>
                                 </tr>

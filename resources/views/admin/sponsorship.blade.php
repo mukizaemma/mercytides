@@ -96,7 +96,7 @@
                                                 <div class="btn-group btn-group-sm">
                                                     <a href="{{ $profile->profileRoute() }}" class="btn btn-outline-secondary" target="_blank" rel="noopener">View</a>
                                                     <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#sponsorshipEditModal{{ $profile->id }}">Edit</button>
-                                                    <a href="{{ route('destroySponsorship', $profile->id) }}" class="btn btn-outline-danger" onclick="return confirm('Delete this sponsorship profile?')">Delete</a>
+                                                    <x-admin.delete-button :action="route('destroySponsorship', $profile->id)" confirm="Delete this sponsorship profile?" />
                                                 </div>
                                             </td>
                                         </tr>

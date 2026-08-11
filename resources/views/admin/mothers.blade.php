@@ -58,7 +58,7 @@
                                             <td class="text-end">
                                                 <div class="btn-group btn-group-sm">
                                                     <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#motherEditModal{{ $mother->id }}">Edit</button>
-                                                    <a href="{{ route('destroyMother', $mother->id) }}" class="btn btn-outline-danger" onclick="return confirm('Delete this mother profile?')">Delete</a>
+                                                    <x-admin.delete-button :action="route('destroyMother', $mother->id)" confirm="Delete this mother profile?" />
                                                 </div>
                                             </td>
                                         </tr>

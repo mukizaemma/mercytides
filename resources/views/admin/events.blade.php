@@ -60,13 +60,11 @@
                                     <td>{{$rs->status}}</td>
 
                                     <td>
-                                        <div class="btn-btn-group ">
-                                        <a type="button" href="{{ route('editEvent', $rs->id) }}"
-                                            class="btn btn-primary text-black">Edit</a>
-                                        <a type="button" href="{{ route('destroyEvent', $rs->id) }}"
-                                            class="btn btn-danger text-black" onclick="return confirm('Are you sure to delete this item?')">Delete</a>
-                                    </div>
-                                </td>
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="{{ route('editEvent', $rs->id) }}" class="btn btn-outline-primary" data-turbo="false">Edit</a>
+                                            <x-admin.delete-button :action="route('destroyEvent', $rs->id)" confirm="Delete this event?" />
+                                        </div>
+                                    </td>
                                 </tr>
                                 @endforeach
                             </tbody>

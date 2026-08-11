@@ -59,9 +59,9 @@
                                                 @endif
                                             </td>
                                             <td class="text-end">
-                                                <a href="{{ route('catalogProducts.edit', $p->id) }}" class="btn btn-sm btn-outline-primary">Edit</a>
+                                                <a href="{{ route('catalogProducts.edit', $p->id) }}" class="btn btn-sm btn-outline-primary" data-turbo="false">Edit</a>
                                                 <a href="{{ route('productShow', $p->slug) }}" class="btn btn-sm btn-outline-secondary" target="_blank">View</a>
-                                                <a href="{{ route('catalogProducts.destroy', $p->id) }}" class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this product?')">Delete</a>
+                                                <x-admin.delete-button :action="route('catalogProducts.destroy', $p->id)" confirm="Delete this product?" class="btn btn-sm btn-outline-danger" />
                                             </td>
                                         </tr>
                                     @empty

@@ -61,9 +61,15 @@
                             <div class="mt-4 d-flex flex-wrap gap-2">
                                 <button type="submit" class="btn btn-primary">Save Changes</button>
                                 @if(!$blog->published_at)
-                                    <a href="{{ route('publishBlog', $blog->id) }}" class="btn btn-outline-success">Publish</a>
+                                    <form action="{{ route('publishBlog', $blog->id) }}" method="POST" data-turbo="false">
+                                        @csrf
+                                        <button type="submit" class="btn btn-outline-success">Publish</button>
+                                    </form>
                                 @else
-                                    <a href="{{ route('unpublishBlog', $blog->id) }}" class="btn btn-outline-secondary">Move to Draft</a>
+                                    <form action="{{ route('unpublishBlog', $blog->id) }}" method="POST" data-turbo="false">
+                                        @csrf
+                                        <button type="submit" class="btn btn-outline-secondary">Move to Draft</button>
+                                    </form>
                                 @endif
                             </div>
                         </form>
@@ -84,7 +90,7 @@
                                     <div class="col-md-3 col-sm-6">
                                         <div class="border rounded p-2 h-100">
                                             <img src="{{ asset('storage/' . ltrim($image->gallery, '/')) }}" class="img-fluid rounded mb-2" alt="Activity photo">
-                                            <a href="{{ route('deleteBlogImage', $image->id) }}" class="btn btn-outline-danger btn-sm w-100" onclick="return confirm('Delete this photo?')">Delete photo</a>
+                                            <x-admin.delete-button :action="route('deleteBlogImage', $image->id)" confirm="Delete this photo?" class="btn btn-outline-danger btn-sm w-100" label="Delete photo" />
                                         </div>
                                     </div>
                                 @endforeach

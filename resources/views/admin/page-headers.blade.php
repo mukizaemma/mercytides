@@ -78,10 +78,13 @@
                                                 <div class="btn-group btn-group-sm">
                                                     <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#pageHeaderEditModal{{ $header->id }}">Edit</button>
                                                     @if($header->imageUrl())
-                                                        <a href="{{ route('pageHeaders.clear', $header->id) }}" class="btn btn-outline-warning" onclick="return confirm('Clear this page image and fall back to the site default?')">Clear</a>
+                                                        <form action="{{ route('pageHeaders.clear', $header->id) }}" method="POST" class="d-inline" data-turbo="false" onsubmit="return confirm('Clear this page image and fall back to the site default?')">
+                                                            @csrf
+                                                            <button type="submit" class="btn btn-outline-warning btn-sm">Clear</button>
+                                                        </form>
                                                     @endif
                                                     @unless(array_key_exists($header->page_key, \App\Models\PageHeader::catalog()))
-                                                        <a href="{{ route('pageHeaders.destroy', $header->id) }}" class="btn btn-outline-danger" onclick="return confirm('Delete this custom page header?')">Delete</a>
+                                                        <x-admin.delete-button :action="route('pageHeaders.destroy', $header->id)" confirm="Delete this custom page header?" />
                                                     @endunless
                                                 </div>
                                             </td>

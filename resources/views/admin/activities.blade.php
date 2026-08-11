@@ -55,8 +55,8 @@
                                             </td>
                                             <td class="text-end">
                                                 <div class="btn-group btn-group-sm">
-                                                    <a href="{{ route('editProject', ['id' => $rs->id]) }}" class="btn btn-outline-primary">Edit & Gallery</a>
-                                                    <form action="{{ route('destroyProject', ['id' => $rs->id]) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete this initiative?')">
+                                                    <a href="{{ route('editProject', ['id' => $rs->id]) }}" class="btn btn-outline-primary" data-turbo="false">Edit & Gallery</a>
+                                                    <form action="{{ route('destroyProject', ['id' => $rs->id]) }}" method="POST" class="d-inline" data-turbo="false" onsubmit="return confirm('Delete this initiative?')">
                                                         @csrf
                                                         <button type="submit" class="btn btn-outline-danger">Delete</button>
                                                     </form>

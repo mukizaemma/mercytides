@@ -62,14 +62,20 @@
                                                 @endif
                                             </td>
                                             <td class="text-end">
-                                                <div class="btn-group btn-group-sm">
-                                                    <a href="{{ route('editBlog', $rs->id) }}" class="btn btn-outline-primary">Edit</a>
+                                                <div class="btn-group btn-group-sm align-items-center">
+                                                    <a href="{{ route('editBlog', $rs->id) }}" class="btn btn-outline-primary" data-turbo="false">Edit</a>
                                                     @if(!$rs->published_at)
-                                                        <a href="{{ route('publishBlog', $rs->id) }}" class="btn btn-outline-success">Publish</a>
+                                                        <form action="{{ route('publishBlog', $rs->id) }}" method="POST" class="d-inline" data-turbo="false">
+                                                            @csrf
+                                                            <button type="submit" class="btn btn-outline-success btn-sm">Publish</button>
+                                                        </form>
                                                     @else
-                                                        <a href="{{ route('unpublishBlog', $rs->id) }}" class="btn btn-outline-secondary">Unpublish</a>
+                                                        <form action="{{ route('unpublishBlog', $rs->id) }}" method="POST" class="d-inline" data-turbo="false">
+                                                            @csrf
+                                                            <button type="submit" class="btn btn-outline-secondary btn-sm">Unpublish</button>
+                                                        </form>
                                                     @endif
-                                                    <a href="{{ route('deleteBlog', $rs->id) }}" class="btn btn-outline-danger" onclick="return confirm('Delete this update?')">Delete</a>
+                                                    <x-admin.delete-button :action="route('deleteBlog', $rs->id)" confirm="Delete this update?" />
                                                 </div>
                                             </td>
                                         </tr>

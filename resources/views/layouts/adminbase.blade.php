@@ -13,6 +13,8 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="csrf-token" content="{{ csrf_token() }}">
+        {{-- Prevent Turbo from prefetching admin GET links (GET deletes were wiping records on hover/edit). --}}
+        <meta name="turbo-prefetch" content="false">
         <title>@yield('title', 'Dashboard') — Mercy Tides</title>
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -44,7 +46,7 @@
         </style>
         @stack('head')
     </head>
-    <body class="sb-nav-fixed" data-turbo="true">
+    <body class="sb-nav-fixed" data-turbo="true" data-turbo-prefetch="false">
         <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
             <a class="navbar-brand ps-3" href="{{ route('redirects') }}">Mercy Tides</a>
             <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" type="button" aria-label="Toggle sidebar"><i class="fas fa-bars"></i></button>

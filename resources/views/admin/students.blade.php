@@ -61,12 +61,8 @@
                                             <td>{{ $rs->address }}</td>
                                             <td>{{ $rs->status }}</td>
                                             <td>
-                                                <div class="btn-btn-group ">
-                                                    <a type="button" href="{{ route('editStudent', $rs->id) }}"
-                                                        class="btn btn-primary text-black">Edit</a>
-                                                    <a type="button" href="{{ route('destroyStudent', $rs->id) }}"
-                                                        class="btn btn-danger text-black"
-                                                        onclick="return confirm('Are you sure to delete this item?')">Delete</a>
+                                                <div class="btn-group btn-group-sm">
+                                                    <span class="text-muted small">Students module is not linked in admin routes.</span>
                                                 </div>
                                             </td>
                                         </tr>

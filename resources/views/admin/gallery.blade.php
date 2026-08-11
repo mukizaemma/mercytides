@@ -70,9 +70,8 @@
                                             <td>{{ $item->program->title ?? '—' }}</td>
                                             <td class="text-end">
                                                 <div class="btn-group">
-                                                    <a href="{{ route('editGallery', $item->id) }}" class="btn btn-sm btn-outline-primary">Edit</a>
-                                                    <a href="{{ route('destroyGallery', $item->id) }}" class="btn btn-sm btn-outline-danger"
-                                                        onclick="return confirm('Delete this gallery item?')">Delete</a>
+                                                    <a href="{{ route('editGallery', $item->id) }}" class="btn btn-sm btn-outline-primary" data-turbo="false">Edit</a>
+                                                    <x-admin.delete-button :action="route('destroyGallery', $item->id)" confirm="Delete this gallery item?" class="btn btn-sm btn-outline-danger" />
                                                 </div>
                                             </td>
                                         </tr>

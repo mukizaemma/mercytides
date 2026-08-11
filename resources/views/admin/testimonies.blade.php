@@ -57,12 +57,9 @@
                                             <td><img src="{{ asset('storage/images/testimonies') . $rs->image }}"
                                                     alt="" width="150px"></td>
                                             <td>
-                                                <div class="btn-btn-group ">
-                                                    <a type="button" href="{{ route('editTestimony', $rs->id) }}"
-                                                        class="btn btn-primary text-black">Edit</a>
-                                                    <a type="button" href="{{ route('destroyTestimony', $rs->id) }}"
-                                                        class="btn btn-danger text-black"
-                                                        onclick="return confirm('Are you sure to delete this item?')">Delete</a>
+                                                <div class="btn-group btn-group-sm">
+                                                    <a href="{{ route('editTestimony', $rs->id) }}" class="btn btn-outline-primary" data-turbo="false">Edit</a>
+                                                    <x-admin.delete-button :action="route('destroyTestimony', $rs->id)" confirm="Delete this testimony?" />
                                                 </div>
                                             </td>
                                         </tr>

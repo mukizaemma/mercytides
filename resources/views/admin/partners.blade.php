@@ -73,8 +73,8 @@
                                             </td>
                                             <td class="text-end">
                                                 <div class="btn-group btn-group-sm">
-                                                    <a href="{{ route('editPartner', $rs->id) }}" class="btn btn-outline-primary">Edit</a>
-                                                    <a href="{{ route('destroyPartner', $rs->id) }}" class="btn btn-outline-danger" onclick="return confirm('Delete this partner?')">Delete</a>
+                                                    <a href="{{ route('editPartner', $rs->id) }}" class="btn btn-outline-primary" data-turbo="false">Edit</a>
+                                                    <x-admin.delete-button :action="route('destroyPartner', $rs->id)" confirm="Delete this partner?" />
                                                 </div>
                                             </td>
                                         </tr>

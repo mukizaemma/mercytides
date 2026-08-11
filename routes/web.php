@@ -58,11 +58,11 @@ Route::get('/sponsor-a-mother', fn () => redirect()->route('sponsorship.youngMot
 Route::get('/apply-for-support',[App\Http\Controllers\HomeController::class,'applyForSupport'])->name('applyForSupport');
 Route::get('/getMembers',[App\Http\Controllers\HomeController::class,'members'])->name('members');
 Route::post('/mailDonation/{id}',[App\Http\Controllers\HomeController::class,'mailDonation'])->name('mailDonation');
-Route::get('/deleteDonation/{id}',[App\Http\Controllers\HomeController::class,'deleteDonation'])->name('deleteDonation');
+Route::post('/deleteDonation/{id}',[App\Http\Controllers\HomeController::class,'deleteDonation'])->name('deleteDonation');
 
 Route::post('/saveMember',[App\Http\Controllers\HomeController::class,'saveMember'])->name('saveMember');
 Route::post('/editMember/{id}',[App\Http\Controllers\HomeController::class,'editMember'])->name('editMember');
-Route::get('/deleteMember/{id}',[App\Http\Controllers\HomeController::class,'deleteMember'])->name('deleteMember');
+Route::post('/deleteMember/{id}',[App\Http\Controllers\HomeController::class,'deleteMember'])->name('deleteMember');
 
 Route::get('/Volunteer',[App\Http\Controllers\HomeController::class,'volunteer'])->name('volunteer');
 Route::post('/resetGoalRaised/{id}',[App\Http\Controllers\CampainsController::class,'resetGoalRaised'])->name('resetGoalRaised');
@@ -133,7 +133,7 @@ Route::middleware(['auth', 'admin.role'
     Route::post('/saveGallery', [App\Http\Controllers\GalleryController::class, 'store'])->name('saveGallery');
     Route::get('/editGallery/{id}', [App\Http\Controllers\GalleryController::class, 'edit'])->name('editGallery');
     Route::post('/updateGallery/{id}', [App\Http\Controllers\GalleryController::class, 'update'])->name('updateGallery');
-    Route::get('/destroyGallery/{id}', [App\Http\Controllers\GalleryController::class, 'destroy'])->name('destroyGallery');
+    Route::post('/destroyGallery/{id}', [App\Http\Controllers\GalleryController::class, 'destroy'])->name('destroyGallery');
     Route::get('/media-library', [App\Http\Controllers\MediaLibraryController::class, 'index'])->name('mediaLibrary.index');
 
     // Gallery
@@ -141,66 +141,66 @@ Route::middleware(['auth', 'admin.role'
     Route::post('/saveSlide', [App\Http\Controllers\SlidesController::class, 'store'])->name('saveSlide');
     Route::get('/editSlide/{id}', [App\Http\Controllers\SlidesController::class, 'edit'])->name('editSlide');
     Route::post('/updateSlide/{id}', [App\Http\Controllers\SlidesController::class, 'update'])->name('updateSlide');
-    Route::get('/destroySlide/{id}', [App\Http\Controllers\SlidesController::class, 'destroy'])->name('destroySlide');
+    Route::post('/destroySlide/{id}', [App\Http\Controllers\SlidesController::class, 'destroy'])->name('destroySlide');
 
     // Page header heroes (per-page + site default)
     Route::get('/page-headers', [App\Http\Controllers\PageHeaderController::class, 'index'])->name('pageHeaders.index');
     Route::post('/page-headers', [App\Http\Controllers\PageHeaderController::class, 'store'])->name('pageHeaders.store');
     Route::post('/page-headers/{id}', [App\Http\Controllers\PageHeaderController::class, 'update'])->name('pageHeaders.update');
-    Route::get('/page-headers/{id}/clear', [App\Http\Controllers\PageHeaderController::class, 'clearImage'])->name('pageHeaders.clear');
+    Route::post('/page-headers/{id}/clear', [App\Http\Controllers\PageHeaderController::class, 'clearImage'])->name('pageHeaders.clear');
     Route::get('/page-headers/{id}/default', [App\Http\Controllers\PageHeaderController::class, 'setDefault'])->name('pageHeaders.setDefault');
-    Route::get('/page-headers/{id}/delete', [App\Http\Controllers\PageHeaderController::class, 'destroy'])->name('pageHeaders.destroy');
+    Route::post('/page-headers/{id}/delete', [App\Http\Controllers\PageHeaderController::class, 'destroy'])->name('pageHeaders.destroy');
 
     // Events
     Route::get('/events', [App\Http\Controllers\EventController::class, 'index'])->name('events');
     Route::post('/saveEvent', [App\Http\Controllers\EventController::class, 'store'])->name('saveEvent');
     Route::get('/editEvent/{id}', [App\Http\Controllers\EventController::class, 'edit'])->name('editEvent');
     Route::post('/updateEvent/{id}', [App\Http\Controllers\EventController::class, 'update'])->name('updateEvent');
-    Route::get('/destroyEvent/{id}', [App\Http\Controllers\EventController::class, 'destroy'])->name('destroyEvent');
+    Route::post('/destroyEvent/{id}', [App\Http\Controllers\EventController::class, 'destroy'])->name('destroyEvent');
 
         // Team
     Route::get('/staff', [App\Http\Controllers\StaffController::class, 'index'])->name('staff');
     Route::post('/saveStaff', [App\Http\Controllers\StaffController::class, 'store'])->name('saveStaff');
     Route::get('/editStaff/{id}', [App\Http\Controllers\StaffController::class, 'edit'])->name('editStaff');
     Route::post('/updateStaff/{id}', [App\Http\Controllers\StaffController::class, 'update'])->name('updateStaff');
-    Route::get('/destroyStaff/{id}', [App\Http\Controllers\StaffController::class, 'destroy'])->name('destroyStaff');
+    Route::post('/destroyStaff/{id}', [App\Http\Controllers\StaffController::class, 'destroy'])->name('destroyStaff');
 
     // Young mothers gallery
     Route::get('/mothers', [App\Http\Controllers\MothersController::class, 'index'])->name('mothers.index');
     Route::post('/saveMother', [App\Http\Controllers\MothersController::class, 'store'])->name('saveMother');
     Route::post('/updateMother/{id}', [App\Http\Controllers\MothersController::class, 'update'])->name('updateMother');
-    Route::get('/destroyMother/{id}', [App\Http\Controllers\MothersController::class, 'destroy'])->name('destroyMother');
+    Route::post('/destroyMother/{id}', [App\Http\Controllers\MothersController::class, 'destroy'])->name('destroyMother');
 
     // Testimonies
     Route::get('/getTestimonials', [App\Http\Controllers\TestimoniesController::class, 'index'])->name('getTestimonials');
     Route::post('/saveTestimony', [App\Http\Controllers\TestimoniesController::class, 'store'])->name('saveTestimony');
     Route::get('/editTestimony/{id}', [App\Http\Controllers\TestimoniesController::class, 'edit'])->name('editTestimony');
     Route::post('/updateTestimony/{id}', [App\Http\Controllers\TestimoniesController::class, 'update'])->name('updateTestimony');
-    Route::get('/destroyTestimony/{id}', [App\Http\Controllers\TestimoniesController::class, 'destroy'])->name('destroyTestimony');
+    Route::post('/destroyTestimony/{id}', [App\Http\Controllers\TestimoniesController::class, 'destroy'])->name('destroyTestimony');
 
     // Partners
     Route::get('/partner', [App\Http\Controllers\PartnersController::class, 'index'])->name('partner');
     Route::post('/savePartner', [App\Http\Controllers\PartnersController::class, 'store'])->name('savePartner');
     Route::get('/editPartner/{id}', [App\Http\Controllers\PartnersController::class, 'edit'])->name('editPartner');
     Route::post('/updatePartner/{id}', [App\Http\Controllers\PartnersController::class, 'update'])->name('updatePartner');
-    Route::get('/destroyPartner/{id}', [App\Http\Controllers\PartnersController::class, 'destroy'])->name('destroyPartner');
+    Route::post('/destroyPartner/{id}', [App\Http\Controllers\PartnersController::class, 'destroy'])->name('destroyPartner');
 
         Route::get('/get-campaigns',[App\Http\Controllers\CampainsController::class,'index'])->name('campainCrud');
         Route::post('/saveCampaign',[App\Http\Controllers\CampainsController::class,'store'])->name('saveCampain');
         Route::get('/editCampaign/{id}',[App\Http\Controllers\CampainsController::class,'edit'])->name('editCampain');
         Route::post('/updateCampaign/{id}',[App\Http\Controllers\CampainsController::class,'update'])->name('updateCampain');
         Route::post('/updateRaised/{id}',[App\Http\Controllers\CampainsController::class,'updateRaised'])->name('updateRaised');
-        Route::get('/deleteCampaign/{id}',[App\Http\Controllers\CampainsController::class,'destroy'])->name('deleteCampain');
+        Route::post('/deleteCampaign/{id}',[App\Http\Controllers\CampainsController::class,'destroy'])->name('deleteCampain');
 
     // BLogs
     Route::get('/blogs', [App\Http\Controllers\NewsController::class, 'index'])->name('blog.index');
     Route::post('/saveBlog', [App\Http\Controllers\NewsController::class, 'store'])->name('saveBlog');
     Route::get('/blog/{id}', [App\Http\Controllers\NewsController::class, 'edit'])->name('editBlog');
     Route::post('/updateBlog/{id}', [App\Http\Controllers\NewsController::class, 'update'])->name('updateBlog');
-    Route::get('/deleteBlog/{id}', [App\Http\Controllers\NewsController::class, 'destroy'])->name('deleteBlog');
-    Route::get('/blogs/{blog}/publish', [App\Http\Controllers\NewsController::class, 'publish'])->name('publishBlog');
-    Route::get('/blogs/{blog}/unpublish', [App\Http\Controllers\NewsController::class, 'unpublish'])->name('unpublishBlog');
-    Route::get('/blogs/gallery/{id}/delete', [App\Http\Controllers\NewsController::class, 'deleteBlogImage'])->name('deleteBlogImage');
+    Route::post('/deleteBlog/{id}', [App\Http\Controllers\NewsController::class, 'destroy'])->name('deleteBlog');
+    Route::post('/blogs/{blog}/publish', [App\Http\Controllers\NewsController::class, 'publish'])->name('publishBlog');
+    Route::post('/blogs/{blog}/unpublish', [App\Http\Controllers\NewsController::class, 'unpublish'])->name('unpublishBlog');
+    Route::post('/blogs/gallery/{id}/delete', [App\Http\Controllers\NewsController::class, 'deleteBlogImage'])->name('deleteBlogImage');
 
     Route::get('/AllMembers',[App\Http\Controllers\MembersController::class,'AllMembers'])->name('AllMembers');
     Route::get('/saveMemb',[App\Http\Controllers\MembersController::class,'saveMemb'])->name('saveMemb');
@@ -213,7 +213,7 @@ Route::middleware(['auth', 'admin.role'
             ->route('sponsorship.index')
             ->with('error', 'Please use the Edit form to update a sponsorship profile.');
     });
-    Route::get('/destroySponsorship/{id}', [App\Http\Controllers\SponsorshipController::class, 'destroy'])->name('destroySponsorship');
+    Route::post('/destroySponsorship/{id}', [App\Http\Controllers\SponsorshipController::class, 'destroy'])->name('destroySponsorship');
     Route::post('/sponsorships/support-options', [App\Http\Controllers\SponsorshipController::class, 'saveSupportOptions'])->name('sponsorship.supportOptions');
 
     // Emails
@@ -225,27 +225,27 @@ Route::middleware(['auth', 'admin.role'
     Route::post('/saveImpact', [App\Http\Controllers\ImpactsController::class, 'store'])->name('saveImpact');
     Route::get('/editImpact/{id}', [App\Http\Controllers\ImpactsController::class, 'edit'])->name('editImpact');
     Route::post('/updateImpact/{id}', [App\Http\Controllers\ImpactsController::class, 'update'])->name('updateImpact');
-    Route::get('/destroyImpact/{id}', [App\Http\Controllers\ImpactsController::class, 'destroy'])->name('destroyImpact');
+    Route::post('/destroyImpact/{id}', [App\Http\Controllers\ImpactsController::class, 'destroy'])->name('destroyImpact');
 
     // Abahizi Manufacturing — product catalog
     Route::get('/product-categories', [App\Http\Controllers\ProductCategoryController::class, 'index'])->name('productCategories.index');
     Route::post('/product-categories', [App\Http\Controllers\ProductCategoryController::class, 'store'])->name('productCategories.store');
     Route::post('/product-categories/{id}', [App\Http\Controllers\ProductCategoryController::class, 'update'])->name('productCategories.update');
-    Route::get('/product-categories/{id}/delete', [App\Http\Controllers\ProductCategoryController::class, 'destroy'])->name('productCategories.destroy');
+    Route::post('/product-categories/{id}/delete', [App\Http\Controllers\ProductCategoryController::class, 'destroy'])->name('productCategories.destroy');
 
     Route::get('/catalog-products', [App\Http\Controllers\CatalogProductController::class, 'index'])->name('catalogProducts.index');
     Route::get('/catalog-products/create', [App\Http\Controllers\CatalogProductController::class, 'create'])->name('catalogProducts.create');
     Route::post('/catalog-products', [App\Http\Controllers\CatalogProductController::class, 'store'])->name('catalogProducts.store');
     Route::get('/catalog-products/{id}/edit', [App\Http\Controllers\CatalogProductController::class, 'edit'])->name('catalogProducts.edit');
     Route::post('/catalog-products/{id}', [App\Http\Controllers\CatalogProductController::class, 'update'])->name('catalogProducts.update');
-    Route::get('/catalog-products/{id}/delete', [App\Http\Controllers\CatalogProductController::class, 'destroy'])->name('catalogProducts.destroy');
-    Route::get('/catalog-products/image/{id}/delete', [App\Http\Controllers\CatalogProductController::class, 'deleteImage'])->name('catalogProducts.deleteImage');
+    Route::post('/catalog-products/{id}/delete', [App\Http\Controllers\CatalogProductController::class, 'destroy'])->name('catalogProducts.destroy');
+    Route::post('/catalog-products/image/{id}/delete', [App\Http\Controllers\CatalogProductController::class, 'deleteImage'])->name('catalogProducts.deleteImage');
 
     Route::get('/product-story', [App\Http\Controllers\ProductStoryController::class, 'index'])->name('productStory.index');
     Route::post('/product-story/heading', [App\Http\Controllers\ProductStoryController::class, 'updateHeading'])->name('productStory.heading');
     Route::post('/product-story/point', [App\Http\Controllers\ProductStoryController::class, 'store'])->name('productStory.store');
     Route::post('/product-story/point/{id}', [App\Http\Controllers\ProductStoryController::class, 'update'])->name('productStory.update');
-    Route::get('/product-story/point/{id}/delete', [App\Http\Controllers\ProductStoryController::class, 'destroy'])->name('productStory.destroy');
+    Route::post('/product-story/point/{id}/delete', [App\Http\Controllers\ProductStoryController::class, 'destroy'])->name('productStory.destroy');
 
     Route::get('/order-requests', [App\Http\Controllers\InquiryAdminController::class, 'orderRequests'])->name('orderRequests.index');
     Route::get('/partnership-inquiries', [App\Http\Controllers\InquiryAdminController::class, 'partnershipInquiries'])->name('partnershipInquiries.index');

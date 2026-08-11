@@ -87,7 +87,7 @@
                                     </div>
                                     <div class="col-md-8 text-md-end d-flex flex-wrap gap-2 justify-content-md-end align-items-end">
                                         <button type="submit" class="btn btn-sm btn-primary">Save</button>
-                                        <a href="{{ route('productStory.destroy', $point->id) }}" class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this point?')">Delete</a>
+                                        <x-admin.delete-button :action="route('productStory.destroy', $point->id)" confirm="Delete this point?" class="btn btn-sm btn-outline-danger" />
                                     </div>
                                 </div>
                             </form>

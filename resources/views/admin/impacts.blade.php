@@ -66,10 +66,10 @@
                                                 @endif
                                             </td>
                                             <td>
-                                                <a href="{{ route('editImpact', $rs->id) }}" class="btn btn-sm btn-primary">Edit</a>
-                                                <a href="{{ route('destroyImpact', $rs->id) }}"
-                                                    class="btn btn-sm btn-danger"
-                                                    onclick="return confirm('Delete this impact metric?')">Delete</a>
+                                                <div class="btn-group btn-group-sm">
+                                                    <a href="{{ route('editImpact', $rs->id) }}" class="btn btn-sm btn-outline-primary" data-turbo="false">Edit</a>
+                                                    <x-admin.delete-button :action="route('destroyImpact', $rs->id)" confirm="Delete this impact metric?" />
+                                                </div>
                                             </td>
                                         </tr>
                                     @endforeach

@@ -80,9 +80,14 @@
                         <input type="text" class="form-control" name="heading" placeholder="Breaking Barriers, Bridging A Better Future">
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Hero image <span class="text-danger">*</span></label>
-                        <input type="file" class="form-control" name="image" required accept="image/*" data-image-preset="hero">
-                        <small class="text-muted">Landscape photo of mothers/children works best (wide format).</small>
+                        <x-admin.image-field
+                            label="Hero image"
+                            name="image"
+                            legacy-dir="images/slides"
+                            preset="hero"
+                            :required="true"
+                            help="Landscape photo of mothers/children works best (wide format)."
+                        />
                     </div>
                     <button type="submit" class="btn btn-primary">Save slide</button>
                 </form>
@@ -107,9 +112,14 @@
                         <input type="text" class="form-control" name="heading" value="{{ $rs->heading }}">
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Replace image (optional)</label>
-                        <input type="file" class="form-control" name="image" accept="image/*">
-                        <img src="{{ \App\Models\Slide::publicImageUrl($rs->image) }}" alt="" class="mt-2 rounded border" width="160">
+                        <x-admin.image-field
+                            label="Hero image"
+                            name="image"
+                            :current="$rs->image ?? null"
+                            legacy-dir="images/slides"
+                            preset="hero"
+                            help="Upload or choose another image to replace the current hero."
+                        />
                     </div>
                     <button type="submit" class="btn btn-primary">Update slide</button>
                 </form>

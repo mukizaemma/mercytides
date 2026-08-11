@@ -57,7 +57,7 @@
                                 <tr>
                                     <td>
                                         @if(!empty($rs->image))
-                                            <img src="{{ asset('storage/images/staff' . $rs->image) }}" alt="{{ $rs->names }}" width="72" class="rounded border">
+                                            <img src="{{ \App\Support\StorageImage::url($rs->image, 'images/staff') }}" alt="{{ $rs->names }}" width="72" class="rounded border">
                                         @else
                                             <span class="text-muted small">No photo</span>
                                         @endif
@@ -152,12 +152,14 @@
                                                 <div class="row">
 
                                                     <div class="col-lg-4 col-sm-12">
-                                                            <label>Select File <br><span style="color: red">(This image should be resized to 270X312 pixels)</span></label>
-                                                            <label id="projectinput7" class="file center-block">
-                                                                <input type="file" id="image" name="image"
-                                                                    required="">
-                                                                <span class="file-custom"></span>
-                                                            </label>
+                                                            <x-admin.image-field
+                                                                label="Staff photo"
+                                                                name="image"
+                                                                legacy-dir="images/staff"
+                                                                preset="portrait"
+                                                                :required="true"
+                                                                help="Portrait photos work best (about 270×312 pixels)."
+                                                            />
                                                     </div>
 
                                                     <div class="col-lg-8 col-sm-12">

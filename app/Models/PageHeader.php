@@ -40,6 +40,7 @@ class PageHeader extends Model
         return [
             self::DEFAULT_KEY => ['label' => 'Site default (fallback)', 'sort' => 0],
             'about' => ['label' => 'About / Our Story', 'sort' => 10],
+            'founding_story' => ['label' => "Founder's Story", 'sort' => 15],
             'mission' => ['label' => 'Vision & Mission', 'sort' => 20],
             'approach' => ['label' => 'Programs & Core Values', 'sort' => 30],
             'model' => ['label' => 'Where We Work', 'sort' => 40],

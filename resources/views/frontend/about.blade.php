@@ -23,6 +23,14 @@
                 <div class="postbox__text about-page-body" style="font-size: 19px; line-height: 1.75; color: #333;">
                     {!! MercyTidesContent::field($about->description ?? null, MercyTidesContent::overview()) !!}
                 </div>
+                <a href="{{ route('foundingStory') }}" class="founder-story-link mt-4">
+                    <span class="founder-story-link__icon" aria-hidden="true"><i class="fas fa-book-open"></i></span>
+                    <span>
+                        <strong>Read the founder’s story</strong>
+                        <span class="d-block small text-muted">How a visit to Luwero-Ndeeba became Mercy Tides Foundation.</span>
+                    </span>
+                    <span class="founder-story-link__arrow" aria-hidden="true"><i class="far fa-arrow-right"></i></span>
+                </a>
             </div>
         </div>
     </div>
@@ -86,7 +94,7 @@
                 <div class="col-xl-4 col-lg-4 col-md-6">
                     <article class="tp-team-2__item text-center h-100">
                         <div class="tp-team-2__thumb">
-                            <img src="{{ asset('storage/images/staff') . $member->image }}" alt="{{ $member->names }}">
+                            <img src="{{ \App\Support\StorageImage::url($member->image, 'images/staff') }}" alt="{{ $member->names }}">
                         </div>
                         <div class="tp-team-2__content">
                             <div class="tp-team-2__author-info">

@@ -38,13 +38,12 @@ class TestimoniesController extends Controller
     {
         $this->forgetRequestRecordIds($request, ['testimony_id']);
 
-        $request->validate([
+        $request->validate(array_merge([
             'names' => ['required', 'string', 'max:255'],
             'title' => ['required', 'string', 'max:255'],
             'testimony' => ['nullable', 'string'],
             'video_url' => ['nullable', 'url', 'regex:/^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\//i'],
-            'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:4096'],
-        ]);
+        ], $this->imageInputRules('image', required: true)));
 
         $countBefore = Testimony::query()->count();
 
@@ -57,8 +56,9 @@ class TestimoniesController extends Controller
             $data->added_by = Auth::id() ?? Auth::guard('admin')->id();
         }
 
-        if ($request->hasFile('image')) {
-            $data->image = $request->file('image')->storeOptimized('images/testimonies', 'public', ['preset' => 'portrait']);
+        $image = $this->imageFromRequest($request, 'image', 'images/testimonies', ['preset' => 'portrait']);
+        if ($image) {
+            $data->image = $image;
         }
 
         $this->assertCreatingNew($data);
@@ -104,13 +104,12 @@ class TestimoniesController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $request->validate([
+        $request->validate(array_merge([
             'names' => ['required', 'string', 'max:255'],
             'title' => ['required', 'string', 'max:255'],
             'testimony' => ['nullable', 'string'],
             'video_url' => ['nullable', 'url', 'regex:/^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\//i'],
-            'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:4096'],
-        ]);
+        ], $this->imageInputRules('image')));
 
         $data = $this->findAdminRecord(Testimony::class, $id);
         $targetId = (int) $data->id;
@@ -119,11 +118,12 @@ class TestimoniesController extends Controller
         $data->testimony = $request->input('testimony');
         $data->video_url = $request->filled('video_url') ? trim((string) $request->input('video_url')) : null;
 
-        if ($request->hasFile('image')) {
-            if (! empty($data->image) && Storage::disk('public')->exists($data->image)) {
+        $image = $this->imageFromRequest($request, 'image', 'images/testimonies', ['preset' => 'portrait']);
+        if ($image) {
+            if (! empty($data->image) && $data->image !== $image && Storage::disk('public')->exists($data->image)) {
                 Storage::disk('public')->delete($data->image);
             }
-            $data->image = $request->file('image')->storeOptimized('images/testimonies', 'public', ['preset' => 'portrait']);
+            $data->image = $image;
         }
 
         $this->assertSameRecord($data, $targetId);

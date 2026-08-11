@@ -4,20 +4,25 @@
     'libraryName' => null,
     'multiple' => false,
     'current' => null,
+    'currentUrl' => null,
+    'legacyDir' => null,
     'help' => null,
     'required' => false,
+    'preset' => null,
 ])
 
 @php
-    $libraryName = $libraryName ?: ($multiple ? 'gallery_paths' : 'image_path');
+    $baseName = rtrim((string) $name, '[]');
+    $libraryName = $libraryName ?: ($multiple ? $baseName.'_paths' : $baseName.'_path');
     $uid = 'media-picker-'.str_replace(['[', ']', '.'], '-', $name).'-'.substr(md5($label.$name.$libraryName), 0, 8);
     $currentPaths = collect(is_array($current) ? $current : ($current ? [$current] : []))
         ->filter()
         ->map(fn ($p) => ltrim(str_replace('\\', '/', (string) $p), '/'))
         ->values();
-    $currentUrl = $currentPaths->isNotEmpty()
-        ? asset('storage/'.$currentPaths->first())
-        : null;
+    if (! $currentUrl && $currentPaths->isNotEmpty()) {
+        $currentUrl = \App\Support\StorageImage::url($currentPaths->first(), $legacyDir);
+    }
+    $maxKb = (int) round(((int) config('image.max_bytes', 700 * 1024)) / 1024);
 @endphp
 
 <div
@@ -25,6 +30,7 @@
     data-media-picker
     data-mode="{{ $multiple ? 'multiple' : 'single' }}"
     data-library-url="{{ route('mediaLibrary.index') }}"
+    data-library-name="{{ $multiple ? $libraryName.'[]' : $libraryName }}"
     id="{{ $uid }}"
 >
     <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
@@ -35,9 +41,10 @@
         </div>
     </div>
 
-    @if($help)
-        <p class="text-muted small mb-2">{{ $help }}</p>
-    @endif
+    <p class="text-muted small mb-2">
+        {{ $help ?: 'Upload a new file or reuse an image already in the library (avoids duplicates).' }}
+        Max upload size {{ $maxKb }} KB — larger files are resized; smaller files stay as-is.
+    </p>
 
     <div class="admin-media-picker__panel" data-media-panel="upload">
         <input
@@ -46,15 +53,15 @@
             name="{{ $name }}"
             accept="image/jpeg,image/png,image/jpg,image/gif,image/webp"
             @if($multiple) multiple @endif
+            @if($preset) data-image-preset="{{ $preset }}" @endif
             data-media-upload
         >
-        <div class="admin-media-picker__upload-preview mt-2 d-none" data-media-upload-preview></div>
     </div>
 
     <div class="admin-media-picker__panel d-none" data-media-panel="library">
         <div class="input-group input-group-sm mb-2">
             <span class="input-group-text"><i class="fas fa-search"></i></span>
-            <input type="search" class="form-control" placeholder="Search media library…" data-media-search autocomplete="off">
+            <input type="search" class="form-control" placeholder="Search existing images…" data-media-search autocomplete="off">
         </div>
         <div class="admin-media-picker__grid" data-media-grid>
             <div class="admin-media-picker__empty text-muted small py-4 text-center">Loading images…</div>
@@ -67,9 +74,7 @@
     </div>
 
     @if($multiple)
-        <div data-media-library-inputs>
-            {{-- Hidden inputs for selected library paths are injected by JS --}}
-        </div>
+        <div data-media-library-inputs></div>
     @else
         <input type="hidden" name="{{ $libraryName }}" value="" data-media-library-input>
     @endif

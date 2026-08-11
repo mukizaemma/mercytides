@@ -71,18 +71,14 @@
 
                                 <div class="row mt-5">
 
-                                    <div class="col-lg-6 col-sm-12">
-                                        <label>Select File</label>
-                                        <label id="projectinput7" class="file center-block">
-                                            <img src="{{ asset('storage/images/students').$student->image }}" alt="" width="120px">
-                                        </label>
-                                    </div>
-                                    <div class="col-lg-6 col-sm-12">
-                                        <label>Select File</label>
-                                        <label id="projectinput7" class="file center-block">
-                                            <input type="file" id="image" name="image">
-                                            <span class="file-custom"></span>
-                                        </label>
+                                    <div class="col-12">
+                                        <x-admin.image-field
+                                            label="Photo"
+                                            name="image"
+                                            :current="$student->image ?? null"
+                                            legacy-dir="images/students"
+                                            preset="portrait"
+                                        />
                                     </div>
                                 </div>
 

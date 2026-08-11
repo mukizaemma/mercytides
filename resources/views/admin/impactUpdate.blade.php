@@ -75,22 +75,15 @@
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">Current image</label>
-                                    <div>
-                                        @if(!empty($data->image))
-                                            <img src="{{ asset('storage/images/impacts/' . $data->image) }}" alt="" width="120">
-                                        @else
-                                            <span class="text-muted">None</span>
-                                        @endif
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label" for="image">Replace image (optional)</label>
-                                    <input type="file" class="form-control @error('image') is-invalid @enderror"
-                                        id="image" name="image" accept="image/*">
+                                <div class="col-12">
+                                    <x-admin.image-field
+                                        label="Image"
+                                        name="image"
+                                        :current="$data->image ?? null"
+                                        legacy-dir="images/impacts"
+                                    />
                                     @error('image')
-                                        <div class="invalid-feedback">{{ $message }}</div>
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
                                     @enderror
                                 </div>
                             </div>

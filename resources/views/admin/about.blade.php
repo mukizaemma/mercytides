@@ -19,7 +19,7 @@
             <div class="container-fluid px-4 py-4">
                 <div class="admin-page-header">
                     <h1>About</h1>
-                    <p class="text-muted mb-0">Manage mission, values, project background, and impact metrics.</p>
+                    <p class="text-muted mb-0">Manage mission, values, founder’s story, project background, and impact metrics.</p>
                 </div>
 
                 @if(session()->has('success'))
@@ -31,6 +31,9 @@
                         <ul class="nav nav-tabs mb-4" id="aboutTabs" role="tablist">
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link active" id="mission-vision-tab" data-bs-toggle="tab" data-bs-target="#mission-vision-pane" type="button" role="tab">Mission &amp; Vision</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="founder-story-tab" data-bs-toggle="tab" data-bs-target="#founder-story-pane" type="button" role="tab">Founder's story</button>
                             </li>
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link" id="core-values-tab" data-bs-toggle="tab" data-bs-target="#core-values-pane" type="button" role="tab">Core values</button>
@@ -62,6 +65,56 @@
                                         <input type="hidden" name="values" value="{{ $data->values }}">
                                         <div class="col-12">
                                             <button type="submit" class="btn btn-primary"><i class="fa fa-save me-1"></i> Save mission &amp; vision</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <div class="tab-pane fade" id="founder-story-pane" role="tabpanel" aria-labelledby="founder-story-tab">
+                                <form action="{{ route('founderStory.update') }}" method="POST" enctype="multipart/form-data">
+                                    @csrf
+                                    <div class="row g-3">
+                                        <div class="col-12">
+                                            <p class="text-muted small mb-0">This content appears on the public <a href="{{ route('foundingStory') }}" target="_blank" rel="noopener">Founder's Story</a> page under About. Upload a portrait of the founder and edit the story at any time.</p>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <label class="form-label">Page title</label>
+                                            <input type="text" class="form-control" name="title" value="{{ old('title', $founderStory->title) }}" placeholder="Founder's Story">
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <label class="form-label">Tagline</label>
+                                            <input type="text" class="form-control" name="tagline" value="{{ old('tagline', $founderStory->tagline) }}" placeholder="Breaking Barriers, Bridging A Better Future">
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="form-label">Header caption</label>
+                                            <input type="text" class="form-control" name="header_caption" value="{{ old('header_caption', $founderStory->header_caption) }}" placeholder="Short line under the page title">
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <label class="form-label">Founder name</label>
+                                            <input type="text" class="form-control" name="founder_name" value="{{ old('founder_name', $founderStory->founder_name) }}" placeholder="Mr. MAGAMBO Jonathan">
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <label class="form-label">Founder role</label>
+                                            <input type="text" class="form-control" name="founder_role" value="{{ old('founder_role', $founderStory->founder_role) }}" placeholder="President &amp; Founder">
+                                        </div>
+                                        <div class="col-lg-5">
+                                            <x-admin.image-field
+                                                label="Founder portrait"
+                                                name="founder_image"
+                                                :current="$founderStory->founder_image ?? null"
+                                                legacy-dir="images/founder"
+                                                preset="portrait"
+                                                help="Portrait of the founder shown beside the story. Upload a new photo or choose one from the media library."
+                                            />
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="form-label">Story</label>
+                                            <p class="text-muted small mb-2">Use headings for the context factors (Poverty Legacy, Education, and so on). They will be styled on the public page.</p>
+                                            <textarea rows="16" class="form-control" name="content" data-editor="rich">{!! old('content', $founderStory->content) !!}</textarea>
+                                        </div>
+                                        <div class="col-12">
+                                            <button type="submit" class="btn btn-primary"><i class="fa fa-save me-1"></i> Save founder's story</button>
+                                            <a href="{{ route('foundingStory') }}" class="btn btn-outline-secondary" target="_blank" rel="noopener">Preview page</a>
                                         </div>
                                     </div>
                                 </form>
@@ -107,40 +160,47 @@
                                             <textarea rows="8" class="form-control" name="model_content" data-editor="rich">{!! $background->model_content !!}</textarea>
                                         </div>
                                         <div class="col-lg-6">
-                                            <label class="form-label">Our Model image (diagram/photo)</label>
-                                            <input type="file" class="form-control" name="model_image">
-                                            @if(!empty($background->model_image))
-                                                <img src="{{ asset('storage/images/' . $background->model_image) }}" width="220" class="mt-2 rounded border p-1 bg-white">
-                                            @endif
+                                            <x-admin.image-field
+                                                label="Our Model image (diagram/photo)"
+                                                name="model_image"
+                                                :current="$background->model_image ?? null"
+                                                legacy-dir="images"
+                                            />
                                         </div>
                                         <div class="col-lg-4">
-                                            <label class="form-label">About cover image</label>
-                                            <input type="file" class="form-control" name="image">
-                                            @if(!empty($background->image))
-                                                <img src="{{ asset('storage/images/' . $background->image) }}" width="120" class="mt-2 rounded border p-1 bg-white">
-                                            @endif
+                                            <x-admin.image-field
+                                                label="About cover image"
+                                                name="image"
+                                                :current="$background->image ?? null"
+                                                legacy-dir="images"
+                                                preset="hero"
+                                            />
                                         </div>
                                         <div class="col-lg-4">
-                                            <label class="form-label">Home background image</label>
-                                            <input type="file" class="form-control" name="image1">
-                                            @if(!empty($background->image1))
-                                                <img src="{{ asset('storage/images/' . $background->image1) }}" width="120" class="mt-2 rounded border p-1 bg-white">
-                                            @endif
+                                            <x-admin.image-field
+                                                label="Home background image"
+                                                name="image1"
+                                                :current="$background->image1 ?? null"
+                                                legacy-dir="images"
+                                            />
                                         </div>
                                         <div class="col-lg-4">
-                                            <label class="form-label">Pages header image</label>
-                                            <input type="file" class="form-control" name="image2">
-                                            @if(!empty($background->image2))
-                                                <img src="{{ asset('storage/images/' . $background->image2) }}" width="120" class="mt-2 rounded border p-1 bg-white">
-                                            @endif
+                                            <x-admin.image-field
+                                                label="Pages header image"
+                                                name="image2"
+                                                :current="$background->image2 ?? null"
+                                                legacy-dir="images"
+                                            />
                                         </div>
                                         <div class="col-lg-6">
-                                            <label class="form-label">Core values section background (About page)</label>
-                                            <p class="text-muted small mb-2">Full-width image behind “Our Core Values.” If not set, the pages header image is used.</p>
-                                            <input type="file" class="form-control" name="core_values_background" accept="image/*">
-                                            @if(!empty($background->core_values_background))
-                                                <img src="{{ asset('storage/images/' . $background->core_values_background) }}" width="220" class="mt-2 rounded border p-1 bg-white" alt="Core values background preview">
-                                            @endif
+                                            <x-admin.image-field
+                                                label="Core values section background (About page)"
+                                                name="core_values_background"
+                                                :current="$background->core_values_background ?? null"
+                                                legacy-dir="images"
+                                                preset="hero"
+                                                help="Full-width image behind “Our Core Values.” If not set, the pages header image is used."
+                                            />
                                         </div>
                                         <div class="col-12">
                                             <input type="hidden" name="donations" value="{{ $background->donations }}">
@@ -221,3 +281,19 @@
 </div>
 
 @endsection
+
+@push('scripts')
+<script>
+    (function () {
+        var params = new URLSearchParams(window.location.search);
+        var tab = params.get('tab');
+        if (!tab) return;
+        var trigger = document.getElementById(tab + '-tab');
+        if (trigger && window.bootstrap && window.bootstrap.Tab) {
+            window.bootstrap.Tab.getOrCreateInstance(trigger).show();
+        } else if (trigger) {
+            trigger.click();
+        }
+    })();
+</script>
+@endpush

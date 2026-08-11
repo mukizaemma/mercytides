@@ -5173,3 +5173,134 @@ html.gallery-lightbox-open body {
     border-radius: 12px;
 }
 
+/* Founder's story */
+.founder-story__aside {
+    position: relative;
+}
+
+@media (min-width: 992px) {
+    .founder-story__aside {
+        position: sticky;
+        top: 7.5rem;
+    }
+}
+
+.founder-story__portrait {
+    background: #fff;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid rgba(44, 44, 44, 0.08);
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.08);
+}
+
+.founder-story__frame {
+    background: #eef5f9;
+    aspect-ratio: 3 / 4;
+    overflow: hidden;
+}
+
+.founder-story__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.founder-story__placeholder {
+    aspect-ratio: 3 / 4;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    background: linear-gradient(180deg, #f7fbfd 0%, #e8f1f6 100%);
+    color: #64748b;
+    text-align: center;
+    padding: 1.5rem;
+}
+
+.founder-story__placeholder i {
+    font-size: 2.75rem;
+    color: var(--brand-primary, #2f84b5);
+    opacity: 0.45;
+}
+
+.founder-story__caption {
+    padding: 1.15rem 1.25rem 1.35rem;
+}
+
+.founder-story__name {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--brand-secondary, #00205b);
+    margin-bottom: 0.2rem;
+    letter-spacing: -0.02em;
+}
+
+.founder-story__role {
+    font-size: 0.9rem;
+    color: var(--brand-primary, #2f84b5);
+    font-weight: 600;
+}
+
+.founder-story__card {
+    min-height: 100%;
+}
+
+.founder-story__body {
+    font-size: 1.08rem;
+    line-height: 1.85;
+}
+
+.founder-story__body h3 {
+    font-family: var(--font-display, Georgia, serif);
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--brand-secondary, #00205b);
+    margin-top: 1.75rem;
+    margin-bottom: 0.65rem;
+    padding-left: 0.85rem;
+    border-left: 3px solid var(--brand-accent, #c9a24a);
+}
+
+.founder-story__body h3:first-child {
+    margin-top: 0;
+}
+
+.founder-story-link {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    padding: 1rem 1.15rem;
+    background: #fff;
+    border: 1px solid rgba(0, 32, 91, 0.1);
+    border-radius: 14px;
+    text-decoration: none;
+    color: inherit;
+    box-shadow: 0 8px 24px rgba(0, 32, 91, 0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.founder-story-link:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(0, 32, 91, 0.1);
+    color: inherit;
+}
+
+.founder-story-link__icon {
+    flex-shrink: 0;
+    width: 2.6rem;
+    height: 2.6rem;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(47, 132, 181, 0.12);
+    color: var(--brand-secondary, #00205b);
+}
+
+.founder-story-link__arrow {
+    margin-left: auto;
+    color: var(--brand-primary, #2f84b5);
+}
+

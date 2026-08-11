@@ -49,18 +49,15 @@
 
                             <div class="row mb-5">
 
-                                <div class="col-lg-4 col-sm-12">
-                                        <label>Featured Image<br></label>
-                                        <label id="projectinput7" class="file center-block">
-                                            <img src="{{ \App\Models\Slide::publicImageUrl($data->image) }}" alt="" width="120px">
-                                        </label>
-                                </div>
-                                <div class="col-lg-4 col-sm-12">
-                                        <label>Change Image <br><span style="color: red">(This image should be resized to 694x1894 pixels)</span></label>
-                                        <label id="projectinput7" class="file center-block">
-                                            <input type="file" id="image" name="image">
-                                            <span class="file-custom"></span>
-                                        </label>
+                                <div class="col-12">
+                                        <x-admin.image-field
+                                            label="Hero image"
+                                            name="image"
+                                            :current="$data->image ?? null"
+                                            legacy-dir="images/slides"
+                                            preset="hero"
+                                            help="Wide landscape photos work best (about 694×1894 pixels)."
+                                        />
                                 </div>
                             </div>
 

@@ -20,25 +20,17 @@ class ImpactsController extends Controller
     {
         $this->forgetRequestRecordIds($request, ['impact_id']);
 
-        $request->validate([
+        $request->validate(array_merge([
             'title' => 'required|max:255',
             'value' => 'required|string|max:255',
             'description' => 'nullable|string',
             'status' => 'nullable|in:Active,Inactive',
             'sort_order' => 'nullable|integer|min:0|max:9999',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-        ]);
+        ], $this->imageInputRules('image')));
 
         $countBefore = Impact::query()->count();
 
-        $fileName = '';
-        if ($request->hasFile('image')) {
-            $fileName = $this->storeOptimizedImageBasename(
-                $request->file('image'),
-                'images/impacts',
-                'public'
-            );
-        }
+        $fileName = $this->imageFromRequest($request, 'image', 'images/impacts') ?? '';
 
         $title = (string) $request->input('title');
         $slug = $this->uniqueModelSlug(Impact::class, $title, null, 'impact');
@@ -76,24 +68,19 @@ class ImpactsController extends Controller
         $impact = $this->findAdminRecord(Impact::class, $id);
         $targetId = (int) $impact->id;
 
-        $request->validate([
+        $request->validate(array_merge([
             'title' => 'required|max:255',
             'value' => 'required|string|max:255',
             'description' => 'nullable|string',
             'status' => 'nullable|in:Active,Inactive',
             'sort_order' => 'nullable|integer|min:0|max:9999',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-        ]);
+        ], $this->imageInputRules('image')));
 
         $fileName = $impact->image;
-        if ($request->hasFile('image')) {
+        $newImage = $this->imageFromRequest($request, 'image', 'images/impacts');
+        if ($newImage) {
             $this->deleteImpactImage($impact->image);
-
-            $fileName = $this->storeOptimizedImageBasename(
-                $request->file('image'),
-                'images/impacts',
-                'public'
-            );
+            $fileName = $newImage;
         }
 
         $newTitle = (string) $request->input('title');
@@ -140,9 +127,17 @@ class ImpactsController extends Controller
             return;
         }
 
-        $path = storage_path('app/public/images/impacts/'.$image);
-        if (File::exists($path)) {
-            File::delete($path);
+        $normalized = ltrim(str_replace('\\', '/', (string) $image), '/');
+        $candidates = [$normalized];
+        if (! str_contains($normalized, '/')) {
+            $candidates[] = 'images/impacts/'.$normalized;
+        }
+
+        foreach ($candidates as $relative) {
+            $path = storage_path('app/public/'.$relative);
+            if (File::exists($path)) {
+                File::delete($path);
+            }
         }
     }
 }

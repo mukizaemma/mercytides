@@ -37,16 +37,17 @@
                         <form action="{{ route('updateGallery', $data->id) }}" method="POST" enctype="multipart/form-data" data-turbo="false">
                             @csrf
                             <div class="row g-3">
-                                <div class="col-md-4">
-                                    <label class="form-label d-block">Current preview</label>
-                                    <img src="{{ $data->thumbUrl() }}" alt="" class="rounded border" width="220" style="max-width:100%; object-fit:cover; aspect-ratio:4/3;">
+                                <div class="col-12">
+                                    <x-admin.image-field
+                                        label="Image"
+                                        name="image"
+                                        :current="$data->image ?? null"
+                                        :current-url="$data->image ? $data->thumbUrl() : null"
+                                        legacy-dir="images/gallery"
+                                    />
                                 </div>
-                                <div class="col-md-8">
+                                <div class="col-12">
                                     <div class="row g-3">
-                                        <div class="col-md-6">
-                                            <label class="form-label" for="edit_image">Replace image</label>
-                                            <input type="file" class="form-control" id="edit_image" name="image" accept="image/*">
-                                        </div>
                                         <div class="col-md-6">
                                             <label class="form-label" for="edit_youtube">YouTube URL</label>
                                             <input type="url" class="form-control" id="edit_youtube" name="youtube_url" value="{{ old('youtube_url', $data->youtube_url) }}" placeholder="https://www.youtube.com/watch?v=…">

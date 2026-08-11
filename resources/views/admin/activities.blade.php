@@ -113,8 +113,12 @@
                             <textarea class="form-control" rows="6" name="description" data-editor="rich" required></textarea>
                         </div>
                         <div class="col-12">
-                            <label class="form-label">Cover image</label>
-                            <input type="file" class="form-control" name="image" required>
+                            <x-admin.image-field
+                                label="Cover image"
+                                name="image"
+                                legacy-dir="images/projects"
+                                :required="true"
+                            />
                         </div>
                     </div>
                     <div class="mt-4">

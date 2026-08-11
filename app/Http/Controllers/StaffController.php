@@ -41,6 +41,14 @@ class StaffController extends Controller
     {
         $this->forgetRequestRecordIds($request, ['staff_id', 'team_id']);
 
+        $request->validate(array_merge([
+            'names' => ['required', 'string', 'max:255'],
+            'position' => ['required', 'string', 'max:255'],
+            'phone' => ['nullable', 'string', 'max:255'],
+            'facebook' => ['nullable', 'string', 'max:255'],
+            'bio' => ['nullable', 'string'],
+        ], $this->imageInputRules('image', required: true)));
+
         $countBefore = Team::query()->count();
 
         $data = new Team();
@@ -53,11 +61,9 @@ class StaffController extends Controller
         $data->twitter = $request->twitter;
         $data->bio = $request->bio;
 
-        if ($request->hasFile('image')) {
-            $file = $request->file('image');
-            $fileName = time().'_'.$file->getClientOriginalName();
-            $this->storeOptimizedImageAs($file, 'images/staff', $fileName, 'public', ['preset' => 'portrait']);
-            $data->image = '/'.$fileName;
+        $image = $this->imageFromRequest($request, 'image', 'images/staff', ['preset' => 'portrait']);
+        if ($image) {
+            $data->image = $image;
         } else {
             return redirect()->back()->with('error', 'Image is required.');
         }
@@ -105,6 +111,14 @@ class StaffController extends Controller
      */
     public function update(Request $request, $id)
     {
+        $request->validate(array_merge([
+            'names' => ['required', 'string', 'max:255'],
+            'position' => ['required', 'string', 'max:255'],
+            'phone' => ['nullable', 'string', 'max:255'],
+            'facebook' => ['nullable', 'string', 'max:255'],
+            'bio' => ['nullable', 'string'],
+        ], $this->imageInputRules('image')));
+
         $data = $this->findAdminRecord(Team::class, $id);
         $targetId = (int) $data->id;
 
@@ -117,16 +131,9 @@ class StaffController extends Controller
         $data->twitter = $request->input('twitter');
         $data->bio = $request->input('bio');
 
-        if ($request->hasFile('image') && request('image') != '') {
-            $fileName = time().'_'.$request->file('image')->getClientOriginalName();
-            $this->storeOptimizedImageAs(
-                $request->file('image'),
-                'images/staff',
-                $fileName,
-                'public',
-                ['preset' => 'portrait']
-            );
-            $data->image = '/'.$fileName;
+        $image = $this->imageFromRequest($request, 'image', 'images/staff', ['preset' => 'portrait']);
+        if ($image) {
+            $data->image = $image;
         }
 
         $this->assertSameRecord($data, $targetId);

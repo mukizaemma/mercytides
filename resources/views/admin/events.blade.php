@@ -53,7 +53,7 @@
                             <tbody>
                                 @foreach($events as $rs)
                                 <tr>
-                                    <td><img src="{{asset('storage/images/events').$rs->image}}" alt="" width="150px"></td>
+                                    <td><img src="{{ \App\Support\StorageImage::url($rs->image, 'images/events') }}" alt="" width="150px"></td>
                                     <td>{{$rs->title}}</td>
                                     <td>{{$rs->date}} <br>{{$rs->timeStart}} - {{$rs->timeEnd}}</td>
                                     <td>{{$rs->location}}</td>
@@ -139,12 +139,13 @@
 
                                                 <div class="row">
                                                     <div class="col-lg-6 col-sm-12">
-                                                            <label>Select Event Banner <br><span style="color: red">(This image should be resized to 540x600 pixels)</span></label>
-                                                            <label id="projectinput7" class="file center-block">
-                                                                <input type="file" id="image" name="image"
-                                                                    required="">
-                                                                <span class="file-custom"></span>
-                                                            </label>
+                                                            <x-admin.image-field
+                                                                label="Event banner"
+                                                                name="image"
+                                                                legacy-dir="images/events"
+                                                                :required="true"
+                                                                help="Recommended size about 540×600 pixels."
+                                                            />
                                                     </div>
 
 

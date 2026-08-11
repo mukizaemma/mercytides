@@ -63,15 +63,9 @@ class ImageUploadService
 
         $settings = $this->resolveSettings($options);
 
-        if ($file->getSize() <= $settings['max_bytes']) {
-            $dimensions = @getimagesize($file->getRealPath());
-            if (
-                is_array($dimensions)
-                && ($dimensions[0] ?? 0) <= $settings['max_width']
-                && ($dimensions[1] ?? 0) <= $settings['max_height']
-            ) {
-                return (string) file_get_contents($file->getRealPath());
-            }
+        // Under 700KB: keep the original. Only resize/compress when over the cap.
+        if ($file->getSize() > 0 && $file->getSize() <= $settings['max_bytes']) {
+            return (string) file_get_contents($file->getRealPath());
         }
 
         $source = $this->readImage($file->getRealPath(), $mime);

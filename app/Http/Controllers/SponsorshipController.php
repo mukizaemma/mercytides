@@ -55,8 +55,9 @@ class SponsorshipController extends Controller
         $profile = new Sponsorship();
         $this->fillProfile($profile, $validated, $request);
 
-        if ($request->hasFile('image')) {
-            $profile->image = $request->file('image')->storeOptimized('images/sponsorship', 'public', ['preset' => 'portrait']);
+        $image = $this->imageFromRequest($request, 'image', 'images/sponsorship', ['preset' => 'portrait']);
+        if ($image) {
+            $profile->image = $image;
         }
 
         $this->syncVideoMedia($profile, $request);
@@ -98,9 +99,12 @@ class SponsorshipController extends Controller
 
         $this->fillProfile($profile, $validated, $request);
 
-        if ($request->hasFile('image')) {
-            $this->deleteStoredImage($profile->image);
-            $profile->image = $request->file('image')->storeOptimized('images/sponsorship', 'public', ['preset' => 'portrait']);
+        $image = $this->imageFromRequest($request, 'image', 'images/sponsorship', ['preset' => 'portrait']);
+        if ($image) {
+            if ($profile->image && $profile->image !== $image) {
+                $this->deleteStoredImage($profile->image);
+            }
+            $profile->image = $image;
         }
 
         $this->syncVideoMedia($profile, $request);
@@ -162,7 +166,7 @@ class SponsorshipController extends Controller
     {
         $types = array_keys(MercyTidesContent::sponsorshipTypes());
 
-        return $request->validate([
+        return $request->validate(array_merge([
             'type' => ['required', 'string', Rule::in($types)],
             'names' => ['required', 'string', 'max:255'],
             'slug' => ['nullable', 'string', 'max:255'],
@@ -199,13 +203,7 @@ class SponsorshipController extends Controller
             ],
             'remove_video_file' => ['nullable', 'boolean'],
             'monthly_need' => ['nullable', 'string', 'max:64'],
-            'image' => array_filter([
-                $creating ? 'required' : 'nullable',
-                'image',
-                'mimes:jpeg,png,jpg,gif,webp',
-                'max:8192',
-            ]),
-        ]);
+        ], $this->imageInputRules('image', required: $creating)));
     }
 
     /**

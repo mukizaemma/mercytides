@@ -60,57 +60,33 @@
 
                                         </div>
 
-                                            <div class="row">
-                                                <div class="col-lg-6 col-sm-12">
-                                                    <label>About Cover Image </label><br>
-                                                    <label id="projectinput7" class="file center-block">
-                                                      <img src="{{ asset('storage/images/' . $data->image) }}" width="150">
-
-                                                    </label>
+                                            <div class="row g-3">
+                                                <div class="col-lg-4 col-sm-12">
+                                                    <x-admin.image-field
+                                                        label="About cover image"
+                                                        name="image"
+                                                        :current="$data->image ?? null"
+                                                        legacy-dir="images"
+                                                        preset="hero"
+                                                    />
                                                 </div>
 
-                                                <div class="col-lg-6 col-sm-12">
-                                                    <label>Change the about Image</label>
-                                                    <label id="projectinput7" class="file center-block">
-                                                        <input type="file" id="image" name="image">
-                                                        <span class="file-custom"></span>
-                                                    </label>
-                                                </div>
-                                            </div>
-
-                                            <div class="row">
-                                                <div class="col-lg-6 col-sm-12">
-                                                    <label>Home Back Image </label><br>
-                                                    <label id="projectinput7" class="file center-block">
-                                                        <img src="{{ asset('storage/images/' . $data->image1) }}" width="150">
-
-                                                    </label>
+                                                <div class="col-lg-4 col-sm-12">
+                                                    <x-admin.image-field
+                                                        label="Home background image"
+                                                        name="image1"
+                                                        :current="$data->image1 ?? null"
+                                                        legacy-dir="images"
+                                                    />
                                                 </div>
 
-                                                <div class="col-lg-6 col-sm-12">
-                                                    <label>Change the home back Image</label>
-                                                    <label id="projectinput7" class="file center-block">
-                                                        <input type="file" id="image" name="image1">
-                                                        <span class="file-custom"></span>
-                                                    </label>
-                                                </div>
-                                            </div>
-
-                                            <div class="row">
-                                                <div class="col-lg-6 col-sm-12">
-                                                    <label>Pages Header Image </label><br>
-                                                    <label id="projectinput7" class="file center-block">
-                                                      <img src="{{ asset('storage/images/' . $data->image2) }}" width="150">
-
-                                                    </label>
-                                                </div>
-
-                                                <div class="col-lg-6 col-sm-12">
-                                                    <label>Change the pages header Image</label>
-                                                    <label id="projectinput7" class="file center-block">
-                                                        <input type="file" id="image" name="image2">
-                                                        <span class="file-custom"></span>
-                                                    </label>
+                                                <div class="col-lg-4 col-sm-12">
+                                                    <x-admin.image-field
+                                                        label="Pages header image"
+                                                        name="image2"
+                                                        :current="$data->image2 ?? null"
+                                                        legacy-dir="images"
+                                                    />
                                                 </div>
                                             </div>
                                         </div>

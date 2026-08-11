@@ -51,25 +51,14 @@
                                     <label class="form-label">Description</label>
                                     <textarea class="form-control" name="description" rows="4" data-editor="rich">{{ old('description', $data->description) }}</textarea>
                                 </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">Current logo</label>
-                                    <div>
-                                        @if($data->hasLogo())
-                                            <img
-                                                src="{{ $data->logoUrl() }}"
-                                                alt="{{ $data->names }}"
-                                                class="rounded border bg-white p-2"
-                                                style="max-height: 120px; width: auto; object-fit: contain;"
-                                            >
-                                        @else
-                                            <span class="text-muted">No logo uploaded</span>
-                                        @endif
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">Replace logo</label>
-                                    <input type="file" class="form-control" name="image" accept="image/jpeg,image/png,image/gif,image/webp,.jpg,.jpeg,.png,.gif,.webp" data-image-preset="logo">
-                                    <small class="text-muted">Leave blank to keep the current logo. JPG, PNG, GIF, or WEBP.</small>
+                                <div class="col-12">
+                                    <x-admin.image-field
+                                        label="Logo"
+                                        name="image"
+                                        :current="$data->image ?? null"
+                                        legacy-dir="images/partners"
+                                        preset="logo"
+                                    />
                                 </div>
                             </div>
                             <div class="d-flex justify-content-end gap-2 mt-4">

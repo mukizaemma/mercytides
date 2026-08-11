@@ -33,10 +33,9 @@ class SlidesController extends Controller
     {
         $this->forgetRequestRecordIds($request, ['slide_id']);
 
-        $request->validate([
+        $request->validate(array_merge([
             'heading' => ['nullable', 'string', 'max:255'],
-            'image' => ['required', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:4096'],
-        ]);
+        ], $this->imageInputRules('image', required: true)));
 
         $countBefore = Slide::query()->count();
 
@@ -44,8 +43,9 @@ class SlidesController extends Controller
         $data->heading = $request->input('heading', 'Default Heading');
         $data->subheading = 'Mercy Tides';
 
-        if ($request->hasFile('image')) {
-            $data->image = $request->file('image')->storeOptimized('images/slides', 'public', ['preset' => 'hero']);
+        $image = $this->imageFromRequest($request, 'image', 'images/slides', ['preset' => 'hero']);
+        if ($image) {
+            $data->image = $image;
         }
 
         $this->assertCreatingNew($data);
@@ -67,19 +67,19 @@ class SlidesController extends Controller
 
     public function update(Request $request, $id)
     {
-        $request->validate([
+        $request->validate(array_merge([
             'heading' => ['nullable', 'string', 'max:255'],
-            'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:4096'],
-        ]);
+        ], $this->imageInputRules('image')));
         $data = $this->findAdminRecord(Slide::class, $id);
         $targetId = (int) $data->id;
         $data->heading = $request->input('heading');
 
-        if ($request->hasFile('image')) {
-            if (! empty($data->image) && Storage::disk('public')->exists($data->image)) {
+        $image = $this->imageFromRequest($request, 'image', 'images/slides', ['preset' => 'hero']);
+        if ($image) {
+            if (! empty($data->image) && $data->image !== $image && Storage::disk('public')->exists($data->image)) {
                 Storage::disk('public')->delete($data->image);
             }
-            $data->image = $request->file('image')->storeOptimized('images/slides', 'public', ['preset' => 'hero']);
+            $data->image = $image;
         }
 
         $this->assertSameRecord($data, $targetId);

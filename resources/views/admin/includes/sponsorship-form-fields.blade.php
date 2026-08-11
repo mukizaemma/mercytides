@@ -45,11 +45,14 @@
     </div>
 
     <div class="mb-3">
-        <label class="form-label">Portrait photo @if(!$isEdit)<span class="text-danger">*</span>@endif</label>
-        <input type="file" class="form-control" name="image" {{ $isEdit ? '' : 'required' }} accept="image/*" data-image-preset="portrait">
-        @if($isEdit && !empty($formProfile->image))
-            <img src="{{ \App\Models\Sponsorship::publicImageUrl($formProfile->image) }}" alt="" class="mt-2 rounded border" width="90" height="120" style="object-fit:cover;">
-        @endif
+        <x-admin.image-field
+            label="Portrait photo"
+            name="image"
+            :current="$isEdit ? ($formProfile->image ?? null) : null"
+            legacy-dir="images/sponsorship"
+            preset="portrait"
+            :required="! $isEdit"
+        />
     </div>
 
     <div class="row">

@@ -11,7 +11,7 @@
     <meta name="form-submissions-url" content="{{ route('formSubmissions.store') }}">
 
     <!-- Place favicon.ico in the root directory -->
-    <link rel="shortcut icon" type="image/x-icon" href="{{asset('storage\images').($setting->logo ?? '')}}">
+    <link rel="shortcut icon" type="image/x-icon" href="{{\App\Support\StorageImage::url($setting->logo ?? null)}}">
 
     <!-- CSS here -->
     <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}">
@@ -96,7 +96,7 @@
             </div>
             <div class="tpoffcanvas__logo">
                 <a href="{{ route('home') }}">
-                    <img src="{{asset('storage\images').($setting->logo ?? '')}}" alt="" width="120px">
+                    <img src="{{\App\Support\StorageImage::url($setting->logo ?? null)}}" alt="" width="120px">
                 </a>
             </div>
             <div class="tpoffcanvas__title">
@@ -150,7 +150,7 @@
                     <div class="col-xl-2 col-lg-6 col-md-4 col-7">
                         <div class="tp-header-3__logo">
                             <a href="{{route('home')}}">
-                                <img src="{{asset('storage\images').($setting->logo ?? '')}}" alt="" width="90px">
+                                <img src="{{\App\Support\StorageImage::url($setting->logo ?? null)}}" alt="" width="90px">
                             </a>
                         </div>
                     </div>
@@ -163,6 +163,7 @@
                                         <a href="{{ route('backgroundDetails') }}">About</a>
                                         <ul class="submenu tp-submenu">
                                             <li><a href="{{ route('backgroundDetails') }}">Our Story</a></li>
+                                            <li><a href="{{ route('foundingStory') }}">Founder's Story</a></li>
                                             <li><a href="{{ route('ourMission') }}">Vision &amp; Mission</a></li>
                                             <li><a href="{{ route('team') }}">Leadership Team</a></li>
                                             <li><a href="{{ route('ourApproach') }}">Programs &amp; Values</a></li>
@@ -232,7 +233,7 @@
                     <div class="col-12 col-lg-4 site-footer__col">
                         <a href="{{ route('home') }}" class="site-footer__logo-link d-inline-block">
                             @if(!empty($setting->logo))
-                                <img src="{{ asset('storage/images' . $setting->logo) }}" alt="{{ $setting->company ?? 'Mercy Tides' }}" class="site-footer__logo" height="88" width="auto">
+                                <img src="{{ \App\Support\StorageImage::url($setting->logo) }}" alt="{{ $setting->company ?? 'Mercy Tides' }}" class="site-footer__logo" height="88" width="auto">
                             @else
                                 <span class="site-footer__wordmark h4 text-white mb-0">{{ $setting->company ?? 'Mercy Tides' }}</span>
                             @endif

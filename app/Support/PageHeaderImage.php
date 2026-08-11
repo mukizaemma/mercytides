@@ -80,12 +80,7 @@ class PageHeaderImage
     {
         $setting = Setting::query()->first();
         if (! empty($setting?->page_header_image)) {
-            $path = ltrim((string) $setting->page_header_image, '/');
-            if (str_contains($path, '/')) {
-                return asset('storage/' . $path);
-            }
-
-            return asset('storage/images' . $setting->page_header_image);
+            return StorageImage::url($setting->page_header_image);
         }
 
         $slide = Slide::query()

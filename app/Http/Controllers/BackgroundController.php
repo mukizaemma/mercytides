@@ -2,14 +2,11 @@
 
 namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Schema;
+use App\Models\About;
 use App\Models\Background;
-use App\Models\Homepage;
 
 class BackgroundController extends Controller
 {
@@ -28,7 +25,7 @@ class BackgroundController extends Controller
 
 public function saveBackg(Request $request)
 {
-    $request->validate([
+    $request->validate(array_merge([
         'description' => 'nullable|string',
         'donations' => 'nullable|string',
         'get_involved_intro' => 'nullable|string',
@@ -51,15 +48,7 @@ public function saveBackg(Request $request)
         'families_impacted' => 'nullable|string|max:255',
         'jobs_created' => 'nullable|string|max:255',
         'training_hours' => 'nullable|string|max:255',
-        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-        'image1' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-        'image2' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-        'core_values_background' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:4096',
-        'model_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:4096',
-        'factory_services_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:4096',
-        'factory_community_impact_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:4096',
-        'factory_training_facilities_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:4096',
-    ]);
+    ], $this->imageInputRules('image'), $this->imageInputRules('image1'), $this->imageInputRules('image2'), $this->imageInputRules('core_values_background'), $this->imageInputRules('model_image'), $this->imageInputRules('factory_services_image'), $this->imageInputRules('factory_community_impact_image'), $this->imageInputRules('factory_training_facilities_image')));
 
     $data = Background::firstOrEmpty();
     if ($request->has('description')) {
@@ -129,86 +118,23 @@ public function saveBackg(Request $request)
         $data->training_hours = $request->input('training_hours');
     }
 
-    // Process image
-    if ($request->hasFile('image')) {
-        if ($data->image && Storage::disk('public')->exists('images/' . $data->image)) {
-            Storage::disk('public')->delete('images/' . $data->image);
-        }
-
-        $filename = 'bg_'.time().'_'.Str::random(5).'.jpg';
-        $this->storeOptimizedImageAs($request->file('image'), 'images', $filename, 'public', ['preset' => 'hero']);
-        $data->image = $filename;
+    $this->assignBackgroundImage($request, $data, 'image', ['preset' => 'hero']);
+    $this->assignBackgroundImage($request, $data, 'image1');
+    $this->assignBackgroundImage($request, $data, 'image2');
+    if (Schema::hasColumn('backgrounds', 'core_values_background')) {
+        $this->assignBackgroundImage($request, $data, 'core_values_background', ['preset' => 'hero']);
     }
-
-    // Process image1
-    if ($request->hasFile('image1')) {
-        if ($data->image1 && Storage::disk('public')->exists('images/' . $data->image1)) {
-            Storage::disk('public')->delete('images/' . $data->image1);
-        }
-
-        $filename1 = 'img1_'.time().'_'.Str::random(5).'.jpg';
-        $this->storeOptimizedImageAs($request->file('image1'), 'images', $filename1, 'public');
-        $data->image1 = $filename1;
+    if (Schema::hasColumn('backgrounds', 'model_image')) {
+        $this->assignBackgroundImage($request, $data, 'model_image');
     }
-
-    // Process image2
-    if ($request->hasFile('image2')) {
-        if ($data->image2 && Storage::disk('public')->exists('images/' . $data->image2)) {
-            Storage::disk('public')->delete('images/' . $data->image2);
-        }
-
-        $filename2 = 'img2_'.time().'_'.Str::random(5).'.jpg';
-        $this->storeOptimizedImageAs($request->file('image2'), 'images', $filename2, 'public');
-        $data->image2 = $filename2;
+    if (Schema::hasColumn('backgrounds', 'factory_services_image')) {
+        $this->assignBackgroundImage($request, $data, 'factory_services_image');
     }
-
-    // Core values section background (About page parallax)
-    if (Schema::hasColumn('backgrounds', 'core_values_background') && $request->hasFile('core_values_background')) {
-        if ($data->core_values_background && Storage::disk('public')->exists('images/' . $data->core_values_background)) {
-            Storage::disk('public')->delete('images/' . $data->core_values_background);
-        }
-
-        $cvFilename = 'cv_bg_'.time().'_'.Str::random(5).'.jpg';
-        $this->storeOptimizedImageAs($request->file('core_values_background'), 'images', $cvFilename, 'public', ['preset' => 'hero']);
-        $data->core_values_background = $cvFilename;
+    if (Schema::hasColumn('backgrounds', 'factory_community_impact_image')) {
+        $this->assignBackgroundImage($request, $data, 'factory_community_impact_image');
     }
-
-    // Process model image
-    if (Schema::hasColumn('backgrounds', 'model_image') && $request->hasFile('model_image')) {
-        if ($data->model_image && Storage::disk('public')->exists('images/' . $data->model_image)) {
-            Storage::disk('public')->delete('images/' . $data->model_image);
-        }
-
-        $modelFilename = 'model_'.time().'_'.Str::random(5).'.jpg';
-        $this->storeOptimizedImageAs($request->file('model_image'), 'images', $modelFilename, 'public');
-        $data->model_image = $modelFilename;
-    }
-
-    if (Schema::hasColumn('backgrounds', 'factory_services_image') && $request->hasFile('factory_services_image')) {
-        if ($data->factory_services_image && Storage::disk('public')->exists('images/' . $data->factory_services_image)) {
-            Storage::disk('public')->delete('images/' . $data->factory_services_image);
-        }
-        $filename = 'factory_services_'.time().'_'.Str::random(5).'.jpg';
-        $this->storeOptimizedImageAs($request->file('factory_services_image'), 'images', $filename, 'public');
-        $data->factory_services_image = $filename;
-    }
-
-    if (Schema::hasColumn('backgrounds', 'factory_community_impact_image') && $request->hasFile('factory_community_impact_image')) {
-        if ($data->factory_community_impact_image && Storage::disk('public')->exists('images/' . $data->factory_community_impact_image)) {
-            Storage::disk('public')->delete('images/' . $data->factory_community_impact_image);
-        }
-        $filename = 'factory_impact_'.time().'_'.Str::random(5).'.jpg';
-        $this->storeOptimizedImageAs($request->file('factory_community_impact_image'), 'images', $filename, 'public');
-        $data->factory_community_impact_image = $filename;
-    }
-
-    if (Schema::hasColumn('backgrounds', 'factory_training_facilities_image') && $request->hasFile('factory_training_facilities_image')) {
-        if ($data->factory_training_facilities_image && Storage::disk('public')->exists('images/' . $data->factory_training_facilities_image)) {
-            Storage::disk('public')->delete('images/' . $data->factory_training_facilities_image);
-        }
-        $filename = 'factory_training_'.time().'_'.Str::random(5).'.jpg';
-        $this->storeOptimizedImageAs($request->file('factory_training_facilities_image'), 'images', $filename, 'public');
-        $data->factory_training_facilities_image = $filename;
+    if (Schema::hasColumn('backgrounds', 'factory_training_facilities_image')) {
+        $this->assignBackgroundImage($request, $data, 'factory_training_facilities_image');
     }
 
     $data->save();
@@ -216,7 +142,83 @@ public function saveBackg(Request $request)
     return redirect()->back()->with('success', 'Background has been updated successfully');
 }
 
+    public function homePage()
+    {
+        $data = About::firstOrEmpty();
+        if (! $data->exists) {
+            $data->vision = 'Alleviate poverty among single-teen mothers in Rutsiro District by providing tailoring trainings';
+            $data->save();
+            $data = About::firstOrEmpty();
+        }
 
+        return view('admin.homePage', ['data' => $data]);
+    }
 
+    public function saveHom(Request $request)
+    {
+        $request->validate(array_merge([
+            'welcomeNote' => ['nullable', 'string'],
+            'mission' => ['nullable', 'string'],
+            'vision' => ['nullable', 'string'],
+            'values' => ['nullable', 'string'],
+        ], $this->imageInputRules('aboutImage'), $this->imageInputRules('back1'), $this->imageInputRules('back2')));
+
+        $data = About::firstOrEmpty();
+        if (Schema::hasColumn('abouts', 'welcomeNote') && $request->has('welcomeNote')) {
+            $data->welcomeNote = $request->input('welcomeNote');
+        }
+        if ($request->has('mission')) {
+            $data->mission = $request->input('mission');
+        }
+        if ($request->has('vision')) {
+            $data->vision = $request->input('vision');
+        }
+        if ($request->has('values')) {
+            $data->values = $request->input('values');
+        }
+
+        if (Schema::hasColumn('abouts', 'aboutImage')) {
+            $this->assignModelImage($request, $data, 'aboutImage', 'images');
+        }
+        if (Schema::hasColumn('abouts', 'back1')) {
+            $this->assignModelImage($request, $data, 'back1', 'images');
+        }
+        if (Schema::hasColumn('abouts', 'back2')) {
+            $this->assignModelImage($request, $data, 'back2', 'images');
+        }
+
+        $data->save();
+
+        return redirect()->back()->with('success', 'Home page has been updated successfully');
+    }
+
+    private function assignBackgroundImage(Request $request, Background $data, string $field, array $options = []): void
+    {
+        $this->assignModelImage($request, $data, $field, 'images', $options);
+    }
+
+    private function assignModelImage(Request $request, object $data, string $field, string $directory, array $options = []): void
+    {
+        $path = $this->imageFromRequest($request, $field, $directory, $options);
+        if (! $path) {
+            return;
+        }
+
+        $existing = (string) ($data->{$field} ?? '');
+        if ($existing !== '' && $existing !== $path) {
+            $normalized = ltrim(str_replace('\\', '/', $existing), '/');
+            $candidates = [$normalized];
+            if (! str_contains($normalized, '/')) {
+                $candidates[] = $directory.'/'.$normalized;
+            }
+            foreach ($candidates as $relative) {
+                if (Storage::disk('public')->exists($relative)) {
+                    Storage::disk('public')->delete($relative);
+                }
+            }
+        }
+
+        $data->{$field} = $path;
+    }
 
 }

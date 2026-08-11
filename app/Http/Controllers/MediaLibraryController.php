@@ -2,12 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Blogimages;
-use App\Models\Image;
-use App\Models\News;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 
 class MediaLibraryController extends Controller
@@ -18,73 +14,27 @@ class MediaLibraryController extends Controller
     public function index(Request $request): JsonResponse
     {
         $q = trim((string) $request->query('q', ''));
+        $disk = Storage::disk('public');
         $items = collect();
 
-        if (Schema::hasTable('images')) {
-            Image::query()
-                ->whereNotNull('image')
-                ->where('image', '!=', '')
-                ->latest()
-                ->limit(120)
-                ->get(['id', 'image', 'caption'])
-                ->each(function (Image $row) use ($items) {
-                    $path = $this->normalizePath((string) $row->image);
-                    if ($path === null) {
-                        return;
-                    }
-                    $items->push([
-                        'path' => $path,
-                        'url' => asset('storage/'.$path),
-                        'label' => $row->caption ?: basename($path),
-                        'source' => 'gallery',
-                    ]);
-                });
-        }
-
-        if (Schema::hasTable('news')) {
-            News::query()
-                ->whereNotNull('image')
-                ->where('image', '!=', '')
-                ->latest()
-                ->limit(80)
-                ->get(['id', 'image', 'title'])
-                ->each(function (News $row) use ($items) {
-                    $path = $this->normalizePath((string) $row->image, 'images/news');
-                    if ($path === null) {
-                        return;
-                    }
-                    $items->push([
-                        'path' => $path,
-                        'url' => asset('storage/'.$path),
-                        'label' => $row->title ?: basename($path),
-                        'source' => 'updates',
-                    ]);
-                });
-        }
-
-        if (Schema::hasTable('blogimages')) {
-            Blogimages::query()
-                ->whereNotNull('gallery')
-                ->where('gallery', '!=', '')
-                ->latest()
-                ->limit(120)
-                ->get(['id', 'gallery', 'caption'])
-                ->each(function (Blogimages $row) use ($items) {
-                    $path = $this->normalizePath((string) $row->gallery);
-                    if ($path === null) {
-                        return;
-                    }
-                    $items->push([
-                        'path' => $path,
-                        'url' => asset('storage/'.$path),
-                        'label' => $row->caption ?: basename($path),
-                        'source' => 'updates',
-                    ]);
-                });
+        if ($disk->exists('images')) {
+            foreach ($disk->allFiles('images') as $path) {
+                if (! preg_match('/\.(jpe?g|png|gif|webp)$/i', $path)) {
+                    continue;
+                }
+                $items->push([
+                    'path' => $path,
+                    'url' => asset('storage/'.$path),
+                    'label' => basename($path),
+                    'source' => dirname($path),
+                    'modified' => $disk->lastModified($path),
+                ]);
+            }
         }
 
         $unique = $items
             ->unique('path')
+            ->sortByDesc('modified')
             ->values()
             ->filter(function (array $item) use ($q) {
                 if ($q === '') {
@@ -94,43 +44,16 @@ class MediaLibraryController extends Controller
 
                 return str_contains($hay, strtolower($q));
             })
-            ->take(160)
+            ->take(240)
+            ->map(function (array $item) {
+                unset($item['modified']);
+
+                return $item;
+            })
             ->values();
 
         return response()->json([
             'data' => $unique,
         ]);
-    }
-
-    /**
-     * Normalize a stored path and ensure the file exists on the public disk.
-     */
-    private function normalizePath(string $raw, ?string $fallbackDir = null): ?string
-    {
-        $path = ltrim(str_replace('\\', '/', $raw), '/');
-        if ($path === '') {
-            return null;
-        }
-        if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
-            return null;
-        }
-        if (str_starts_with($path, 'storage/')) {
-            $path = substr($path, strlen('storage/'));
-        }
-
-        // Legacy basename-only values (e.g. events / older news).
-        if ($fallbackDir && ! str_contains($path, '/')) {
-            $path = rtrim($fallbackDir, '/').'/'.$path;
-        }
-
-        if (! str_starts_with($path, 'images/')) {
-            return null;
-        }
-
-        if (! Storage::disk('public')->exists($path)) {
-            return null;
-        }
-
-        return $path;
     }
 }

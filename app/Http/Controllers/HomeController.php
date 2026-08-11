@@ -24,6 +24,7 @@ use App\Models\Testimony;
 use App\Models\Volunteer;
 use App\Mail\ReplyMessage;
 use App\Models\Background;
+use App\Models\FounderStory;
 use App\Models\OrderRequest;
 use App\Models\PartnershipInquiry;
 use App\Models\Product;
@@ -689,6 +690,10 @@ class HomeController extends Controller
 
 
     public function saveSetting(Request $request){
+        $request->validate(array_merge([
+            'company' => ['nullable', 'string', 'max:255'],
+        ], $this->imageInputRules('logo'), $this->imageInputRules('page_header_image')));
+
         $data = Setting::firstOrEmpty();
         $data->company = $request->input('company');
         $data->address = $request->input('address');
@@ -751,22 +756,16 @@ class HomeController extends Controller
             $data->donation_gateway_notice = $request->input('donation_gateway_notice');
         }
 
-        if ($request->hasFile('logo') && request('logo') != '') {
-            $data->logo = $this->storeOptimizedImageBasename(
-                $request->file('logo'),
-                'images',
-                'public',
-                ['preset' => 'logo']
-            );
+        $logo = $this->imageFromRequest($request, 'logo', 'images', ['preset' => 'logo']);
+        if ($logo) {
+            $data->logo = $logo;
         }
 
-        if (Schema::hasColumn('settings', 'page_header_image') && $request->hasFile('page_header_image') && request('page_header_image') != '') {
-            $data->page_header_image = $this->storeOptimizedImageBasename(
-                $request->file('page_header_image'),
-                'images',
-                'public',
-                ['preset' => 'hero']
-            );
+        if (Schema::hasColumn('settings', 'page_header_image')) {
+            $headerImage = $this->imageFromRequest($request, 'page_header_image', 'images', ['preset' => 'hero']);
+            if ($headerImage) {
+                $data->page_header_image = $headerImage;
+            }
         }
 
         // Allow password change only for this specific admin account
@@ -796,8 +795,9 @@ class HomeController extends Controller
         }
 
         $background = Background::firstOrEmpty();
+        $founderStory = FounderStory::firstOrSingleton();
 
-        return view('admin.about', ['data'=>$data, 'background' => $background]);
+        return view('admin.about', ['data'=>$data, 'background' => $background, 'founderStory' => $founderStory]);
     }
 
     public function saveAbout(Request $request, $id){
@@ -810,13 +810,9 @@ class HomeController extends Controller
         }
 
 
-        if ($request->hasFile('backImage') && request('backImage') != '') {
-            $data->backImage = $this->storeOptimizedImageBasename(
-                $request->file('backImage'),
-                'images',
-                'public',
-                ['preset' => 'hero']
-            );
+        $backImage = $this->imageFromRequest($request, 'backImage', 'images', ['preset' => 'hero']);
+        if ($backImage) {
+            $data->backImage = $backImage;
         }
 
         $data->save();
@@ -843,6 +839,13 @@ class HomeController extends Controller
         $data = Donation::find($id);
         $data->delete($id);
         return redirect()->back()->with('warning','Donation has been deleted!');
+    }
+
+    public function foundingStory(){
+        $about = Background::firstOrEmpty();
+        $story = FounderStory::firstOrSingleton();
+
+        return view('frontend.founding-story', compact('about', 'story'));
     }
 
     public function ourMission(){

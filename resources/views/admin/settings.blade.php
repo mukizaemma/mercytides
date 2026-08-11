@@ -69,11 +69,13 @@
                                             <input type="text" class="form-control" value="{{ $data->company }}" name="company">
                                         </div>
                                         <div class="col-lg-6">
-                                            <label class="form-label">Company Logo</label>
-                                            <input type="file" class="form-control" name="logo">
-                                            @if(!empty($data->logo))
-                                                <img src="{{ asset('storage/images') . $data->logo }}" alt="Logo" width="130" class="mt-2 rounded border p-1 bg-white">
-                                            @endif
+                                            <x-admin.image-field
+                                                label="Company Logo"
+                                                name="logo"
+                                                :current="$data->logo ?? null"
+                                                legacy-dir="images"
+                                                preset="logo"
+                                            />
                                         </div>
 
                                         @if ((Auth::user()->email ?? null) === 'admin@iremetech.com')
@@ -214,12 +216,14 @@
                                     </div>
                                     <div class="row g-3">
                                         <div class="col-lg-6">
-                                            <label class="form-label">Legacy default image (optional fallback)</label>
-                                            <input type="file" class="form-control" name="page_header_image">
-                                            <small class="text-muted d-block mt-1">Kept for compatibility. Prefer uploading the default in Page headers.</small>
-                                            @if(!empty($data->page_header_image))
-                                                <img src="{{ asset('storage/images') . $data->page_header_image }}" alt="Page header image" width="180" class="mt-2 rounded border p-1 bg-white">
-                                            @endif
+                                            <x-admin.image-field
+                                                label="Legacy default image (optional fallback)"
+                                                name="page_header_image"
+                                                :current="$data->page_header_image ?? null"
+                                                legacy-dir="images"
+                                                preset="hero"
+                                                help="Kept for compatibility. Prefer uploading the default in Page headers."
+                                            />
                                         </div>
                                         <div class="col-lg-6">
                                             <label class="form-label">Default header caption</label>

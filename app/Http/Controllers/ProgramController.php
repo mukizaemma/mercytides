@@ -25,12 +25,13 @@ class ProgramController extends Controller
     {
         $this->forgetRequestRecordIds($request, ['program_id']);
 
-        $request->validate([
+        $request->validate(array_merge([
             'title' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
-            'image' => ['required', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:3072'],
-            'gallery_images.*' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:3072'],
-        ]);
+            'gallery_images.*' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:10240'],
+            'gallery_images_paths' => ['nullable', 'array'],
+            'gallery_images_paths.*' => ['nullable', 'string', 'max:500'],
+        ], $this->imageInputRules('image', required: true)));
 
         $countBefore = Program::query()->count();
 
@@ -38,7 +39,10 @@ class ProgramController extends Controller
         $program->title = $request->input('title');
         $program->description = $request->input('description');
         $program->slug = $this->uniqueModelSlug(Program::class, (string) $request->input('title'), null, 'program');
-        $program->image = $request->file('image')->storeOptimized('images/programs', 'public');
+        $cover = $this->imageFromRequest($request, 'image', 'images/programs');
+        if ($cover) {
+            $program->image = $cover;
+        }
         if (Schema::hasColumn('programs', 'added_by')) {
             $program->added_by = Auth::id() ?? Auth::guard('admin')->id();
         }
@@ -53,8 +57,7 @@ class ProgramController extends Controller
         }
 
         if (Schema::hasTable('programimages')) {
-            foreach ($request->file('gallery_images', []) as $galleryImage) {
-                $path = $galleryImage->storeOptimized('images/programs/gallery', 'public');
+            foreach ($this->galleryFromRequest($request, 'gallery_images', 'images/programs/gallery') as $path) {
                 Programimage::create([
                     'image' => $path,
                     'program_id' => $program->id,
@@ -87,11 +90,10 @@ class ProgramController extends Controller
 
     public function update(Request $request, $id)
     {
-        $request->validate([
+        $request->validate(array_merge([
             'title' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
-            'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:3072'],
-        ]);
+        ], $this->imageInputRules('image')));
 
         $data = $this->findAdminRecord(Program::class, $id);
         $targetId = (int) $data->id;
@@ -102,11 +104,12 @@ class ProgramController extends Controller
             $data->slug = $this->uniqueModelSlug(Program::class, $newTitle, $targetId, 'program');
         }
 
-        if ($request->hasFile('image')) {
-            if (! empty($data->image) && Storage::disk('public')->exists($data->image)) {
+        $cover = $this->imageFromRequest($request, 'image', 'images/programs');
+        if ($cover) {
+            if (! empty($data->image) && $data->image !== $cover && Storage::disk('public')->exists($data->image)) {
                 Storage::disk('public')->delete($data->image);
             }
-            $data->image = $request->file('image')->storeOptimized('images/programs', 'public');
+            $data->image = $cover;
         }
 
         $this->assertSameRecord($data, $targetId);
@@ -160,16 +163,20 @@ class ProgramController extends Controller
         $request->validate([
             'program_id' => 'required|exists:programs,id',
             'gallery_images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:10240',
+            'gallery_images_paths' => ['nullable', 'array'],
+            'gallery_images_paths.*' => ['nullable', 'string', 'max:500'],
             'image.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:10240',
+            'image_paths' => ['nullable', 'array'],
+            'image_paths.*' => ['nullable', 'string', 'max:500'],
         ]);
 
-        $files = $request->file('gallery_images', []);
-        if (empty($files)) {
-            $files = $request->file('image', []);
+        $paths = $this->galleryFromRequest($request, 'gallery_images', 'images/programs/gallery');
+        if (empty($paths)) {
+            $paths = $this->galleryFromRequest($request, 'image', 'images/programs/gallery');
         }
 
-        if (empty($files)) {
-            return redirect()->back()->with('error', 'Please select at least one image to upload.');
+        if (empty($paths)) {
+            return redirect()->back()->with('error', 'Please select at least one image to upload or choose from the library.');
         }
 
         $userId = Auth::id() ?? Auth::guard('admin')->id();
@@ -177,9 +184,7 @@ class ProgramController extends Controller
             return redirect()->back()->with('error', 'Unable to determine current user for upload.');
         }
 
-        foreach ($files as $image) {
-            $path = $image->storeOptimized('images/programs/gallery', 'public');
-
+        foreach ($paths as $path) {
             Programimage::create([
                 'image' => $path,
                 'program_id' => $request->program_id,

@@ -6,7 +6,6 @@ use App\Models\Image;
 use App\Models\Program;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Validation\Rule;
 
 class GalleryController extends Controller
 {
@@ -25,24 +24,17 @@ class GalleryController extends Controller
     {
         $this->forgetRequestRecordIds($request, ['gallery_id', 'image_id']);
 
-        $validated = $request->validate([
+        $validated = $request->validate(array_merge([
             'caption' => ['nullable', 'string', 'max:255'],
             'program_id' => ['nullable', 'exists:programs,id'],
             'youtube_url' => ['nullable', 'string', 'max:500', 'regex:/^(https?:\/\/)?(www\.)?(youtube\.com\/(watch\?v=|embed\/|shorts\/)|youtu\.be\/).+/i'],
-            'image' => [
-                Rule::requiredIf(fn () => blank($request->input('youtube_url'))),
-                'nullable',
-                'image',
-                'mimes:jpeg,png,jpg,gif,webp',
-                'max:4096',
-            ],
-        ], [
-            'image.required' => 'Upload an image or provide a YouTube URL.',
+        ], $this->imageInputRules('image')), [
             'youtube_url.regex' => 'Enter a valid YouTube URL.',
         ]);
 
-        if (blank($validated['youtube_url'] ?? null) && ! $request->hasFile('image')) {
-            return redirect()->back()->with('error', 'Upload an image or provide a YouTube URL.')->withInput();
+        $image = $this->imageFromRequest($request, 'image', 'images/gallery');
+        if (blank($validated['youtube_url'] ?? null) && ! $image) {
+            return redirect()->back()->with('error', 'Upload an image, choose one from the library, or provide a YouTube URL.')->withInput();
         }
 
         $countBefore = Image::query()->count();
@@ -52,8 +44,8 @@ class GalleryController extends Controller
         $data->program_id = $validated['program_id'] ?? null;
         $data->youtube_url = filled($validated['youtube_url'] ?? null) ? trim($validated['youtube_url']) : null;
 
-        if ($request->hasFile('image')) {
-            $data->image = $request->file('image')->storeOptimized('images/gallery', 'public');
+        if ($image) {
+            $data->image = $image;
         }
 
         $this->assertCreatingNew($data);
@@ -84,30 +76,30 @@ class GalleryController extends Controller
         $data = $this->findAdminRecord(Image::class, $id);
         $targetId = (int) $data->id;
 
-        $validated = $request->validate([
+        $validated = $request->validate(array_merge([
             'caption' => ['nullable', 'string', 'max:255'],
             'program_id' => ['nullable', 'exists:programs,id'],
             'youtube_url' => ['nullable', 'string', 'max:500', 'regex:/^(https?:\/\/)?(www\.)?(youtube\.com\/(watch\?v=|embed\/|shorts\/)|youtu\.be\/).+/i'],
-            'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:4096'],
-        ], [
+        ], $this->imageInputRules('image')), [
             'youtube_url.regex' => 'Enter a valid YouTube URL.',
         ]);
 
         $youtube = filled($validated['youtube_url'] ?? null) ? trim($validated['youtube_url']) : null;
+        $image = $this->imageFromRequest($request, 'image', 'images/gallery');
 
-        if (! $request->hasFile('image') && blank($youtube) && empty($data->image)) {
-            return redirect()->back()->with('error', 'Keep an image, upload a new one, or provide a YouTube URL.')->withInput();
+        if (! $image && blank($youtube) && empty($data->image)) {
+            return redirect()->back()->with('error', 'Keep an image, upload or choose a new one, or provide a YouTube URL.')->withInput();
         }
 
         $data->caption = $validated['caption'] ?? null;
         $data->program_id = $validated['program_id'] ?? null;
         $data->youtube_url = $youtube;
 
-        if ($request->hasFile('image')) {
-            if (! empty($data->image) && Storage::disk('public')->exists($data->image)) {
+        if ($image) {
+            if (! empty($data->image) && $data->image !== $image && Storage::disk('public')->exists($data->image)) {
                 Storage::disk('public')->delete($data->image);
             }
-            $data->image = $request->file('image')->storeOptimized('images/gallery', 'public');
+            $data->image = $image;
         }
 
         $this->assertSameRecord($data, $targetId);

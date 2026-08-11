@@ -82,6 +82,23 @@
         const img = await loadImage(file);
         const originalWidth = img.naturalWidth || img.width;
         const originalHeight = img.naturalHeight || img.height;
+
+        if (file.size <= options.maxBytes) {
+            return {
+                previewUrl: URL.createObjectURL(file),
+                width: originalWidth,
+                height: originalHeight,
+                originalWidth: originalWidth,
+                originalHeight: originalHeight,
+                originalSize: file.size,
+                optimizedSize: file.size,
+                resized: false,
+                compressed: false,
+                needsOptimization: false,
+                blob: null,
+            };
+        }
+
         let width = originalWidth;
         let height = originalHeight;
         let resized = false;
@@ -117,10 +134,9 @@
         }
 
         const compressed = file.size > (blob ? blob.size : file.size) + 2048;
-        const needsOptimization = resized || compressed || file.size > options.maxBytes;
 
         return {
-            previewUrl: blob ? URL.createObjectURL(blob) : '',
+            previewUrl: blob ? URL.createObjectURL(blob) : URL.createObjectURL(file),
             width: width,
             height: height,
             originalWidth: originalWidth,
@@ -129,7 +145,8 @@
             optimizedSize: blob ? blob.size : file.size,
             resized: resized,
             compressed: compressed,
-            needsOptimization: needsOptimization,
+            needsOptimization: true,
+            blob: blob,
         };
     }
 
@@ -238,11 +255,11 @@
             setBadge(badgeWrap, result);
 
             if (files.length > 1) {
-                hintEl.textContent = 'Showing estimate for the first of ' + files.length + ' selected images. Each will be optimized on upload.';
+                hintEl.textContent = 'Showing the first of ' + files.length + ' images. Files over ' + Math.round(options.maxBytes / 1024) + ' KB will be resized.';
             } else if (result.needsOptimization) {
-                hintEl.textContent = 'Estimated preview — the server will optimize before saving (max ' + Math.round(options.maxBytes / 1024) + ' KB).';
+                hintEl.textContent = 'Over ' + Math.round(options.maxBytes / 1024) + ' KB — this will be resized. Upload size: ' + formatBytes(result.optimizedSize) + '.';
             } else {
-                hintEl.textContent = 'This image is already within the recommended size limits.';
+                hintEl.textContent = 'Under ' + Math.round(options.maxBytes / 1024) + ' KB — original will be uploaded as-is (' + formatBytes(result.originalSize) + ').';
             }
         } catch (error) {
             panel.querySelector('[data-role="original"]').textContent = 'Could not preview this file.';

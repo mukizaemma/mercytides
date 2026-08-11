@@ -20,12 +20,11 @@ class PartnersController extends Controller
     {
         $this->forgetRequestRecordIds($request, ['partner_id']);
 
-        $validated = $request->validate([
+        $validated = $request->validate(array_merge([
             'names' => ['required', 'string', 'max:255'],
             'website' => ['nullable', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
-            'image' => ['required', 'image', 'mimes:jpeg,jpg,png,gif,webp', 'max:4096'],
-        ]);
+        ], $this->imageInputRules('image', required: true)));
 
         $countBefore = Partner::query()->count();
 
@@ -36,7 +35,14 @@ class PartnersController extends Controller
         $partner->slug = $this->uniqueModelSlug(Partner::class, $validated['names'], null, 'partner');
 
         try {
-            $partner->image = $this->storePartnerLogo($request->file('image'));
+            $image = $this->imageFromRequest($request, 'image', 'images/partners', ['preset' => 'logo']);
+            if (! $image) {
+                return redirect()
+                    ->back()
+                    ->withInput()
+                    ->with('error', 'A partner logo is required. Upload a new image or choose one from the library.');
+            }
+            $partner->image = $image;
         } catch (Throwable $e) {
             report($e);
 
@@ -72,12 +78,11 @@ class PartnersController extends Controller
         $partner = $this->findAdminRecord(Partner::class, $id);
         $targetId = (int) $partner->id;
 
-        $validated = $request->validate([
+        $validated = $request->validate(array_merge([
             'names' => ['required', 'string', 'max:255'],
             'website' => ['nullable', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
-            'image' => ['nullable', 'image', 'mimes:jpeg,jpg,png,gif,webp', 'max:4096'],
-        ]);
+        ], $this->imageInputRules('image')));
 
         if ($partner->names !== $validated['names']) {
             $partner->slug = $this->uniqueModelSlug(Partner::class, $validated['names'], $targetId, 'partner');
@@ -87,11 +92,14 @@ class PartnersController extends Controller
         $partner->website = $validated['website'] ?? null;
         $partner->description = $validated['description'] ?? null;
 
-        if ($request->hasFile('image')) {
+        $image = $this->imageFromRequest($request, 'image', 'images/partners', ['preset' => 'logo']);
+        if ($image) {
             try {
                 $oldImage = $partner->image;
-                $partner->image = $this->storePartnerLogo($request->file('image'));
-                $this->deletePartnerLogo($oldImage);
+                $partner->image = $image;
+                if ($oldImage && $oldImage !== $image) {
+                    $this->deletePartnerLogo($oldImage);
+                }
             } catch (Throwable $e) {
                 report($e);
 
@@ -119,18 +127,6 @@ class PartnersController extends Controller
         return redirect()
             ->route('partner')
             ->with('success', 'Partner has been deleted.');
-    }
-
-    protected function storePartnerLogo($file): string
-    {
-        $basename = $this->storeOptimizedImageBasename(
-            $file,
-            'images/partners',
-            'public',
-            ['preset' => 'logo']
-        );
-
-        return ltrim((string) $basename, '/');
     }
 
     protected function deletePartnerLogo(?string $image): void

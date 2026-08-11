@@ -70,61 +70,30 @@
 
                                                 </div>
 
-                                                <div class="row">
-                                                    <div class="col-lg-6 col-sm-12">
-                                                        <label>Image on the right of Welcome note </label><br>
-                                                        <label id="projectinput7" class="file center-block">
-                                                            <img src="{{ asset('storage/images') . $data->aboutImage }}"
-                                                                alt="" width="150px">
-                                                        </label>
+                                                <div class="row g-3">
+                                                    <div class="col-12">
+                                                        <x-admin.image-field
+                                                            label="Image on the right of Welcome note"
+                                                            name="aboutImage"
+                                                            :current="$data->aboutImage ?? null"
+                                                            legacy-dir="images"
+                                                        />
                                                     </div>
-
-                                                    <div class="col-lg-6 col-sm-12">
-                                                        <label>Change the Image on the left of Welcome note <br><span
-                                                                style="color: red">(This image should be resized to 120x90
-                                                                pixels)</span></label>
-                                                        <label id="projectinput7" class="file center-block">
-                                                            <input type="file" id="aboutImage" name="aboutImage">
-                                                            <span class="file-custom"></span>
-                                                        </label>
+                                                    <div class="col-12">
+                                                        <x-admin.image-field
+                                                            label="Background image behind Vision & Mission row"
+                                                            name="back1"
+                                                            :current="$data->back1 ?? null"
+                                                            legacy-dir="images"
+                                                        />
                                                     </div>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="col-lg-6 col-sm-12">
-                                                        <label>Backgound Image behind Vision & Mission row </label><br>
-                                                        <label id="projectinput7" class="file center-block">
-                                                            <img src="{{ asset('storage/images') . $data->back1 }}"
-                                                                alt="" width="150px">
-                                                        </label>
-                                                    </div>
-
-                                                    <div class="col-lg-6 col-sm-12">
-                                                        <label>Change the Backgound Image behind Vision & Mission row
-                                                            <br><span style="color: red">(This image should be resized to
-                                                                120x90 pixels)</span></label>
-                                                        <label id="projectinput7" class="file center-block">
-                                                            <input type="file" id="back1" name="back1">
-                                                            <span class="file-custom"></span>
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="col-lg-6 col-sm-12">
-                                                        <label>Backgound Image below Programs </label><br>
-                                                        <label id="projectinput7" class="file center-block">
-                                                            <img src="{{ asset('storage/images') . $data->back2 }}"
-                                                                alt="" width="150px">
-                                                        </label>
-                                                    </div>
-
-                                                    <div class="col-lg-6 col-sm-12">
-                                                        <label>Change the Backgound Image below Programs <br><span
-                                                                style="color: red">(This image should be resized to 120x90
-                                                                pixels)</span></label>
-                                                        <label id="projectinput7" class="file center-block">
-                                                            <input type="file" id="back2" name="back2">
-                                                            <span class="file-custom"></span>
-                                                        </label>
+                                                    <div class="col-12">
+                                                        <x-admin.image-field
+                                                            label="Background image below Programs"
+                                                            name="back2"
+                                                            :current="$data->back2 ?? null"
+                                                            legacy-dir="images"
+                                                        />
                                                     </div>
                                                 </div>
                                             </div>

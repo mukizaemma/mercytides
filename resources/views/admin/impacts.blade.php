@@ -136,12 +136,14 @@
                                                 <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
                                         </div>
-                                        <div class="col-md-6">
-                                            <label class="form-label" for="image">Optional image</label>
-                                            <input type="file" class="form-control @error('image') is-invalid @enderror"
-                                                id="image" name="image" accept="image/*">
+                                        <div class="col-12">
+                                            <x-admin.image-field
+                                                label="Optional image"
+                                                name="image"
+                                                legacy-dir="images/impacts"
+                                            />
                                             @error('image')
-                                                <div class="invalid-feedback">{{ $message }}</div>
+                                                <div class="invalid-feedback d-block">{{ $message }}</div>
                                             @enderror
                                         </div>
                                     </div>

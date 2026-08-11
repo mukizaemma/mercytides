@@ -14,7 +14,7 @@
                         <div class="tp-event__wrapper">
                             <div class="tp-event__item">
                                 <div class="tp-event__thumb p-relative">
-                                    <img src="{{asset('storage/images/events/').$event->image}}" alt="">
+                                    <img src="{{ \App\Support\StorageImage::url($event->image, 'images/events') }}" alt="">
                                     {{-- <div class="tp-event__thumb-text">
                                         <h4 class="tp-event__thumb-date">
                                             {{ \Carbon\Carbon::parse($event->date)->format('d') }} <br>

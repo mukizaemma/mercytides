@@ -30,7 +30,6 @@ return [
         'logo' => [
             'max_width' => 900,
             'max_height' => 900,
-            'max_bytes' => 350 * 1024,
         ],
         'thumb' => [
             'max_width' => 1200,

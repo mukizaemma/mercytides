@@ -45,19 +45,13 @@
                                     <label class="form-label">Initiative details / description</label>
                                     <textarea rows="7" class="form-control" name="description" data-editor="rich" required>{!! $data->description !!}</textarea>
                                 </div>
-                                <div class="col-lg-6">
-                                    <label class="form-label">Current cover</label>
-                                    <div>
-                                        @if(!empty($data->image))
-                                            <img src="{{ asset('storage/' . $data->image) }}" alt="{{ $data->title }}" class="rounded border" width="120">
-                                        @else
-                                            <span class="text-muted">No image</span>
-                                        @endif
-                                    </div>
-                                </div>
-                                <div class="col-lg-6">
-                                    <label class="form-label">Change cover image</label>
-                                    <input type="file" class="form-control" name="image">
+                                <div class="col-12">
+                                    <x-admin.image-field
+                                        label="Cover image"
+                                        name="image"
+                                        :current="$data->image ?? null"
+                                        legacy-dir="images/projects"
+                                    />
                                 </div>
                             </div>
                             <div class="mt-4">
@@ -115,8 +109,13 @@
                     @csrf
                     <input type="hidden" name="activity_id" value="{{ $data->id }}">
                     <div class="mb-3">
-                        <label class="form-label">Select one or more images</label>
-                        <input type="file" class="form-control" name="image[]" multiple required>
+                        <x-admin.image-field
+                            label="Select one or more images"
+                            name="image[]"
+                            :multiple="true"
+                            legacy-dir="images/projects/gallery"
+                            :required="true"
+                        />
                     </div>
                     <button type="submit" class="btn btn-primary">Upload Images</button>
                 </form>

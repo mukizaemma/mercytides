@@ -6,7 +6,6 @@ use App\Models\Background;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 class FactoryAdminController extends Controller
 {
@@ -70,7 +69,7 @@ class FactoryAdminController extends Controller
             $data = $request->validate([
                 'factory_services' => ['nullable', 'string'],
                 'factory_services_subitems' => ['nullable', 'string'],
-                'factory_services_image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:4096'],
+                ...$this->imageInputRules('factory_services_image'),
             ]);
 
             if (Schema::hasColumn('backgrounds', 'factory_services')) {
@@ -86,7 +85,7 @@ class FactoryAdminController extends Controller
             $data = $request->validate([
                 'factory_community_impact' => ['nullable', 'string'],
                 'factory_community_impact_subitems' => ['nullable', 'string'],
-                'factory_community_impact_image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:4096'],
+                ...$this->imageInputRules('factory_community_impact_image'),
             ]);
 
             if (Schema::hasColumn('backgrounds', 'factory_community_impact')) {
@@ -102,7 +101,7 @@ class FactoryAdminController extends Controller
             $data = $request->validate([
                 'factory_training_facilities' => ['nullable', 'string'],
                 'factory_training_facilities_subitems' => ['nullable', 'string'],
-                'factory_training_facilities_image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:4096'],
+                ...$this->imageInputRules('factory_training_facilities_image'),
             ]);
 
             if (Schema::hasColumn('backgrounds', 'factory_training_facilities')) {
@@ -121,17 +120,29 @@ class FactoryAdminController extends Controller
 
     private function replaceImageIfUploaded(Request $request, Background $bg, string $field, string $prefix): void
     {
-        if (! Schema::hasColumn('backgrounds', $field) || ! $request->hasFile($field)) {
+        if (! Schema::hasColumn('backgrounds', $field)) {
+            return;
+        }
+
+        $path = $this->imageFromRequest($request, $field, 'images');
+        if (! $path) {
             return;
         }
 
         $existing = (string) ($bg->{$field} ?? '');
-        if ($existing !== '' && Storage::disk('public')->exists('images/' . $existing)) {
-            Storage::disk('public')->delete('images/' . $existing);
+        if ($existing !== '' && $existing !== $path) {
+            $normalized = ltrim(str_replace('\\', '/', $existing), '/');
+            $candidates = [$normalized];
+            if (! str_contains($normalized, '/')) {
+                $candidates[] = 'images/'.$normalized;
+            }
+            foreach ($candidates as $relative) {
+                if (Storage::disk('public')->exists($relative)) {
+                    Storage::disk('public')->delete($relative);
+                }
+            }
         }
 
-        $filename = $prefix.time().'_'.Str::random(5).'.jpg';
-        $this->storeOptimizedImageAs($request->file($field), 'images', $filename, 'public');
-        $bg->{$field} = $filename;
+        $bg->{$field} = $path;
     }
 }

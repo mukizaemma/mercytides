@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\About;
 use App\Models\Background;
+use App\Models\FounderStory;
 use App\Models\Team;
 use App\Support\MercyTidesContent;
 use Illuminate\Database\Seeder;
@@ -47,6 +48,17 @@ class MercyTidesContentSeeder extends Seeder
                 $bg->what_we_do = MercyTidesContent::programOfferingsHtml();
             }
             $bg->save();
+        }
+
+        if (Schema::hasTable('founder_stories')) {
+            $story = FounderStory::query()->first() ?? new FounderStory();
+            foreach (FounderStory::defaultAttributes() as $key => $value) {
+                if (filled($story->{$key})) {
+                    continue;
+                }
+                $story->{$key} = $value;
+            }
+            $story->save();
         }
 
         if (Schema::hasTable('teams')) {

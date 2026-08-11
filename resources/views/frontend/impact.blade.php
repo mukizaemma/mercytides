@@ -169,7 +169,7 @@
                                 ? asset('storage/' . ltrim($testimonial->image, '/'))
                                 : null;
                             $fallbackCoverUrl = !$coverUrl && !empty($testimonial->image)
-                                ? asset('storage/images/testimonies/' . ltrim($testimonial->image, '/'))
+                                ? \App\Support\StorageImage::url($testimonial->image, 'images/testimonies')
                                 : null;
                             $coverUrl = $coverUrl ?? $fallbackCoverUrl;
                         @endphp

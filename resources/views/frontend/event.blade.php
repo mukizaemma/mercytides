@@ -11,7 +11,7 @@
                     <div class="col-xl-8 col-lg-8">
                         <div class="tp-event-details__left-box">
                             <div class="tp-event-details__thumb p-relative pb-25">                   
-                                <img src="{{asset('storage/images/events').$event->image}}" alt="">
+                                <img src="{{ \App\Support\StorageImage::url($event->image, 'images/events') }}" alt="">
                                 {{-- <div class="tp-event-details__thumb-text d-none d-md-block">
                                     <span>{{ \Carbon\Carbon::parse($event->date)->format('d M') }}</span>
                                 </div> --}}

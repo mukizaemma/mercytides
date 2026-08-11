@@ -93,9 +93,14 @@
                 <form action="{{ route('saveMother', [], false) }}" method="POST" enctype="multipart/form-data" data-turbo="false" autocomplete="off">
                     @csrf
                     <div class="mb-3">
-                        <label class="form-label">Portrait photo <span class="text-danger">*</span></label>
-                        <input type="file" class="form-control" name="image" required accept="image/*" data-image-preset="portrait">
-                        <small class="text-muted">Vertical portrait photos work best for the gallery. You’ll see the estimated size after selecting a file.</small>
+                        <x-admin.image-field
+                            label="Portrait photo"
+                            name="image"
+                            legacy-dir="images/mothers"
+                            preset="portrait"
+                            :required="true"
+                            help="Vertical portrait photos work best for the gallery."
+                        />
                     </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
@@ -137,9 +142,13 @@
                 <form action="{{ route('updateMother', $mother->id, false) }}" method="POST" enctype="multipart/form-data" data-turbo="false" autocomplete="off">
                     @csrf
                     <div class="mb-3">
-                        <label class="form-label">Replace portrait (optional)</label>
-                        <input type="file" class="form-control" name="image" accept="image/*" data-image-preset="portrait">
-                        <img src="{{ \App\Models\Mother::publicImageUrl($mother->image) }}" alt="" class="mt-2 rounded border" width="120" style="aspect-ratio:3/4;object-fit:cover;">
+                        <x-admin.image-field
+                            label="Portrait photo"
+                            name="image"
+                            :current="$mother->image ?? null"
+                            legacy-dir="images/mothers"
+                            preset="portrait"
+                        />
                     </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">

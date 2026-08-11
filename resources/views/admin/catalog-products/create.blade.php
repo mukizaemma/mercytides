@@ -70,12 +70,19 @@
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">Cover image</label>
-                            <input type="file" name="image" class="form-control" accept="image/*">
+                            <x-admin.image-field
+                                label="Cover image"
+                                name="image"
+                                legacy-dir="images/products"
+                            />
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">Gallery images (optional)</label>
-                            <input type="file" name="gallery_images[]" class="form-control" accept="image/*" multiple>
+                            <x-admin.image-field
+                                label="Gallery images (optional)"
+                                name="gallery_images[]"
+                                :multiple="true"
+                                legacy-dir="images/products/gallery"
+                            />
                         </div>
                     </div>
                     <div class="card-footer bg-white">

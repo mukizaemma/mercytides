@@ -70,15 +70,20 @@
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">Replace cover image</label>
-                            @if($product->image)
-                                <div class="mb-2"><img src="{{ asset('storage/' . $product->image) }}" alt="" height="80" class="rounded border"></div>
-                            @endif
-                            <input type="file" name="image" class="form-control" accept="image/*">
+                            <x-admin.image-field
+                                label="Cover image"
+                                name="image"
+                                :current="$product->image ?? null"
+                                legacy-dir="images/products"
+                            />
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">Add gallery images</label>
-                            <input type="file" name="gallery_images[]" class="form-control" accept="image/*" multiple>
+                            <x-admin.image-field
+                                label="Add gallery images"
+                                name="gallery_images[]"
+                                :multiple="true"
+                                legacy-dir="images/products/gallery"
+                            />
                         </div>
                     </div>
                     <div class="card-footer bg-white">

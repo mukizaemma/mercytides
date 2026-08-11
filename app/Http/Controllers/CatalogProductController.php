@@ -28,7 +28,7 @@ class CatalogProductController extends Controller
     {
         $this->forgetRequestRecordIds($request, ['product_id']);
 
-        $request->validate([
+        $request->validate(array_merge([
             'title' => ['required', 'string', 'max:255'],
             'product_category_id' => ['required', 'exists:product_categories,id'],
             'description' => ['nullable', 'string'],
@@ -37,11 +37,12 @@ class CatalogProductController extends Controller
             'stock_quantity' => ['nullable', 'integer', 'min:0'],
             'color' => ['nullable', 'string', 'max:100'],
             'sort_order' => ['nullable', 'integer', 'min:0'],
-            'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:4096'],
-            'gallery_images.*' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:4096'],
+            'gallery_images.*' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:10240'],
+            'gallery_images_paths' => ['nullable', 'array'],
+            'gallery_images_paths.*' => ['nullable', 'string', 'max:500'],
             'is_new' => ['boolean'],
             'is_active' => ['boolean'],
-        ]);
+        ], $this->imageInputRules('image')));
 
         $countBefore = Product::query()->count();
         $slug = $this->uniqueModelSlug(Product::class, (string) $request->input('title'), null, 'product');
@@ -59,8 +60,9 @@ class CatalogProductController extends Controller
         $product->is_new = $request->has('is_new');
         $product->is_active = $request->has('is_active');
 
-        if ($request->hasFile('image')) {
-            $product->image = $request->file('image')->storeOptimized('images/products', 'public');
+        $image = $this->imageFromRequest($request, 'image', 'images/products');
+        if ($image) {
+            $product->image = $image;
         }
 
         $this->assertCreatingNew($product);
@@ -90,7 +92,7 @@ class CatalogProductController extends Controller
         $product = $this->findAdminRecord(Product::class, $id);
         $targetId = (int) $product->id;
 
-        $request->validate([
+        $request->validate(array_merge([
             'title' => ['required', 'string', 'max:255'],
             'product_category_id' => ['required', 'exists:product_categories,id'],
             'description' => ['nullable', 'string'],
@@ -99,11 +101,12 @@ class CatalogProductController extends Controller
             'stock_quantity' => ['nullable', 'integer', 'min:0'],
             'color' => ['nullable', 'string', 'max:100'],
             'sort_order' => ['nullable', 'integer', 'min:0'],
-            'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:4096'],
-            'gallery_images.*' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:4096'],
+            'gallery_images.*' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:10240'],
+            'gallery_images_paths' => ['nullable', 'array'],
+            'gallery_images_paths.*' => ['nullable', 'string', 'max:500'],
             'is_new' => ['boolean'],
             'is_active' => ['boolean'],
-        ]);
+        ], $this->imageInputRules('image')));
 
         $newTitle = (string) $request->input('title');
         if ($product->title !== $newTitle) {
@@ -120,11 +123,12 @@ class CatalogProductController extends Controller
         $product->is_new = $request->has('is_new');
         $product->is_active = $request->has('is_active');
 
-        if ($request->hasFile('image')) {
-            if (! empty($product->image) && Storage::disk('public')->exists($product->image)) {
+        $image = $this->imageFromRequest($request, 'image', 'images/products');
+        if ($image) {
+            if (! empty($product->image) && $product->image !== $image && Storage::disk('public')->exists($product->image)) {
                 Storage::disk('public')->delete($product->image);
             }
-            $product->image = $request->file('image')->storeOptimized('images/products', 'public');
+            $product->image = $image;
         }
 
         $this->assertSameRecord($product, $targetId);
@@ -169,17 +173,13 @@ class CatalogProductController extends Controller
 
     private function storeGalleryImages(Product $product, Request $request): void
     {
-        $files = $request->file('gallery_images', []);
-        if (empty($files)) {
+        $paths = $this->galleryFromRequest($request, 'gallery_images', 'images/products/gallery');
+        if (empty($paths)) {
             return;
         }
 
         $maxSort = (int) $product->images()->max('sort_order');
-        foreach ($files as $file) {
-            if (! $file) {
-                continue;
-            }
-            $path = $file->storeOptimized('images/products/gallery', 'public');
+        foreach ($paths as $path) {
             $maxSort++;
             ProductImage::create([
                 'product_id' => $product->id,

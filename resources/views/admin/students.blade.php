@@ -53,7 +53,7 @@
                                 <tbody>
                                     @foreach ($data as $rs)
                                         <tr>
-                                            <td><img src="{{ asset('storage/images/students') . $rs->image }}"
+                                            <td><img src="{{ \App\Support\StorageImage::url($rs->image, 'images/students') }}"
                                                 alt="" width="150px"></td>
                                             <td>{{ $rs->names }}</td>
                                             <td>{!! $rs->testimony !!}</td>
@@ -123,11 +123,12 @@
                                             <div class="row mt-5">
 
                                                 <div class="col-lg-6 col-sm-12">
-                                                    <label>Select File</label>
-                                                    <label id="projectinput7" class="file center-block">
-                                                        <input type="file" id="image" name="image">
-                                                        <span class="file-custom"></span>
-                                                    </label>
+                                                    <x-admin.image-field
+                                                        label="Photo"
+                                                        name="image"
+                                                        legacy-dir="images/students"
+                                                        preset="portrait"
+                                                    />
                                                 </div>
                                             </div>
 

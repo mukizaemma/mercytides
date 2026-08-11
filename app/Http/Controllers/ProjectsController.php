@@ -24,12 +24,11 @@ class ProjectsController extends Controller
     {
         $this->forgetRequestRecordIds($request, ['activity_id', 'project_id']);
 
-        $request->validate([
+        $request->validate(array_merge([
             'title' => ['required', 'string', 'max:255'],
             'program_id' => ['required', 'exists:programs,id'],
             'description' => ['required', 'string'],
-            'image' => ['required', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:3072'],
-        ]);
+        ], $this->imageInputRules('image', required: true)));
 
         $countBefore = Activity::query()->count();
 
@@ -42,8 +41,9 @@ class ProjectsController extends Controller
             $activity->added_by = Auth::id() ?? Auth::guard('admin')->id();
         }
 
-        if ($request->hasFile('image')) {
-            $activity->image = $request->file('image')->storeOptimized('images/projects', 'public');
+        $image = $this->imageFromRequest($request, 'image', 'images/projects');
+        if ($image) {
+            $activity->image = $image;
         }
 
         $this->assertCreatingNew($activity);
@@ -75,12 +75,11 @@ class ProjectsController extends Controller
 
     public function update(Request $request, $id)
     {
-        $request->validate([
+        $request->validate(array_merge([
             'title' => ['required', 'string', 'max:255'],
             'program_id' => ['required', 'exists:programs,id'],
             'description' => ['required', 'string'],
-            'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:3072'],
-        ]);
+        ], $this->imageInputRules('image')));
 
         $data = $this->findAdminRecord(Activity::class, $id);
         $targetId = (int) $data->id;
@@ -92,11 +91,12 @@ class ProjectsController extends Controller
             $data->slug = $this->uniqueModelSlug(Activity::class, $newTitle, $targetId, 'project');
         }
 
-        if ($request->hasFile('image')) {
-            if (! empty($data->image) && Storage::disk('public')->exists($data->image)) {
+        $image = $this->imageFromRequest($request, 'image', 'images/projects');
+        if ($image) {
+            if (! empty($data->image) && $data->image !== $image && Storage::disk('public')->exists($data->image)) {
                 Storage::disk('public')->delete($data->image);
             }
-            $data->image = $request->file('image')->storeOptimized('images/projects', 'public');
+            $data->image = $image;
         }
 
         $this->assertSameRecord($data, $targetId);
@@ -130,15 +130,19 @@ class ProjectsController extends Controller
     public function addProjectImage(Request $request)
     {
         $request->validate([
-            'image.*' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:3072',
+            'image.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:10240',
+            'image_paths' => ['nullable', 'array'],
+            'image_paths.*' => ['nullable', 'string', 'max:500'],
             'activity_id' => 'required|exists:activities,id',
         ]);
 
-        $files = $request->file('image', []);
-        $userId = Auth::id() ?? Auth::guard('admin')->id();
-        foreach ($files as $image) {
-            $path = $image->storeOptimized('images/projects/gallery', 'public');
+        $paths = $this->galleryFromRequest($request, 'image', 'images/projects/gallery');
+        if (empty($paths)) {
+            return redirect()->back()->with('error', 'Please select at least one image to upload or choose from the library.');
+        }
 
+        $userId = Auth::id() ?? Auth::guard('admin')->id();
+        foreach ($paths as $path) {
             Projectimage::create([
                 'image' => $path,
                 'activity_id' => $request->activity_id,

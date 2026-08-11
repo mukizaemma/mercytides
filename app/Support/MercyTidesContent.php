@@ -98,6 +98,38 @@ class MercyTidesContent
 <p>Our primary focus is mothers facing poverty and related vulnerabilities in communities with high unemployment and limited access to education and training. We strive for a diverse, inclusive environment that promotes gender equality and social cohesion.</p>';
     }
 
+    /**
+     * @return array{title: string, tagline: string, header_caption: string, founder_name: string, founder_role: string}
+     */
+    public static function foundingStoryMeta(): array
+    {
+        return [
+            'title' => "Founder's Story",
+            'tagline' => 'Breaking Barriers, Bridging A Better Future',
+            'header_caption' => 'How a visit to Luwero-Ndeeba became Mercy Tides Foundation.',
+            'founder_name' => 'Mr. MAGAMBO Jonathan',
+            'founder_role' => 'President & Founder',
+        ];
+    }
+
+    public static function foundingStoryHtml(): string
+    {
+        return '<p>Our story of supporting teenage mothers was inspired from footsteps that trekked through the soils of Luwero-Ndeeba on an invitation by a friend to speak to youth and teenagers at their church on <strong>6 December 2025</strong>. The high figures of teenage mothers left my heart overwhelmed with pain and flooded thoughts of how to help a young teenage mother.</p>
+<p>High levels of teenage pregnancy in Luwero District, Uganda is best understood within context of the district’s history. While teenage pregnancy is a nationwide challenge, Luwero’s history as the main battle ground between 1981 and 1986 — between the government forces and the National Resistance Army (NRA) — shaped what followed. The conflict resulted in widespread destruction of infrastructure, displacement of communities, loss of lives, and long-term social and economic disruption. As I flipped through some of the historical and contemporary factors that have contributed to the high prevalence of teenage pregnancy in Luwero, the surfaced realities included:</p>
+<h3>Poverty Legacy</h3>
+<p>The economic effects of the Bush War left many households impoverished. Poverty increased adolescents’ vulnerability to transactional sex, early marriage, and school dropout, all of which are associated with teenage pregnancy.</p>
+<h3>Limited Access to Education</h3>
+<p>Although Uganda introduced Universal Primary Education (UPE) and Universal Secondary Education (USE), many girls in rural Luwero leave school because of school-related costs, household responsibilities, or poor academic performance. Girls who drop out of school fall prey to a higher risk of early pregnancy.</p>
+<h3>Sexual Exploitation and Gender-Based Violence</h3>
+<p>Economic hardship and unequal gender relations expose some adolescent girls to sexual coercion, exploitation, and abuse, increasing the risk of unintended pregnancies.</p>
+<h3>COVID-19 Pandemic</h3>
+<p>During the COVID-19 lockdowns (2020–2021), prolonged school closures, reduced access to reproductive health services, and increased economic hardship contributed to a rise in teenage pregnancies across Uganda, including in Luwero.</p>
+<p>The teenage mothers talked to, troubled with concern that their dreams were shattered when they found themselves wrapped with a hard life of struggle — no money, no jobs, the hard reality of dropping out of school. All was just but a perplexing situation to all. After which, I had a hard talk with my wife about the encountered situation and stories of teenage mothers in Luwero-Ndeeba.</p>
+<p>As a family the odds of life definitely did not add up, but we prayed seeking ways we could help at least one teenage mother lift up this burden of worry. Vocational skills equipping lit up as an answer to the dark tunnel for a teenage mother to rewrite life’s story. With determination, practical skills, and support, a teenage mother can become financially independent, raise a healthy child, and build a better future.</p>
+<p>The high rates of teenage pregnancy in Luwero result from an interplay between historical conflict, persistent poverty, educational challenges, cultural practices, gender inequality, and limited access to adolescent reproductive health services. Despite the district’s slight progress since the Bush War, addressing teenage pregnancy requires continued investment in education, healthcare, economic development, and community engagement to tackle both the immediate and underlying causes.</p>
+<p><strong>Mercy Tides Foundation</strong> was then formed as an engine of hope to fundraise support, glided through tides of mercy as good Samaritans helping teenage mothers <em>Breaking Barriers and Bridging A Better Future</em> from their traumatic scars of life.</p>';
+    }
+
     /** @return list<array{names: string, position: string, bio: string}> */
     public static function leadershipTeam(): array
     {

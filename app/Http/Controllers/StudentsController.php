@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\File;
 use App\Models\Students;
 
 class StudentsController extends Controller
@@ -29,19 +28,22 @@ class StudentsController extends Controller
 
     public function store(Request $request)
     {
+        $request->validate(array_merge([
+            'names' => ['nullable', 'string', 'max:255'],
+            'address' => ['nullable', 'string', 'max:255'],
+            'phone' => ['nullable', 'string', 'max:255'],
+            'testimony' => ['nullable', 'string'],
+        ], $this->imageInputRules('image')));
+
         $data = new Students();
         $data->names = $request->names;
         $data ->address = $request->address;
         $data ->phone = $request->phone;
         $data ->testimony = $request->testimony;
 
-        if ($request->hasFile('image')) {
-            $data->image = $this->storeOptimizedImageBasename(
-                $request->file('image'),
-                'images/students',
-                'public',
-                ['preset' => 'portrait']
-            );
+        $image = $this->imageFromRequest($request, 'image', 'images/students', ['preset' => 'portrait']);
+        if ($image) {
+            $data->image = $image;
         }
 
         $stored = $data->save();
@@ -67,6 +69,13 @@ class StudentsController extends Controller
 
     public function update(Request $request, $id)
     {
+        $request->validate(array_merge([
+            'names' => ['nullable', 'string', 'max:255'],
+            'address' => ['nullable', 'string', 'max:255'],
+            'phone' => ['nullable', 'string', 'max:255'],
+            'testimony' => ['nullable', 'string'],
+        ], $this->imageInputRules('image')));
+
         $data = Students::find($id);
         $data->names = $request->input('names');
         $data->phone = $request->input('phone');
@@ -77,13 +86,9 @@ class StudentsController extends Controller
             return back()->with('Error','Student Not Found');
         }
 
-        if ($request->hasFile('image') && request('image') != '') {
-            $data->image = $this->storeOptimizedImageBasename(
-                $request->file('image'),
-                'images/students',
-                'public',
-                ['preset' => 'portrait']
-            );
+        $image = $this->imageFromRequest($request, 'image', 'images/students', ['preset' => 'portrait']);
+        if ($image) {
+            $data->image = $image;
         }
 
         $data->update();

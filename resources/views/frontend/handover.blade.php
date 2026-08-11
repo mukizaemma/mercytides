@@ -118,7 +118,7 @@
 
                         <h3 class="h5 mb-2">3) About section</h3>
                         <ol class="handover-steps mb-4">
-                            <li>Use the <strong>About</strong> management page to update mission, vision, model, and key story sections.</li>
+                            <li>Use the <strong>About</strong> management page to update mission, vision, the founder’s story (including the founder portrait), model, and key story sections.</li>
                             <li>Keep language concise and practical for partners, buyers, and collaborators.</li>
                             <li>Preview public pages after each update to ensure flow and clarity.</li>
                         </ol>

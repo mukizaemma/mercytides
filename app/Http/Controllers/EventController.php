@@ -23,6 +23,17 @@ class EventController extends Controller
     {
         $this->forgetRequestRecordIds($request, ['event_id']);
 
+        $request->validate(array_merge([
+            'title' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
+            'location' => ['nullable', 'string', 'max:255'],
+            'date' => ['nullable', 'string', 'max:255'],
+            'timeStart' => ['nullable', 'string', 'max:255'],
+            'timeEnd' => ['nullable', 'string', 'max:255'],
+            'registerLink' => ['nullable', 'string', 'max:255'],
+            'registerContact' => ['nullable', 'string', 'max:255'],
+        ], $this->imageInputRules('image', required: true)));
+
         $countBefore = Event::query()->count();
 
         $data = new Event();
@@ -36,12 +47,9 @@ class EventController extends Controller
         $data->registerContact = $request->registerContact;
         $data->slug = $this->uniqueModelSlug(Event::class, (string) $request->input('title'), null, 'event');
 
-        if ($request->hasFile('image')) {
-            $data->image = $this->storeOptimizedImageBasename(
-                $request->file('image'),
-                'images/events',
-                'public'
-            );
+        $image = $this->imageFromRequest($request, 'image', 'images/events');
+        if ($image) {
+            $data->image = $image;
         }
 
         $this->assertCreatingNew($data);
@@ -87,6 +95,18 @@ class EventController extends Controller
      */
     public function update(Request $request, $id)
     {
+        $request->validate(array_merge([
+            'title' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
+            'location' => ['nullable', 'string', 'max:255'],
+            'date' => ['nullable', 'string', 'max:255'],
+            'timeStart' => ['nullable', 'string', 'max:255'],
+            'timeEnd' => ['nullable', 'string', 'max:255'],
+            'registerLink' => ['nullable', 'string', 'max:255'],
+            'registerContact' => ['nullable', 'string', 'max:255'],
+            'status' => ['nullable', 'string', 'max:64'],
+        ], $this->imageInputRules('image')));
+
         $data = $this->findAdminRecord(Event::class, $id);
         $targetId = (int) $data->id;
 
@@ -105,12 +125,9 @@ class EventController extends Controller
         $data->status = $request->input('status');
         $data->description = $request->input('description');
 
-        if ($request->hasFile('image') && request('image') != '') {
-            $data->image = $this->storeOptimizedImageBasename(
-                $request->file('image'),
-                'images/events',
-                'public'
-            );
+        $image = $this->imageFromRequest($request, 'image', 'images/events');
+        if ($image) {
+            $data->image = $image;
         }
 
         $this->assertSameRecord($data, $targetId);

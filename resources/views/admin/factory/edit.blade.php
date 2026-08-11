@@ -51,11 +51,12 @@
                                     <textarea rows="7" class="form-control" name="factory_services" data-editor="rich">{!! $background->factory_services !!}</textarea>
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label">Factory services image</label>
-                                    <input type="file" class="form-control" name="factory_services_image" accept="image/*">
-                                    @if(!empty($background->factory_services_image))
-                                        <img src="{{ asset('storage/images/' . $background->factory_services_image) }}" width="180" class="mt-2 rounded border p-1 bg-white">
-                                    @endif
+                                    <x-admin.image-field
+                                        label="Factory services image"
+                                        name="factory_services_image"
+                                        :current="$background->factory_services_image ?? null"
+                                        legacy-dir="images"
+                                    />
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Sub-items</label>
@@ -73,11 +74,12 @@
                                     <textarea rows="7" class="form-control" name="factory_community_impact" data-editor="rich">{!! $background->factory_community_impact !!}</textarea>
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label">Community impact image</label>
-                                    <input type="file" class="form-control" name="factory_community_impact_image" accept="image/*">
-                                    @if(!empty($background->factory_community_impact_image))
-                                        <img src="{{ asset('storage/images/' . $background->factory_community_impact_image) }}" width="180" class="mt-2 rounded border p-1 bg-white">
-                                    @endif
+                                    <x-admin.image-field
+                                        label="Community impact image"
+                                        name="factory_community_impact_image"
+                                        :current="$background->factory_community_impact_image ?? null"
+                                        legacy-dir="images"
+                                    />
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Sub-items</label>
@@ -95,11 +97,12 @@
                                     <textarea rows="7" class="form-control" name="factory_training_facilities" data-editor="rich">{!! $background->factory_training_facilities !!}</textarea>
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label">Training facilities image</label>
-                                    <input type="file" class="form-control" name="factory_training_facilities_image" accept="image/*">
-                                    @if(!empty($background->factory_training_facilities_image))
-                                        <img src="{{ asset('storage/images/' . $background->factory_training_facilities_image) }}" width="180" class="mt-2 rounded border p-1 bg-white">
-                                    @endif
+                                    <x-admin.image-field
+                                        label="Training facilities image"
+                                        name="factory_training_facilities_image"
+                                        :current="$background->factory_training_facilities_image ?? null"
+                                        legacy-dir="images"
+                                    />
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Sub-items</label>

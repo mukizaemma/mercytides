@@ -35,12 +35,11 @@ class PageHeaderController extends Controller
     {
         $this->forgetRequestRecordIds($request, ['header_id', 'page_header_id']);
 
-        $validated = $request->validate([
+        $validated = $request->validate(array_merge([
             'label' => ['required', 'string', 'max:255'],
             'page_key' => ['nullable', 'string', 'max:64', 'regex:/^[a-z0-9_\-]+$/', 'unique:page_headers,page_key'],
-            'image' => ['required', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:8192'],
             'is_default' => ['nullable', 'boolean'],
-        ]);
+        ], $this->imageInputRules('image', required: true)));
 
         $countBefore = PageHeader::query()->count();
 
@@ -57,7 +56,10 @@ class PageHeaderController extends Controller
         $header->page_key = $key;
         $header->label = $validated['label'];
         $header->sort_order = ((int) PageHeader::query()->max('sort_order')) + 10;
-        $header->image = $request->file('image')->storeOptimized('images/page-headers', 'public', ['preset' => 'hero']);
+        $image = $this->imageFromRequest($request, 'image', 'images/page-headers', ['preset' => 'hero']);
+        if ($image) {
+            $header->image = $image;
+        }
         $header->is_default = false;
 
         $this->assertCreatingNew($header);
@@ -84,11 +86,10 @@ class PageHeaderController extends Controller
 
         $isBuiltIn = array_key_exists($header->page_key, PageHeader::catalog());
 
-        $rules = [
+        $rules = array_merge([
             'label' => ['required', 'string', 'max:255'],
-            'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:8192'],
             'is_default' => ['nullable', 'boolean'],
-        ];
+        ], $this->imageInputRules('image'));
 
         if (! $isBuiltIn) {
             $rules['page_key'] = [
@@ -108,9 +109,12 @@ class PageHeaderController extends Controller
             $header->page_key = $validated['page_key'];
         }
 
-        if ($request->hasFile('image')) {
-            $this->deleteImageFile($header->image);
-            $header->image = $request->file('image')->storeOptimized('images/page-headers', 'public', ['preset' => 'hero']);
+        $image = $this->imageFromRequest($request, 'image', 'images/page-headers', ['preset' => 'hero']);
+        if ($image) {
+            if ($header->image && $header->image !== $image) {
+                $this->deleteImageFile($header->image);
+            }
+            $header->image = $image;
         }
 
         $this->assertSameRecord($header, $targetId);

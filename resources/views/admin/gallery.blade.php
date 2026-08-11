@@ -98,9 +98,12 @@
                                 <div class="modal-body">
                                     <div class="row g-3">
                                         <div class="col-md-6">
-                                            <label class="form-label" for="gallery_image">Image file</label>
-                                            <input type="file" class="form-control" id="gallery_image" name="image" accept="image/*">
-                                            <small class="text-muted">Required unless you add a YouTube URL.</small>
+                                            <x-admin.image-field
+                                                label="Image file"
+                                                name="image"
+                                                legacy-dir="images/gallery"
+                                                help="Required unless you add a YouTube URL. Upload a new file or reuse one from the library."
+                                            />
                                         </div>
                                         <div class="col-md-6">
                                             <label class="form-label" for="gallery_youtube">YouTube URL</label>

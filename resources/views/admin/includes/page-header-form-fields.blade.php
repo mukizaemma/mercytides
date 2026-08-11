@@ -33,12 +33,16 @@
     @endunless
 
     <div class="mb-3">
-        <label class="form-label">Header image @if(!$isEdit)<span class="text-danger">*</span>@endif</label>
-        <input type="file" class="form-control" name="image" {{ $isEdit ? '' : 'required' }} accept="image/*" data-image-preset="hero">
-        <small class="text-muted">Wide landscape photos work best for the breadcrumb hero.</small>
-        @if($isEdit && $formHeader->imageUrl())
-            <img src="{{ $formHeader->imageUrl() }}" alt="" class="mt-2 rounded border" width="220" height="90" style="object-fit:cover;">
-        @endif
+        <x-admin.image-field
+            label="Header image"
+            name="image"
+            :current="$isEdit ? ($formHeader->image ?? null) : null"
+            :current-url="$isEdit ? $formHeader->imageUrl() : null"
+            legacy-dir="images/page-headers"
+            preset="hero"
+            :required="! $isEdit"
+            help="Wide landscape photos work best for the breadcrumb hero."
+        />
     </div>
 
     <div class="form-check mb-3">

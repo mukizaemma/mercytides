@@ -18,7 +18,7 @@
                     <article class="tp-team-2__item text-center h-100 bg-white rounded-3 shadow-sm p-3">
                         @if(!empty($rs->image))
                             <div class="tp-team-2__thumb mb-3">
-                                <img src="{{ asset('storage/images/staff') . $rs->image }}" alt="{{ $rs->names }}" class="rounded-circle" style="width:140px;height:140px;object-fit:cover;">
+                                <img src="{{ \App\Support\StorageImage::url($rs->image, 'images/staff') }}" alt="{{ $rs->names }}" class="rounded-circle" style="width:140px;height:140px;object-fit:cover;">
                             </div>
                         @else
                             <div class="tp-team-2__thumb mb-3 d-flex align-items-center justify-content-center rounded-circle mx-auto bg-light" style="width:140px;height:140px;">
@@ -62,7 +62,7 @@
                         <article class="tp-team-2__item text-center h-100 bg-white rounded-3 shadow-sm p-3">
                             @if(!empty($adv->image))
                                 <div class="tp-team-2__thumb mb-3">
-                                    <img src="{{ asset('storage/images/staff') . $adv->image }}" alt="{{ $adv->names }}" class="rounded-circle" style="width:120px;height:120px;object-fit:cover;">
+                                    <img src="{{ \App\Support\StorageImage::url($adv->image, 'images/staff') }}" alt="{{ $adv->names }}" class="rounded-circle" style="width:120px;height:120px;object-fit:cover;">
                                 </div>
                             @endif
                             <h4 class="h6 mb-1">{{ $adv->names }}</h4>

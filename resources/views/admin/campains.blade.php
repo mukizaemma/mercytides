@@ -55,7 +55,7 @@
                                 @foreach ($campain as $rs)
                                 <tr>
                                     <td><a href="{{ route('editCampain', $rs->id) }}">{{ $rs->title }}</a> </td>
-                                    <td><img src="{{ asset('storage/images/campaigns/' . $rs->image) }}" alt="" width="150px"></td>
+                                    <td><img src="{{ \App\Support\StorageImage::url($rs->image, 'images/campaigns') }}" alt="" width="150px"></td>
                                     <td>{{ $rs->program->title ?? '' }}</td>
                                     <td>{!! \Illuminate\Support\Str::limit(strip_tags($rs->description), 100) !!}</td>
                                     <td>{{$rs->goal}}</td>
@@ -190,12 +190,18 @@
 
                                     <div class="row mb-3">
                                         <div class="col-lg-6 col-sm-12">
-                                            <label for="image" class="form-label">Cover Image</label>
-                                            <input type="file" name="image" class="form-control" id="image" accept="image/*">
+                                            <x-admin.image-field
+                                                label="Cover Image"
+                                                name="image"
+                                                legacy-dir="images/campaigns"
+                                            />
                                         </div>
                                         <div class="col-lg-6 col-sm-12">
-                                            <label for="youtube_cover_image" class="form-label">YouTube Cover Image</label>
-                                            <input type="file" name="youtube_cover_image" class="form-control" id="youtube_cover_image" accept="image/*">
+                                            <x-admin.image-field
+                                                label="YouTube Cover Image"
+                                                name="youtube_cover_image"
+                                                legacy-dir="images/campaigns"
+                                            />
                                         </div>
                                     </div>
                                 </div>

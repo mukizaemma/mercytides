@@ -39,19 +39,14 @@
                                     <label class="form-label" for="facebook">Email</label>
                                     <input type="text" class="form-control" id="facebook" value="{{ $data->facebook }}" name="facebook">
                                 </div>
-                                <div class="col-lg-6">
-                                    <label class="form-label">Current photo</label>
-                                    <div>
-                                        @if(!empty($data->image))
-                                            <img src="{{ asset('storage/images/staff' . $data->image) }}" alt="{{ $data->names }}" width="120" class="rounded border">
-                                        @else
-                                            <span class="text-muted">No photo</span>
-                                        @endif
-                                    </div>
-                                </div>
-                                <div class="col-lg-6">
-                                    <label class="form-label" for="image">Change photo</label>
-                                    <input type="file" id="image" name="image" class="form-control" accept="image/*">
+                                <div class="col-12">
+                                    <x-admin.image-field
+                                        label="Staff photo"
+                                        name="image"
+                                        :current="$data->image ?? null"
+                                        legacy-dir="images/staff"
+                                        preset="portrait"
+                                    />
                                 </div>
                                 <div class="col-12">
                                     <label class="form-label" for="bio">Biography</label>

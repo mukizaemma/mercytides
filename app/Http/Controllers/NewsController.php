@@ -30,25 +30,18 @@ class NewsController extends Controller
     {
         $this->forgetRequestRecordIds($request, ['news_id', 'blog_id']);
 
-        $request->validate([
+        $request->validate(array_merge([
             'title' => ['required', 'string', 'max:255'],
             'author' => ['nullable', 'string', 'max:255'],
             'body' => ['nullable', 'string'],
-            'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:4096'],
-            'image_path' => ['nullable', 'string', 'max:500'],
-            'gallery.*' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:4096'],
+            'gallery.*' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:10240'],
             'gallery_paths' => ['nullable', 'array'],
             'gallery_paths.*' => ['nullable', 'string', 'max:500'],
-        ]);
+        ], $this->imageInputRules('image')));
 
         $countBefore = News::query()->count();
 
-        $fileName = null;
-        if ($request->hasFile('image')) {
-            $fileName = $request->file('image')->storeOptimized('images/news', 'public');
-        } else {
-            $fileName = $this->resolveLibraryPath($request->input('image_path'));
-        }
+        $fileName = $this->imageFromRequest($request, 'image', 'images/news');
 
         $blog = new News();
         $blog->title = $request->input('title');
@@ -69,8 +62,12 @@ class NewsController extends Controller
             return redirect('blogs')->with('error', 'Something went wrong while saving. Existing posts were left unchanged.');
         }
 
-        $this->attachGalleryUploads($blog, $request);
-        $this->attachGalleryLibraryPaths($blog, $request->input('gallery_paths', []));
+        foreach ($this->galleryFromRequest($request, 'gallery', 'images/news/gallery') as $path) {
+            $blog->blogimages()->create([
+                'gallery' => $path,
+                'news_id' => $blog->id,
+            ]);
+        }
 
         return redirect('blogs')->with('success', 'Update saved as draft successfully');
     }
@@ -84,37 +81,36 @@ class NewsController extends Controller
 
     public function update(Request $request, $id)
     {
-        $request->validate([
+        $request->validate(array_merge([
             'title' => ['required', 'string', 'max:255'],
             'author' => ['nullable', 'string', 'max:255'],
             'body' => ['nullable', 'string'],
-            'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:4096'],
-            'image_path' => ['nullable', 'string', 'max:500'],
-            'gallery.*' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:4096'],
+            'gallery.*' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:10240'],
             'gallery_paths' => ['nullable', 'array'],
             'gallery_paths.*' => ['nullable', 'string', 'max:500'],
-        ]);
+        ], $this->imageInputRules('image')));
 
         $blog = $this->findAdminRecord(News::class, $id);
         $blog->load('blogimages');
         $targetId = (int) $blog->id;
 
-        if ($request->hasFile('image')) {
+        $newCover = $this->imageFromRequest($request, 'image', 'images/news');
+        if ($newCover && $newCover !== $blog->image) {
             $this->deleteOwnedNewsImage($blog->image);
-            $blog->image = $request->file('image')->storeOptimized('images/news', 'public');
-        } else {
-            $libraryPath = $this->resolveLibraryPath($request->input('image_path'));
-            if ($libraryPath && $libraryPath !== $blog->image) {
-                // Don't delete a shared library asset when swapping covers.
-                if ($this->isOwnedNewsUpload($blog->image)) {
-                    $this->deleteOwnedNewsImage($blog->image);
-                }
-                $blog->image = $libraryPath;
-            }
+            $blog->image = $newCover;
         }
 
-        $this->attachGalleryUploads($blog, $request);
-        $this->attachGalleryLibraryPaths($blog, $request->input('gallery_paths', []));
+        $existingGallery = $blog->blogimages()->pluck('gallery')->map(fn ($p) => ltrim((string) $p, '/'))->all();
+        foreach ($this->galleryFromRequest($request, 'gallery', 'images/news/gallery') as $path) {
+            if (in_array($path, $existingGallery, true)) {
+                continue;
+            }
+            $blog->blogimages()->create([
+                'gallery' => $path,
+                'news_id' => $blog->id,
+            ]);
+            $existingGallery[] = $path;
+        }
 
         $newTitle = (string) $request->input('title');
         if ($blog->title !== $newTitle) {
@@ -175,71 +171,6 @@ class NewsController extends Controller
         $this->deleteOwnedNewsImage($image->gallery);
         $image->delete();
         return back()->with('warning', 'Activity photo deleted');
-    }
-
-    private function attachGalleryUploads(News $blog, Request $request): void
-    {
-        if (! $request->hasFile('gallery')) {
-            return;
-        }
-
-        foreach ($request->file('gallery') as $gallery) {
-            if (! $gallery) {
-                continue;
-            }
-            $path = $gallery->storeOptimized('images/news/gallery', 'public');
-            $blog->blogimages()->create([
-                'gallery' => $path,
-                'news_id' => $blog->id,
-            ]);
-        }
-    }
-
-    /**
-     * @param  array<int, string|null>|mixed  $paths
-     */
-    private function attachGalleryLibraryPaths(News $blog, mixed $paths): void
-    {
-        if (! is_array($paths)) {
-            return;
-        }
-
-        $existing = $blog->blogimages()->pluck('gallery')->map(fn ($p) => ltrim((string) $p, '/'))->all();
-
-        foreach ($paths as $raw) {
-            $path = $this->resolveLibraryPath($raw);
-            if ($path === null || in_array($path, $existing, true)) {
-                continue;
-            }
-            $blog->blogimages()->create([
-                'gallery' => $path,
-                'news_id' => $blog->id,
-            ]);
-            $existing[] = $path;
-        }
-    }
-
-    private function resolveLibraryPath(mixed $raw): ?string
-    {
-        if (! is_string($raw) || trim($raw) === '') {
-            return null;
-        }
-
-        $path = ltrim(str_replace('\\', '/', $raw), '/');
-        if (str_starts_with($path, 'storage/')) {
-            $path = substr($path, strlen('storage/'));
-        }
-        if (! str_starts_with($path, 'images/')) {
-            return null;
-        }
-        if (str_contains($path, '..')) {
-            return null;
-        }
-        if (! Storage::disk('public')->exists($path)) {
-            return null;
-        }
-
-        return $path;
     }
 
     /**

@@ -83,18 +83,14 @@
                             </div>
 
                             <div class="row">
-                                <div class="col-lg-4 col-sm-12">
-                                        <label>Featured Event Banner</label>
-                                        <label id="projectinput7" class="file center-block">
-                                            <img src="{{asset('storage/images/events').$data->image}}" alt="" width="120px">
-                                        </label>
-                                </div>
-                                <div class="col-lg-4 col-sm-12">
-                                        <label>Select Event Banner <br><span style="color: red">(This image should be resized to 540x600 pixels)</span></label>
-                                        <label id="projectinput7" class="file center-block">
-                                            <input type="file" id="image" name="image">
-                                            <span class="file-custom"></span>
-                                        </label>
+                                <div class="col-lg-8 col-sm-12">
+                                        <x-admin.image-field
+                                            label="Event banner"
+                                            name="image"
+                                            :current="$data->image ?? null"
+                                            legacy-dir="images/events"
+                                            help="Recommended size about 540×600 pixels."
+                                        />
                                 </div>
 
 

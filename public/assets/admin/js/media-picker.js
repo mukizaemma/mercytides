@@ -24,10 +24,10 @@
 
         const mode = root.dataset.mode || 'single';
         const libraryUrl = root.dataset.libraryUrl;
+        const libraryName = root.dataset.libraryName || (mode === 'multiple' ? 'gallery_paths[]' : 'image_path');
         const tabs = root.querySelectorAll('[data-media-tab]');
         const panels = root.querySelectorAll('[data-media-panel]');
         const uploadInput = root.querySelector('[data-media-upload]');
-        const uploadPreview = root.querySelector('[data-media-upload-preview]');
         const grid = root.querySelector('[data-media-grid]');
         const search = root.querySelector('[data-media-search]');
         const libraryInput = root.querySelector('[data-media-library-input]');
@@ -60,43 +60,13 @@
         function clearUpload() {
             if (uploadInput) {
                 uploadInput.value = '';
+                uploadInput.dispatchEvent(new Event('change', { bubbles: true }));
             }
-            if (uploadPreview) {
-                uploadPreview.classList.add('d-none');
-                uploadPreview.innerHTML = '';
-            }
-        }
-
-        function renderUploadPreview(files) {
-            if (!uploadPreview) {
-                return;
-            }
-            uploadPreview.innerHTML = '';
-            if (!files || !files.length) {
-                uploadPreview.classList.add('d-none');
-                return;
-            }
-            uploadPreview.classList.remove('d-none');
-            Array.prototype.forEach.call(files, function (file) {
-                const wrap = document.createElement('div');
-                wrap.className = 'admin-media-picker__preview-item';
-                const img = document.createElement('img');
-                img.alt = file.name;
-                img.className = 'admin-media-picker__thumb';
-                img.src = URL.createObjectURL(file);
-                wrap.appendChild(img);
-                const cap = document.createElement('span');
-                cap.className = 'small text-muted d-block mt-1 text-truncate';
-                cap.textContent = file.name;
-                wrap.appendChild(cap);
-                uploadPreview.appendChild(wrap);
-            });
         }
 
         if (uploadInput) {
             uploadInput.addEventListener('change', function () {
                 if (uploadInput.files && uploadInput.files.length) {
-                    // Prefer upload over library selection.
                     selected = [];
                     if (libraryInput) {
                         libraryInput.value = '';
@@ -111,9 +81,6 @@
                         currentInline.classList.add('d-none');
                     }
                     highlightGrid();
-                    renderUploadPreview(uploadInput.files);
-                } else {
-                    renderUploadPreview(null);
                 }
             });
         }
@@ -124,7 +91,7 @@
                 selected.forEach(function (item) {
                     const input = document.createElement('input');
                     input.type = 'hidden';
-                    input.name = 'gallery_paths[]';
+                    input.name = libraryName;
                     input.value = item.path;
                     libraryInputsWrap.appendChild(input);
                 });

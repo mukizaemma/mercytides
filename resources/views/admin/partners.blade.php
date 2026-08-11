@@ -122,9 +122,13 @@
                             <textarea class="form-control" name="description" rows="4" data-editor="rich" placeholder="Optional short note">{{ old('description') }}</textarea>
                         </div>
                         <div class="col-12">
-                            <label class="form-label">Logo <span class="text-danger">*</span></label>
-                            <input type="file" class="form-control" name="image" required accept="image/jpeg,image/png,image/gif,image/webp,.jpg,.jpeg,.png,.gif,.webp" data-image-preset="logo">
-                            <small class="text-muted">JPG, PNG, GIF, or WEBP — max about 4MB.</small>
+                            <x-admin.image-field
+                                label="Logo"
+                                name="image"
+                                legacy-dir="images/partners"
+                                preset="logo"
+                                :required="true"
+                            />
                         </div>
                     </div>
                     <div class="d-flex justify-content-end gap-2 mt-4">

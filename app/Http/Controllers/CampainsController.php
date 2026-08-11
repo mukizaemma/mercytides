@@ -22,16 +22,16 @@ class CampainsController extends Controller
         // Create must never upsert/overwrite by slug.
         $this->forgetRequestRecordIds($request, ['campain_id', 'campaign_id']);
 
+        $request->validate(array_merge([
+            'title' => ['nullable', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
+            'short_description' => ['nullable', 'string'],
+        ], $this->imageInputRules('image'), $this->imageInputRules('youtube_cover_image')));
+
         $countBefore = Campain::query()->count();
 
-        $fileName = null;
-        if ($request->hasFile('image')) {
-            $fileName = $this->storeOptimizedImageBasename(
-                $request->file('image'),
-                'images/campaigns',
-                'public'
-            );
-        }
+        $fileName = $this->imageFromRequest($request, 'image', 'images/campaigns');
+        $youtubeCover = $this->imageFromRequest($request, 'youtube_cover_image', 'images/campaigns');
 
         $title = (string) $request->input('title');
         $slug = $this->uniqueModelSlug(Campain::class, $title, null, 'campaign');
@@ -49,6 +49,7 @@ class CampainsController extends Controller
         $campaign->start_date = $request->input('start_date');
         $campaign->end_date = $request->input('end_date');
         $campaign->image = $fileName;
+        $campaign->youtubeimg = $youtubeCover;
         $campaign->target_people = $request->input('target_people');
         $campaign->cost_per_person = $request->input('cost_per_person');
         $campaign->slug = $slug;
@@ -75,31 +76,23 @@ class CampainsController extends Controller
 
     public function update(Request $request, $id)
     {
+        $request->validate(array_merge([
+            'title' => ['nullable', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
+            'short_description' => ['nullable', 'string'],
+        ], $this->imageInputRules('image'), $this->imageInputRules('youtubeimg')));
+
         $post = $this->findAdminRecord(Campain::class, $id);
         $targetId = (int) $post->id;
 
-        if ($request->hasFile('image')) {
-            $fileName = $this->storeOptimizedImageBasename(
-                $request->file('image'),
-                'images/campains',
-                'public'
-            );
-            if (! empty($post->image)) {
-                Storage::delete('public/images/campains/'.$post->image);
-            }
-            $post->image = $fileName;
+        $image = $this->imageFromRequest($request, 'image', 'images/campaigns');
+        if ($image) {
+            $post->image = $image;
         }
 
-        if ($request->hasFile('youtubeimg')) {
-            $fileName = $this->storeOptimizedImageBasename(
-                $request->file('youtubeimg'),
-                'images/campains',
-                'public'
-            );
-            if (! empty($post->youtubeimg)) {
-                Storage::delete('public/images/campains/'.$post->youtubeimg);
-            }
-            $post->youtubeimg = $fileName;
+        $youtubeimg = $this->imageFromRequest($request, 'youtubeimg', 'images/campaigns');
+        if ($youtubeimg) {
+            $post->youtubeimg = $youtubeimg;
         }
 
         $newTitle = (string) $request->input('title');

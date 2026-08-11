@@ -54,7 +54,7 @@
                                             <td>{{ $rs->names }}</td>
                                             <td>{!! $rs->testimony !!}</td>
                                             <td>{{ !empty($rs->video_url) ? 'Video (YouTube)' : 'Text' }}</td>
-                                            <td><img src="{{ asset('storage/images/testimonies') . $rs->image }}"
+                                            <td><img src="{{ \App\Support\StorageImage::url($rs->image, 'images/testimonies') }}"
                                                     alt="" width="150px"></td>
                                             <td>
                                                 <div class="btn-group btn-group-sm">
@@ -116,11 +116,13 @@
                                             <div class="row mt-5">
 
                                                 <div class="col-lg-6 col-sm-12">
-                                                    <label>Select File</label>
-                                                    <label id="projectinput7" class="file center-block">
-                                                        <input type="file" id="image" name="image" required="">
-                                                        <span class="file-custom"></span>
-                                                    </label>
+                                                    <x-admin.image-field
+                                                        label="Photo"
+                                                        name="image"
+                                                        legacy-dir="images/testimonies"
+                                                        preset="portrait"
+                                                        :required="true"
+                                                    />
                                                 </div>
                                             </div>
 

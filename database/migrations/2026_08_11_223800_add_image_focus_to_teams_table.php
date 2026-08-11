@@ -9,9 +9,11 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('teams', function (Blueprint $table) {
-            $table->string('image_focus', 32)->nullable()->after('image');
-        });
+        if (! Schema::hasColumn('teams', 'image_focus')) {
+            Schema::table('teams', function (Blueprint $table) {
+                $table->string('image_focus', 32)->nullable()->after('image');
+            });
+        }
 
         // Nudge known off-center portraits into the circle (can be overridden in admin).
         DB::table('teams')->where('names', 'like', '%Margaret%')->update(['image_focus' => '80 28']);
@@ -21,8 +23,10 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::table('teams', function (Blueprint $table) {
-            $table->dropColumn('image_focus');
-        });
+        if (Schema::hasColumn('teams', 'image_focus')) {
+            Schema::table('teams', function (Blueprint $table) {
+                $table->dropColumn('image_focus');
+            });
+        }
     }
 };

@@ -6,6 +6,8 @@ use App\Support\MercyTidesContent;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
 class Team extends Model
@@ -33,6 +35,34 @@ class Team extends Model
     ];
 
     public const DEFAULT_IMAGE_FOCUS = '50 18';
+
+    /**
+     * Add image_focus when the live database has not been migrated yet.
+     */
+    public static function ensureImageFocusColumn(): bool
+    {
+        static $ready = null;
+
+        if ($ready !== null) {
+            return $ready;
+        }
+
+        if (! Schema::hasTable('teams')) {
+            return $ready = false;
+        }
+
+        if (! Schema::hasColumn('teams', 'image_focus')) {
+            Schema::table('teams', function (Blueprint $table) {
+                $table->string('image_focus', 32)->nullable()->after('image');
+            });
+
+            static::query()->where('names', 'like', '%Margaret%')->update(['image_focus' => '80 28']);
+            static::query()->where('names', 'like', '%Jonathan%')->update(['image_focus' => '50 30']);
+            static::query()->where('names', 'like', '%Samuel%')->update(['image_focus' => '48 18']);
+        }
+
+        return $ready = true;
+    }
 
     /**
      * CSS object-position value that keeps faces inside the circular crop.

@@ -633,3 +633,20 @@ a:hover {
     min-width: 160px;
 }
 
+.gallery-sort-handle {
+    cursor: grab;
+    user-select: none;
+}
+
+.gallery-sort-handle:active {
+    cursor: grabbing;
+}
+
+#galleryVisibleTable tr.is-dragging {
+    opacity: 0.45;
+}
+
+#galleryVisibleTable tr.is-drop-target td {
+    border-top: 2px solid var(--brand-primary, #2f84b5);
+}
+

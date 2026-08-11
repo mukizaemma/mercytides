@@ -418,8 +418,11 @@ class HomeController extends Controller
 
     public function gallery()
     {
+        Image::ensureGalleryColumns();
+
         $gallery = Image::query()
-            ->latest()
+            ->onGallery()
+            ->ordered()
             ->paginate(16);
 
         return view('frontend.gallery', [

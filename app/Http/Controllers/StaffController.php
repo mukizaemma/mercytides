@@ -15,6 +15,7 @@ class StaffController extends Controller
     public function index()
     {
         Team::ensureLeadershipSeeded();
+        Team::ensureImageFocusColumn();
 
         $members = Team::query()->orderBy('id')->get();
 
@@ -61,7 +62,9 @@ class StaffController extends Controller
         $data->instagram = $request->instagram;
         $data->twitter = $request->twitter;
         $data->bio = $request->bio;
-        $data->image_focus = Team::normalizeImageFocus($request->input('image_focus'));
+        if (Team::ensureImageFocusColumn()) {
+            $data->image_focus = Team::normalizeImageFocus($request->input('image_focus'));
+        }
 
         $image = $this->imageFromRequest($request, 'image', 'images/staff', ['preset' => 'portrait']);
         if ($image) {
@@ -100,6 +103,7 @@ class StaffController extends Controller
     public function edit($id)
     {
         $data = $this->findAdminRecord(Team::class, $id);
+        Team::ensureImageFocusColumn();
 
         return view('admin.teamUpdate', ['data' => $data]);
     }
@@ -133,7 +137,9 @@ class StaffController extends Controller
         $data->instagram = $request->input('instagram');
         $data->twitter = $request->input('twitter');
         $data->bio = $request->input('bio');
-        $data->image_focus = Team::normalizeImageFocus($request->input('image_focus'));
+        if (Team::ensureImageFocusColumn()) {
+            $data->image_focus = Team::normalizeImageFocus($request->input('image_focus'));
+        }
 
         $image = $this->imageFromRequest($request, 'image', 'images/staff', ['preset' => 'portrait']);
         if ($image) {

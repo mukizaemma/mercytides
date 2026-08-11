@@ -17,6 +17,7 @@ class ImageUploadService
 
         $binary = $this->optimize($file, $options);
         Storage::disk($disk)->put($path, $binary);
+        $this->registerInGallery($path, $disk);
 
         return $path;
     }
@@ -29,6 +30,7 @@ class ImageUploadService
 
         $binary = $this->optimize($file, $options);
         Storage::disk($disk)->put($path, $binary);
+        $this->registerInGallery($path, $disk);
 
         return $path;
     }
@@ -44,6 +46,22 @@ class ImageUploadService
     public function storeAsBasename(UploadedFile $file, string $directory, string $filename, string $disk = 'public', array $options = []): string
     {
         return basename($this->storeAs($file, $directory, $filename, $disk, $options));
+    }
+
+    /**
+     * Every stored image is catalogued for the public Gallery; admins can hide it later.
+     */
+    private function registerInGallery(string $path, string $disk): void
+    {
+        if ($disk !== 'public' || ! str_starts_with($path, 'images/')) {
+            return;
+        }
+
+        try {
+            \App\Models\Image::registerFromPath($path);
+        } catch (\Throwable) {
+            // Cataloguing must never block an upload.
+        }
     }
 
     public function optimize(UploadedFile $file, array $options = []): string

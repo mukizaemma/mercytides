@@ -135,6 +135,8 @@ Route::middleware(['auth', 'admin.role'
     Route::post('/saveGallery', [App\Http\Controllers\GalleryController::class, 'store'])->name('saveGallery');
     Route::get('/editGallery/{id}', [App\Http\Controllers\GalleryController::class, 'edit'])->name('editGallery');
     Route::post('/updateGallery/{id}', [App\Http\Controllers\GalleryController::class, 'update'])->name('updateGallery');
+    Route::post('/toggleGallery/{id}', [App\Http\Controllers\GalleryController::class, 'toggle'])->name('toggleGallery');
+    Route::post('/reorderGallery', [App\Http\Controllers\GalleryController::class, 'reorder'])->name('reorderGallery');
     Route::post('/destroyGallery/{id}', [App\Http\Controllers\GalleryController::class, 'destroy'])->name('destroyGallery');
     Route::get('/media-library', [App\Http\Controllers\MediaLibraryController::class, 'index'])->name('mediaLibrary.index');
 

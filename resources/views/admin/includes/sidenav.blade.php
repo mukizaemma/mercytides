@@ -40,7 +40,7 @@
             <x-admin.nav-link :href="route('partner')" icon="fa-handshake" :active="request()->routeIs(['partner', 'savePartner', 'updatePartner'])">
                 Partners
             </x-admin.nav-link>
-            <x-admin.nav-link :href="route('images')" icon="fa-image" :active="request()->routeIs(['images', 'saveGallery', 'updateGallery'])">
+            <x-admin.nav-link :href="route('images')" icon="fa-image" :active="request()->routeIs(['images', 'saveGallery', 'updateGallery', 'editGallery', 'toggleGallery', 'reorderGallery'])">
                 Media gallery
             </x-admin.nav-link>
 

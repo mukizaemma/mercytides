@@ -14,7 +14,7 @@
                 <div class="admin-page-header d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
                     <div>
                         <h1>Media gallery</h1>
-                        <p class="text-muted mb-0">Photos and YouTube videos shown on the public Gallery page (16 per page).</p>
+                        <p class="text-muted mb-0">Every uploaded image is listed here. Drag to sort what appears on the public Gallery page, or remove items you do not want shown there.</p>
                     </div>
                     <button class="btn btn-primary px-3" data-bs-toggle="modal" data-bs-target="#galleryCreateModal">
                         <i class="fa fa-plus me-1"></i> Add item
@@ -39,45 +39,103 @@
                         </ul>
                     </div>
                 @endif
+                @if(!empty($synced))
+                    <div class="alert alert-info">Added {{ $synced }} existing upload{{ $synced === 1 ? '' : 's' }} to the gallery catalog. Hide any that should not appear publicly.</div>
+                @endif
 
-                <div class="card">
+                <div class="card mb-4">
+                    <div class="card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
+                        <strong>On the Gallery page ({{ $visible->count() }})</strong>
+                        <span class="small text-muted">Drag the handle to reorder. Removed items stay in the library.</span>
+                    </div>
                     <div class="card-body p-0">
                         <div class="table-responsive">
-                            <table class="table table-hover align-middle mb-0">
+                            <table class="table table-hover align-middle mb-0" id="galleryVisibleTable">
                                 <thead>
                                     <tr>
+                                        <th style="width:2.5rem;"></th>
                                         <th>Preview</th>
-                                        <th>Type</th>
+                                        <th>Source</th>
                                         <th>Caption</th>
                                         <th>Program</th>
                                         <th class="text-end">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    @forelse($images as $item)
-                                        <tr>
+                                <tbody data-gallery-sortable data-reorder-url="{{ route('reorderGallery') }}">
+                                    @forelse($visible as $item)
+                                        <tr data-id="{{ $item->id }}">
+                                            <td class="text-muted gallery-sort-handle" title="Drag to reorder">
+                                                <i class="fas fa-grip-vertical"></i>
+                                            </td>
                                             <td>
                                                 <img src="{{ $item->thumbUrl() }}" alt="" width="96" height="64" class="rounded border" style="object-fit:cover;">
                                             </td>
                                             <td>
-                                                @if($item->isVideo())
-                                                    <span class="badge text-bg-danger">YouTube</span>
-                                                @else
-                                                    <span class="badge text-bg-secondary">Image</span>
-                                                @endif
+                                                <span class="badge text-bg-{{ $item->isVideo() ? 'danger' : 'secondary' }}">{{ $item->sourceLabel() }}</span>
                                             </td>
                                             <td>{{ $item->caption ?: '—' }}</td>
                                             <td>{{ $item->program->title ?? '—' }}</td>
                                             <td class="text-end">
                                                 <div class="btn-group">
                                                     <a href="{{ route('editGallery', $item->id) }}" class="btn btn-sm btn-outline-primary" data-turbo="false">Edit</a>
-                                                    <x-admin.delete-button :action="route('destroyGallery', $item->id)" confirm="Delete this gallery item?" class="btn btn-sm btn-outline-danger" />
+                                                    <form action="{{ route('toggleGallery', $item->id) }}" method="POST" class="d-inline" data-turbo="false">
+                                                        @csrf
+                                                        <input type="hidden" name="show" value="0">
+                                                        <button type="submit" class="btn btn-sm btn-outline-warning">Remove from gallery</button>
+                                                    </form>
                                                 </div>
                                             </td>
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="5" class="text-center text-muted py-5">No gallery items yet.</td>
+                                            <td colspan="6" class="text-center text-muted py-5">Nothing is currently shown on the Gallery page.</td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <strong>Not on the Gallery page ({{ $hidden->count() }})</strong>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Preview</th>
+                                        <th>Source</th>
+                                        <th>Caption</th>
+                                        <th class="text-end">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse($hidden as $item)
+                                        <tr>
+                                            <td>
+                                                <img src="{{ $item->thumbUrl() }}" alt="" width="96" height="64" class="rounded border" style="object-fit:cover;">
+                                            </td>
+                                            <td>
+                                                <span class="badge text-bg-light text-dark border">{{ $item->sourceLabel() }}</span>
+                                            </td>
+                                            <td>{{ $item->caption ?: '—' }}</td>
+                                            <td class="text-end">
+                                                <div class="btn-group">
+                                                    <a href="{{ route('editGallery', $item->id) }}" class="btn btn-sm btn-outline-primary" data-turbo="false">Edit</a>
+                                                    <form action="{{ route('toggleGallery', $item->id) }}" method="POST" class="d-inline" data-turbo="false">
+                                                        @csrf
+                                                        <input type="hidden" name="show" value="1">
+                                                        <button type="submit" class="btn btn-sm btn-outline-success">Show on gallery</button>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="4" class="text-center text-muted py-4">All catalogued images currently appear on the Gallery page.</td>
                                         </tr>
                                     @endforelse
                                 </tbody>

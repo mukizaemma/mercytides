@@ -103,6 +103,7 @@
         <script src="{{ asset('assets/admin/js/image-upload-preview.js') }}?v={{ @filemtime(public_path('assets/admin/js/image-upload-preview.js')) ?: time() }}"></script>
         <script src="{{ asset('assets/admin/js/media-picker.js') }}?v={{ @filemtime(public_path('assets/admin/js/media-picker.js')) ?: time() }}"></script>
         <script src="{{ asset('assets/admin/js/image-focus.js') }}?v={{ @filemtime(public_path('assets/admin/js/image-focus.js')) ?: time() }}"></script>
+        <script src="{{ asset('assets/admin/js/gallery-sort.js') }}?v={{ @filemtime(public_path('assets/admin/js/gallery-sort.js')) ?: time() }}"></script>
         <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" crossorigin="anonymous"></script>
         <script src="{{ asset('assets/admin/js/datatables-simple-demo.js') }}"></script>
 

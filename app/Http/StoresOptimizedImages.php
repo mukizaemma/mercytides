@@ -128,6 +128,12 @@ trait StoresOptimizedImages
             return null;
         }
 
+        try {
+            \App\Models\Image::registerFromPath($path);
+        } catch (\Throwable) {
+            // Gallery catalog is best-effort.
+        }
+
         return $path;
     }
 

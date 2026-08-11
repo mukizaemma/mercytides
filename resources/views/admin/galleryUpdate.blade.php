@@ -65,6 +65,17 @@
                                             <label class="form-label" for="edit_caption">Caption</label>
                                             <input type="text" class="form-control" id="edit_caption" name="caption" value="{{ old('caption', $data->caption) }}">
                                         </div>
+                                        <div class="col-md-3">
+                                            <label class="form-label" for="edit_sort">Display order</label>
+                                            <input type="number" min="0" class="form-control" id="edit_sort" name="sort_order" value="{{ old('sort_order', $data->sort_order ?? 0) }}">
+                                            <small class="text-muted">Lower numbers appear first.</small>
+                                        </div>
+                                        <div class="col-md-3 d-flex align-items-end">
+                                            <div class="form-check mb-2">
+                                                <input class="form-check-input" type="checkbox" value="1" id="edit_show" name="show_on_gallery" @checked(old('show_on_gallery', $data->show_on_gallery ?? true))>
+                                                <label class="form-check-label" for="edit_show">Show on Gallery page</label>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

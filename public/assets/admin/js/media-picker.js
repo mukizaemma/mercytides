@@ -199,8 +199,13 @@
                 btn.dataset.path = item.path;
                 btn.title = item.label || item.path;
                 btn.innerHTML =
-                    '<img src="' + item.url + '" alt="" loading="lazy">' +
-                    '<span class="admin-media-picker__tile-check"><i class="fas fa-check"></i></span>';
+                    '<span class="admin-media-picker__tile-media">' +
+                    '<img alt="" loading="lazy">' +
+                    '<span class="admin-media-picker__tile-check"><i class="fas fa-check"></i></span>' +
+                    '</span>' +
+                    '<span class="admin-media-picker__tile-label"></span>';
+                btn.querySelector('img').src = item.url;
+                btn.querySelector('.admin-media-picker__tile-label').textContent = item.label || item.path;
                 btn.addEventListener('click', function () {
                     toggleSelect(item);
                 });

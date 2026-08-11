@@ -47,6 +47,7 @@ class StaffController extends Controller
             'phone' => ['nullable', 'string', 'max:255'],
             'facebook' => ['nullable', 'string', 'max:255'],
             'bio' => ['nullable', 'string'],
+            'image_focus' => ['nullable', 'string', 'max:32'],
         ], $this->imageInputRules('image', required: true)));
 
         $countBefore = Team::query()->count();
@@ -60,6 +61,7 @@ class StaffController extends Controller
         $data->instagram = $request->instagram;
         $data->twitter = $request->twitter;
         $data->bio = $request->bio;
+        $data->image_focus = Team::normalizeImageFocus($request->input('image_focus'));
 
         $image = $this->imageFromRequest($request, 'image', 'images/staff', ['preset' => 'portrait']);
         if ($image) {
@@ -117,6 +119,7 @@ class StaffController extends Controller
             'phone' => ['nullable', 'string', 'max:255'],
             'facebook' => ['nullable', 'string', 'max:255'],
             'bio' => ['nullable', 'string'],
+            'image_focus' => ['nullable', 'string', 'max:32'],
         ], $this->imageInputRules('image')));
 
         $data = $this->findAdminRecord(Team::class, $id);
@@ -130,6 +133,7 @@ class StaffController extends Controller
         $data->instagram = $request->input('instagram');
         $data->twitter = $request->input('twitter');
         $data->bio = $request->input('bio');
+        $data->image_focus = Team::normalizeImageFocus($request->input('image_focus'));
 
         $image = $this->imageFromRequest($request, 'image', 'images/staff', ['preset' => 'portrait']);
         if ($image) {

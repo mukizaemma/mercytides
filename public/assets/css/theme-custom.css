@@ -5304,3 +5304,74 @@ html.gallery-lightbox-open body {
     color: var(--brand-primary, #2f84b5);
 }
 
+/* Leadership team — consistent circular crop */
+.about-page-team .team-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    padding: 1.75rem 1.35rem 1.5rem;
+}
+
+.team-avatar {
+    --team-size: 148px;
+    --team-focus: 50% 18%;
+    width: var(--team-size);
+    height: var(--team-size);
+    margin: 0 auto 1.15rem;
+    border-radius: 50%;
+    overflow: hidden;
+    flex: 0 0 var(--team-size);
+    background: #e8f0f4;
+    box-shadow: 0 0 0 3px #fff, 0 0 0 5px rgba(47, 132, 181, 0.16);
+}
+
+.team-avatar--sm {
+    --team-size: 120px;
+}
+
+.team-avatar img,
+.about-page-team .team-avatar img {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none;
+    object-fit: cover;
+    object-position: var(--team-focus);
+    display: block;
+}
+
+.team-avatar__placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(180deg, #f7fbfd 0%, #e8f1f6 100%);
+    color: #64748b;
+}
+
+.team-card__identity {
+    flex: 0 0 auto;
+    width: 100%;
+    min-height: 4.35rem;
+    margin-bottom: 0.35rem;
+}
+
+.team-card__identity .tp-team-2__author-name,
+.team-card__identity h4 {
+    margin-bottom: 0.2rem;
+}
+
+.team-card__bio {
+    flex: 1 1 auto;
+    width: 100%;
+}
+
+.about-page-team .team-card .tp-team-2__content {
+    padding: 0;
+}
+
+.about-page-team .tp-team-2__thumb::after {
+    display: none;
+}
+

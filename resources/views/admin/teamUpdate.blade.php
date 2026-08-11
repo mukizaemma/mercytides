@@ -46,7 +46,12 @@
                                         :current="$data->image ?? null"
                                         legacy-dir="images/staff"
                                         preset="portrait"
+                                        help="Portrait photos work best. After uploading, use Photo crop below to centre the face in the circle."
                                     />
+                                    @include('admin.includes.image-focus-picker', [
+                                        'imageUrl' => \App\Support\StorageImage::url($data->image ?? null, 'images/staff'),
+                                        'focus' => $data->image_focus,
+                                    ])
                                 </div>
                                 <div class="col-12">
                                     <label class="form-label" for="bio">Biography</label>

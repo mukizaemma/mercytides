@@ -21,6 +21,7 @@ class Team extends Model
         'phone',
         'bio',
         'image',
+        'image_focus',
         'position',
         'slug',
         'category',
@@ -30,6 +31,44 @@ class Team extends Model
         'display',
         'status',
     ];
+
+    public const DEFAULT_IMAGE_FOCUS = '50 18';
+
+    /**
+     * CSS object-position value that keeps faces inside the circular crop.
+     */
+    public function imageFocusCss(): string
+    {
+        $parsed = static::parseImageFocus($this->image_focus);
+
+        return $parsed['x'].'% '.$parsed['y'].'%';
+    }
+
+    /**
+     * @return array{x: float, y: float}
+     */
+    public static function parseImageFocus(?string $value): array
+    {
+        $value = trim((string) $value);
+        if (preg_match('/^(\d{1,3}(?:\.\d+)?)\s*%?\s+[x,]?\s*(\d{1,3}(?:\.\d+)?)\s*%?$/i', $value, $m)) {
+            return [
+                'x' => max(0, min(100, (float) $m[1])),
+                'y' => max(0, min(100, (float) $m[2])),
+            ];
+        }
+
+        [$x, $y] = array_map('floatval', explode(' ', self::DEFAULT_IMAGE_FOCUS));
+
+        return ['x' => $x, 'y' => $y];
+    }
+
+    public static function normalizeImageFocus(?string $value): string
+    {
+        $parsed = static::parseImageFocus($value);
+
+        return rtrim(rtrim(number_format($parsed['x'], 1, '.', ''), '0'), '.').' '
+            .rtrim(rtrim(number_format($parsed['y'], 1, '.', ''), '0'), '.');
+    }
 
     /**
      * Restore trashed leaders and ensure the default Magambo profiles exist.

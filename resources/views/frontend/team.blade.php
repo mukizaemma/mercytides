@@ -15,35 +15,33 @@
         <div class="row g-4">
             @forelse($team as $rs)
                 <div class="col-xl-4 col-lg-4 col-md-6">
-                    <article class="tp-team-2__item text-center h-100 bg-white rounded-3 shadow-sm p-3">
-                        @if(!empty($rs->image))
-                            <div class="tp-team-2__thumb mb-3">
-                                <img src="{{ \App\Support\StorageImage::url($rs->image, 'images/staff') }}" alt="{{ $rs->names }}" class="rounded-circle" style="width:140px;height:140px;object-fit:cover;">
-                            </div>
-                        @else
-                            <div class="tp-team-2__thumb mb-3 d-flex align-items-center justify-content-center rounded-circle mx-auto bg-light" style="width:140px;height:140px;">
-                                <i class="fas fa-user fa-2x text-muted"></i>
-                            </div>
-                        @endif
-                        <div class="tp-team-2__content">
+                    <article class="tp-team-2__item team-card text-center h-100 bg-white rounded-3 shadow-sm">
+                        @include('frontend.includes.team-avatar', [
+                            'src' => !empty($rs->image) ? \App\Support\StorageImage::url($rs->image, 'images/staff') : null,
+                            'alt' => $rs->names,
+                            'focus' => $rs->imageFocusCss(),
+                        ])
+                        <div class="team-card__identity tp-team-2__content p-0">
                             <h4 class="tp-team-2__author-name h5">{{ $rs->names }}</h4>
-                            <span class="d-block text-muted mb-2">{{ $rs->position }}</span>
-                            @if(!empty($rs->bio))
-                                <div class="postbox__text text-start small">{!! $rs->bio !!}</div>
-                            @endif
+                            <span class="d-block text-muted">{{ $rs->position }}</span>
                         </div>
+                        @if(!empty($rs->bio))
+                            <div class="team-card__bio postbox__text text-start small">{!! $rs->bio !!}</div>
+                        @endif
                     </article>
                 </div>
             @empty
                 @foreach(\App\Support\MercyTidesContent::leadershipTeam() as $leader)
                     <div class="col-xl-4 col-lg-4 col-md-6">
-                        <article class="tp-team-2__item text-center h-100 bg-white rounded-3 shadow-sm p-4">
-                            <div class="tp-team-2__thumb mb-3 d-flex align-items-center justify-content-center rounded-circle mx-auto" style="width:140px;height:140px;background:rgba(250,210,0,0.2);">
-                                <i class="fas fa-user fa-2x text-dark"></i>
+                        <article class="tp-team-2__item team-card text-center h-100 bg-white rounded-3 shadow-sm">
+                            @include('frontend.includes.team-avatar', [
+                                'alt' => $leader['names'],
+                            ])
+                            <div class="team-card__identity">
+                                <h4 class="h5 mb-1">{{ $leader['names'] }}</h4>
+                                <span class="d-block fw-semibold" style="color:var(--brand-primary,#3386B5);">{{ $leader['position'] }}</span>
                             </div>
-                            <h4 class="h5 mb-1">{{ $leader['names'] }}</h4>
-                            <span class="d-block fw-semibold mb-2" style="color:var(--brand-primary,#3386B5);">{{ $leader['position'] }}</span>
-                            <div class="postbox__text text-start small">{!! $leader['bio'] !!}</div>
+                            <div class="team-card__bio postbox__text text-start small">{!! $leader['bio'] !!}</div>
                         </article>
                     </div>
                 @endforeach
@@ -59,14 +57,17 @@
             <div class="row g-4">
                 @foreach ($advisors as $adv)
                     <div class="col-xl-4 col-lg-4 col-md-6">
-                        <article class="tp-team-2__item text-center h-100 bg-white rounded-3 shadow-sm p-3">
-                            @if(!empty($adv->image))
-                                <div class="tp-team-2__thumb mb-3">
-                                    <img src="{{ \App\Support\StorageImage::url($adv->image, 'images/staff') }}" alt="{{ $adv->names }}" class="rounded-circle" style="width:120px;height:120px;object-fit:cover;">
-                                </div>
-                            @endif
-                            <h4 class="h6 mb-1">{{ $adv->names }}</h4>
-                            <span class="text-muted small">{{ $adv->position }}</span>
+                        <article class="tp-team-2__item team-card text-center h-100 bg-white rounded-3 shadow-sm">
+                            @include('frontend.includes.team-avatar', [
+                                'src' => !empty($adv->image) ? \App\Support\StorageImage::url($adv->image, 'images/staff') : null,
+                                'alt' => $adv->names,
+                                'focus' => $adv->imageFocusCss(),
+                                'size' => 'sm',
+                            ])
+                            <div class="team-card__identity">
+                                <h4 class="h6 mb-1">{{ $adv->names }}</h4>
+                                <span class="text-muted small">{{ $adv->position }}</span>
+                            </div>
                         </article>
                     </div>
                 @endforeach

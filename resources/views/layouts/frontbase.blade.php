@@ -26,7 +26,7 @@
     <link rel="stylesheet" href="{{ asset('assets/css/magnific-popup.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/spacing.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/css/theme-custom.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/theme-custom.css') }}?v={{ @filemtime(public_path('assets/css/theme-custom.css')) ?: time() }}">
 
     @php
         /* Lake-blue brand (Uganda / Pearl of Africa): navy depth, daylight blue, soft gold accent */

@@ -92,16 +92,17 @@
         <div class="row g-4">
             @forelse($staff as $member)
                 <div class="col-xl-4 col-lg-4 col-md-6">
-                    <article class="tp-team-2__item text-center h-100">
-                        <div class="tp-team-2__thumb">
-                            <img src="{{ \App\Support\StorageImage::url($member->image, 'images/staff') }}" alt="{{ $member->names }}">
+                    <article class="tp-team-2__item team-card text-center h-100">
+                        @include('frontend.includes.team-avatar', [
+                            'src' => !empty($member->image) ? \App\Support\StorageImage::url($member->image, 'images/staff') : null,
+                            'alt' => $member->names,
+                            'focus' => $member->imageFocusCss(),
+                        ])
+                        <div class="team-card__identity tp-team-2__content p-0">
+                            <h4 class="tp-team-2__author-name">{{ $member->names }}</h4>
+                            <span>{{ $member->position }}</span>
                         </div>
-                        <div class="tp-team-2__content">
-                            <div class="tp-team-2__author-info">
-                                <h4 class="tp-team-2__author-name">{{ $member->names }}</h4>
-                                <span>{{ $member->position }}</span>
-                            </div>
-                        </div>
+                    </article>
                 </div>
             @empty
                 <div class="col-12 text-center">

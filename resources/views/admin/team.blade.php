@@ -158,8 +158,9 @@
                                                                 legacy-dir="images/staff"
                                                                 preset="portrait"
                                                                 :required="true"
-                                                                help="Portrait photos work best (about 270×312 pixels)."
+                                                                help="Portrait photos work best. After saving, open Edit to centre the face in the circle."
                                                             />
+                                                            @include('admin.includes.image-focus-picker')
                                                     </div>
 
                                                     <div class="col-lg-8 col-sm-12">

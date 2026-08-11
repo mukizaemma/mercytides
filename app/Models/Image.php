@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -56,7 +57,7 @@ class Image extends Model
     {
         static::ensureGalleryColumns();
 
-        return $query->orderBy('sort_order')->orderByDesc('id');
+        return $query->orderByDesc('created_at')->orderByDesc('id');
     }
 
     /**
@@ -145,6 +146,9 @@ class Image extends Model
             ? (bool) $attributes['show_on_gallery']
             : true;
         $row->sort_order = 0;
+        if (! empty($attributes['created_at'])) {
+            $row->created_at = $attributes['created_at'];
+        }
         $row->save();
 
         return $row;
@@ -177,7 +181,17 @@ class Image extends Model
                 })
                 ->exists();
 
-            static::registerFromPath($path);
+            $mtime = Carbon::createFromTimestamp($disk->lastModified($path));
+            $row = $exists
+                ? static::registerFromPath($path)
+                : static::registerFromPath($path, ['created_at' => $mtime]);
+
+            if ($row && $row->created_at && $row->created_at->gt($mtime)) {
+                $row->timestamps = false;
+                $row->created_at = $mtime;
+                $row->save();
+            }
+
             if (! $exists) {
                 $added++;
             }

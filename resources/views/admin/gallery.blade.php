@@ -14,7 +14,7 @@
                 <div class="admin-page-header d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
                     <div>
                         <h1>Media gallery</h1>
-                        <p class="text-muted mb-0">Every uploaded image is listed here. Drag to sort what appears on the public Gallery page, or remove items you do not want shown there.</p>
+                        <p class="text-muted mb-0">Every uploaded image is listed here. The public Gallery shows the newest uploads first. Remove items you do not want shown there.</p>
                     </div>
                     <button class="btn btn-primary px-3" data-bs-toggle="modal" data-bs-target="#galleryCreateModal">
                         <i class="fa fa-plus me-1"></i> Add item
@@ -46,27 +46,24 @@
                 <div class="card mb-4">
                     <div class="card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
                         <strong>On the Gallery page ({{ $visible->count() }})</strong>
-                        <span class="small text-muted">Drag the handle to reorder. Removed items stay in the library.</span>
+                        <span class="small text-muted">Newest uploads appear first. Removed items stay in the library.</span>
                     </div>
                     <div class="card-body p-0">
                         <div class="table-responsive">
                             <table class="table table-hover align-middle mb-0" id="galleryVisibleTable">
                                 <thead>
                                     <tr>
-                                        <th style="width:2.5rem;"></th>
                                         <th>Preview</th>
                                         <th>Source</th>
                                         <th>Caption</th>
+                                        <th>Added</th>
                                         <th>Program</th>
                                         <th class="text-end">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody data-gallery-sortable data-reorder-url="{{ route('reorderGallery') }}">
+                                <tbody>
                                     @forelse($visible as $item)
-                                        <tr data-id="{{ $item->id }}">
-                                            <td class="text-muted gallery-sort-handle" title="Drag to reorder">
-                                                <i class="fas fa-grip-vertical"></i>
-                                            </td>
+                                        <tr>
                                             <td>
                                                 <img src="{{ $item->thumbUrl() }}" alt="" width="96" height="64" class="rounded border" style="object-fit:cover;">
                                             </td>
@@ -74,6 +71,7 @@
                                                 <span class="badge text-bg-{{ $item->isVideo() ? 'danger' : 'secondary' }}">{{ $item->sourceLabel() }}</span>
                                             </td>
                                             <td>{{ $item->caption ?: '—' }}</td>
+                                            <td class="text-muted small">{{ optional($item->created_at)->diffForHumans() }}</td>
                                             <td>{{ $item->program->title ?? '—' }}</td>
                                             <td class="text-end">
                                                 <div class="btn-group">

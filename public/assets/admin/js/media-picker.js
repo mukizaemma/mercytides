@@ -198,14 +198,29 @@
                 btn.className = 'admin-media-picker__tile';
                 btn.dataset.path = item.path;
                 btn.title = item.label || item.path;
-                btn.innerHTML =
-                    '<span class="admin-media-picker__tile-media">' +
-                    '<img alt="" loading="lazy">' +
-                    '<span class="admin-media-picker__tile-check"><i class="fas fa-check"></i></span>' +
-                    '</span>' +
-                    '<span class="admin-media-picker__tile-label"></span>';
-                btn.querySelector('img').src = item.url;
-                btn.querySelector('.admin-media-picker__tile-label').textContent = item.label || item.path;
+
+                const media = document.createElement('span');
+                media.className = 'admin-media-picker__tile-media';
+
+                const img = document.createElement('img');
+                img.alt = '';
+                img.loading = 'lazy';
+                img.width = 160;
+                img.height = 160;
+                img.src = item.url;
+
+                const check = document.createElement('span');
+                check.className = 'admin-media-picker__tile-check';
+                check.innerHTML = '<i class="fas fa-check"></i>';
+
+                const label = document.createElement('span');
+                label.className = 'admin-media-picker__tile-label';
+                label.textContent = item.label || item.path;
+
+                media.appendChild(img);
+                media.appendChild(check);
+                btn.appendChild(media);
+                btn.appendChild(label);
                 btn.addEventListener('click', function () {
                     toggleSelect(item);
                 });

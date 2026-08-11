@@ -21,7 +21,6 @@
         <link href="https://fonts.googleapis.com/css2?family={{ $googleFontParam }}:wght@300;400;500;600;700&display=swap" rel="stylesheet">
         <link href="https://cdn.jsdelivr.net/npm/simple-datatables@latest/dist/style.css" rel="stylesheet" />
         <link href="{{ asset('assets/admin/css/styles.css') }}" rel="stylesheet" />
-        <link href="{{ asset('assets/admin/css/admin-refine.css') }}" rel="stylesheet" />
         <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js" crossorigin="anonymous"></script>
 
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -29,6 +28,8 @@
         <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
 
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        {{-- Load after Vite/Bootstrap so media-picker grid and other refinements win over Tailwind img resets. --}}
+        <link href="{{ asset('assets/admin/css/admin-refine.css') }}?v={{ @filemtime(public_path('assets/admin/css/admin-refine.css')) ?: time() }}" rel="stylesheet" />
         <style>
             :root {
                 --brand-primary: {{ $primary }};
@@ -99,8 +100,8 @@
         <script>
             window.MercyTidesImageUpload = @json($imageUploadConfig);
         </script>
-        <script src="{{ asset('assets/admin/js/image-upload-preview.js') }}"></script>
-        <script src="{{ asset('assets/admin/js/media-picker.js') }}"></script>
+        <script src="{{ asset('assets/admin/js/image-upload-preview.js') }}?v={{ @filemtime(public_path('assets/admin/js/image-upload-preview.js')) ?: time() }}"></script>
+        <script src="{{ asset('assets/admin/js/media-picker.js') }}?v={{ @filemtime(public_path('assets/admin/js/media-picker.js')) ?: time() }}"></script>
         <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" crossorigin="anonymous"></script>
         <script src="{{ asset('assets/admin/js/datatables-simple-demo.js') }}"></script>
 

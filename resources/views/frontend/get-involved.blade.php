@@ -1,6 +1,6 @@
 @extends('layouts.frontbase')
 
-@section('title', 'Get Involved')
+@section('title', \App\Support\SiteContent::text('getinvolved.page_title'))
 
 @php
     use App\Support\MercyTidesContent;
@@ -23,8 +23,8 @@
 @section('content')
 
 @include('frontend.includes.page-header', [
-    'title' => 'Get Involved',
-    'caption' => 'Stand with young mothers in Uganda — choose a clear way to support her journey.',
+    'title' => \App\Support\SiteContent::text('getinvolved.page_title'),
+    'caption' => \App\Support\SiteContent::text('getinvolved.page_caption'),
     'pageKey' => 'get_involved',
 ])
 
@@ -34,7 +34,7 @@
             <div class="col-lg-10">
                 <div class="get-involved-page__intro card border-0 shadow-sm">
                     <div class="card-body p-4 p-lg-5">
-                        <h2 class="h3 mb-3">Your partnership changes lives</h2>
+                        <h2 class="h3 mb-3">{{ \App\Support\SiteContent::text('getinvolved.partnership_title') }}</h2>
                         <div class="get-involved-page__intro-teaser postbox__text">{!! $introTeaserHtml !!}</div>
                         @if($hasMoreIntro)
                             <div class="collapse get-involved-page__intro-more" id="getInvolvedIntroMore">
@@ -82,8 +82,8 @@
             <div class="col-lg-10 col-xl-9">
                 <div class="card border-0 shadow-sm site-form-card get-involved-page__form-card">
                     <div class="card-body p-4 p-lg-5">
-                        <h2 class="h4 mb-2">Choose a way to support mothers</h2>
-                        <p class="text-muted mb-4">These are the same support paths used across Mercy Tides. Pick one, share your details, then send via WhatsApp or email.</p>
+                        <h2 class="h4 mb-2">{{ \App\Support\SiteContent::text('getinvolved.form_title') }}</h2>
+                        <p class="text-muted mb-4">{{ \App\Support\SiteContent::text('getinvolved.form_lead') }}</p>
 
                         @include('frontend.includes.get-involved-form', [
                             'singleSelect' => true,

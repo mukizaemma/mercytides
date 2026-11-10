@@ -36,30 +36,33 @@ class MercyTidesContent
         return 'Mercy Tides Foundation walks alongside unwed young mothers through vocational training, entrepreneurship development, discipleship, renewable energy support, and leadership formation—equipping them to build dignified livelihoods and Christ-centered homes.';
     }
 
+    /**
+     * Built-in objective cards. Public pages use {@see SiteContent::objectives()} so admins can edit them.
+     *
+     * @return list<array{icon: string, text: string}>
+     */
+    public static function objectiveBlueprint(): array
+    {
+        return [
+            ['icon' => 'fas fa-graduation-cap', 'text' => 'Offering vocational training programs tailored to local community challenges and demands.'],
+            ['icon' => 'fas fa-handshake', 'text' => 'Providing mentorship and coaching to develop entrepreneurial skills.'],
+            ['icon' => 'fas fa-coins', 'text' => 'Facilitating access to microfinance and startup resources.'],
+            ['icon' => 'fas fa-store', 'text' => 'Supporting businesses and startups led by unwed young and teenage mothers.'],
+            ['icon' => 'fas fa-users', 'text' => 'Conducting monthly discipleship gatherings and annual conferences for mothers and their children.'],
+            ['icon' => 'fas fa-solar-panel', 'text' => 'Providing renewable solar energy solutions to sponsored mothers and communities served.'],
+        ];
+    }
+
     /** @return list<string> */
     public static function objectives(): array
     {
-        return [
-            'Offering vocational training programs tailored to local community challenges and demands.',
-            'Providing mentorship and coaching to develop entrepreneurial skills.',
-            'Facilitating access to microfinance and startup resources.',
-            'Supporting businesses and startups led by unwed young and teenage mothers.',
-            'Conducting monthly discipleship gatherings and annual conferences for mothers and their children.',
-            'Providing renewable solar energy solutions to sponsored mothers and communities served.',
-        ];
+        return array_column(SiteContent::objectives(), 'text');
     }
 
     /** Font Awesome icon classes aligned with {@see objectives()} order. */
     public static function objectiveIcons(): array
     {
-        return [
-            'fas fa-graduation-cap',
-            'fas fa-handshake',
-            'fas fa-coins',
-            'fas fa-store',
-            'fas fa-users',
-            'fas fa-solar-panel',
-        ];
+        return array_column(SiteContent::objectives(), 'icon');
     }
 
     /** @return list<string> */
@@ -182,7 +185,7 @@ class MercyTidesContent
     }
 
     /** @return array<string, array{label: string, route: string, icon: string, caption: string, intro: string}> */
-    public static function sponsorshipTypes(): array
+    public static function sponsorshipTypeBlueprint(): array
     {
         return [
             'child' => [
@@ -235,6 +238,31 @@ class MercyTidesContent
         ];
     }
 
+    /** @return array<string, array{label: string, route: string, icon: string, caption: string, intro: string}> */
+    public static function sponsorshipTypes(): array
+    {
+        $types = self::sponsorshipTypeBlueprint();
+        foreach ($types as $key => $meta) {
+            $types[$key]['label'] = SiteContent::text("sponsorship.{$key}.label", $meta['label']);
+            $types[$key]['caption'] = SiteContent::text("sponsorship.{$key}.caption", $meta['caption']);
+            $types[$key]['intro_title'] = SiteContent::text("sponsorship.{$key}.intro_title", $meta['intro_title']);
+            $types[$key]['intro'] = SiteContent::html("sponsorship.{$key}.intro", $meta['intro']);
+            $types[$key]['grid_title'] = SiteContent::text("sponsorship.{$key}.grid_title", $meta['grid_title']);
+            $types[$key]['grid_lead'] = SiteContent::text("sponsorship.{$key}.grid_lead", $meta['grid_lead']);
+            foreach ($meta['pillars'] ?? [] as $index => $pillar) {
+                $n = $index + 1;
+                $types[$key]['pillars'][$index]['icon'] = SiteContent::faIcon(
+                    SiteContent::text("sponsorship.{$key}.pillar{$n}_icon", $pillar['icon']),
+                    $pillar['icon']
+                );
+                $types[$key]['pillars'][$index]['title'] = SiteContent::text("sponsorship.{$key}.pillar{$n}_title", $pillar['title']);
+                $types[$key]['pillars'][$index]['text'] = SiteContent::text("sponsorship.{$key}.pillar{$n}_text", $pillar['text']);
+            }
+        }
+
+        return $types;
+    }
+
     public static function sponsorshipTypeLabel(string $type): string
     {
         return self::sponsorshipTypes()[$type]['label'] ?? ucfirst(str_replace('_', ' ', $type));
@@ -260,8 +288,8 @@ class MercyTidesContent
 
         $cards[] = [
             'key' => 'get_involved',
-            'title' => 'Get involved',
-            'text' => 'Volunteer, partner, give, or visit — choose how you want to stand with Mercy Tides.',
+            'title' => SiteContent::text('sponsorship.hub_extra_title', 'Get involved'),
+            'text' => SiteContent::text('sponsorship.hub_extra_text', 'Volunteer, partner, give, or visit — choose how you want to stand with Mercy Tides.'),
             'icon' => 'fa-hand-holding-heart',
             'route' => 'getInvolved',
         ];

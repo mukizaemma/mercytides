@@ -50,7 +50,7 @@
                     <header class="page-standalone-card__head">
                         <span class="page-standalone-card__icon" aria-hidden="true"><i class="fas fa-book-open"></i></span>
                         <div>
-                            <p class="page-standalone-card__eyebrow mb-1">The story behind Mercy Tides</p>
+                            <p class="page-standalone-card__eyebrow mb-1">{{ \App\Support\SiteContent::text('founder.eyebrow') }}</p>
                             <h2 class="page-standalone-card__title mb-0">{{ $tagline }}</h2>
                         </div>
                     </header>

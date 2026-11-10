@@ -6,7 +6,7 @@
 
 
         @include('frontend.includes.page-header', [
-            'title' => 'Upcoming Events',
+            'title' => \App\Support\SiteContent::text('events.page_title'),
             'pageKey' => 'events',
         ])
 

@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <title>{{ $setting->company ?? ''}}</title>
-    <meta name="description" content="Mercy Tides Foundation empowers mothers and families in Uganda through vocational training, entrepreneurship, discipleship, and community care.">
+    <meta name="description" content="{{ \App\Support\SiteContent::text('meta.description') }}">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="turbo-cache-control" content="no-preview">
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -158,20 +158,20 @@
                         <div class="tp-header-3__main-menu">
                             <nav class="tp-main-menu-content">
                                 <ul>
-                                    <li><a href="{{ route('home') }}">Home</a></li>
+                                    <li><a href="{{ route('home') }}">{{ \App\Support\SiteContent::text('nav.home') }}</a></li>
                                     <li class="has-dropdown">
-                                        <a href="{{ route('backgroundDetails') }}">About</a>
+                                        <a href="{{ route('backgroundDetails') }}">{{ \App\Support\SiteContent::text('nav.about') }}</a>
                                         <ul class="submenu tp-submenu">
-                                            <li><a href="{{ route('backgroundDetails') }}">Our Story</a></li>
-                                            <li><a href="{{ route('foundingStory') }}">Founder's Story</a></li>
-                                            <li><a href="{{ route('ourMission') }}">Vision &amp; Mission</a></li>
-                                            <li><a href="{{ route('team') }}">Leadership Team</a></li>
-                                            <li><a href="{{ route('ourApproach') }}">Programs &amp; Values</a></li>
-                                            <li><a href="{{ route('ourModel') }}">Where We Work</a></li>
+                                            <li><a href="{{ route('backgroundDetails') }}">{{ \App\Support\SiteContent::text('nav.our_story') }}</a></li>
+                                            <li><a href="{{ route('foundingStory') }}">{{ \App\Support\SiteContent::text('nav.founder') }}</a></li>
+                                            <li><a href="{{ route('ourMission') }}">{{ \App\Support\SiteContent::text('nav.mission') }}</a></li>
+                                            <li><a href="{{ route('team') }}">{{ \App\Support\SiteContent::text('nav.leadership') }}</a></li>
+                                            <li><a href="{{ route('ourApproach') }}">{{ \App\Support\SiteContent::text('nav.programs_values') }}</a></li>
+                                            <li><a href="{{ route('ourModel') }}">{{ \App\Support\SiteContent::text('nav.where') }}</a></li>
                                         </ul>
                                     </li>
                                     <li class="has-dropdown">
-                                        <a href="{{ route('showPrograms') }}">Programs</a>
+                                        <a href="{{ route('showPrograms') }}">{{ \App\Support\SiteContent::text('nav.programs') }}</a>
                                         <ul class="submenu tp-submenu">
                                             @forelse ($ourPrograms as $prog)
                                                 <li><a href="{{ route('project', ['slug' => $prog->slug]) }}">{{ $prog->title }}</a></li>
@@ -179,13 +179,13 @@
                                                 <li><span class="px-3 d-inline-block text-muted small">No programs yet</span></li>
                                             @endforelse
                                             <li class="submenu-divider" role="separator"></li>
-                                            <li><a href="{{ route('sponsorship.hub') }}">Sponsorship</a></li>
+                                            <li><a href="{{ route('sponsorship.hub') }}">{{ \App\Support\SiteContent::text('nav.sponsorship') }}</a></li>
                                         </ul>
                                     </li>
-                                    <li><a href="{{ route('impactPage') }}">Impact</a></li>
-                                    <li><a href="{{ route('posts') }}">Updates</a></li>
-                                    <li><a href="{{ route('gallery') }}">Gallery</a></li>
-                                    <li><a href="{{ route('contacts') }}">Contact us</a></li>
+                                    <li><a href="{{ route('impactPage') }}">{{ \App\Support\SiteContent::text('nav.impact') }}</a></li>
+                                    <li><a href="{{ route('posts') }}">{{ \App\Support\SiteContent::text('nav.updates') }}</a></li>
+                                    <li><a href="{{ route('gallery') }}">{{ \App\Support\SiteContent::text('nav.gallery') }}</a></li>
+                                    <li><a href="{{ route('contacts') }}">{{ \App\Support\SiteContent::text('nav.contact') }}</a></li>
                                 </ul>
                             </nav>
                         </div>
@@ -238,7 +238,7 @@
                                 <span class="site-footer__wordmark h4 text-white mb-0">{{ $setting->company ?? 'Mercy Tides' }}</span>
                             @endif
                         </a>
-                        <p class="site-footer__tagline mt-3 mb-0">Breaking barriers and bridging a better future for mothers and children in Uganda.</p>
+                        <p class="site-footer__tagline mt-3 mb-0">{{ \App\Support\SiteContent::text('footer.tagline') }}</p>
 
                         <ul class="site-footer__contact list-unstyled mt-4 mb-0">
                             @if(!empty($setting->email))
@@ -270,21 +270,21 @@
                     </div>
 
                     <div class="col-12 col-sm-6 col-lg-4 site-footer__col">
-                        <h3 class="site-footer__heading">Explore</h3>
+                        <h3 class="site-footer__heading">{{ \App\Support\SiteContent::text('footer.explore_heading') }}</h3>
                         <ul class="site-footer__nav list-unstyled mb-0">
-                            <li><a href="{{ route('backgroundDetails') }}">About us</a></li>
-                            <li><a href="{{ route('showPrograms') }}">Programs</a></li>
-                            <li><a href="{{ route('impactPage') }}">Impact</a></li>
-                            <li><a href="{{ route('posts') }}">Updates</a></li>
-                            <li><a href="{{ route('gallery') }}">Gallery</a></li>
-                            <li><a href="{{ route('sponsorship.hub') }}">Sponsorship</a></li>
-                            <li><a href="{{ route('getInvolved') }}">Get involved</a></li>
-                            <li><a href="{{ route('contacts') }}">Contact</a></li>
+                            <li><a href="{{ route('backgroundDetails') }}">{{ \App\Support\SiteContent::text('footer.about') }}</a></li>
+                            <li><a href="{{ route('showPrograms') }}">{{ \App\Support\SiteContent::text('footer.programs') }}</a></li>
+                            <li><a href="{{ route('impactPage') }}">{{ \App\Support\SiteContent::text('footer.impact') }}</a></li>
+                            <li><a href="{{ route('posts') }}">{{ \App\Support\SiteContent::text('footer.updates') }}</a></li>
+                            <li><a href="{{ route('gallery') }}">{{ \App\Support\SiteContent::text('footer.gallery') }}</a></li>
+                            <li><a href="{{ route('sponsorship.hub') }}">{{ \App\Support\SiteContent::text('footer.sponsorship') }}</a></li>
+                            <li><a href="{{ route('getInvolved') }}">{{ \App\Support\SiteContent::text('footer.get_involved') }}</a></li>
+                            <li><a href="{{ route('contacts') }}">{{ \App\Support\SiteContent::text('footer.contact') }}</a></li>
                         </ul>
                     </div>
 
                     <div class="col-12 col-sm-6 col-lg-4 site-footer__col">
-                        <h3 class="site-footer__heading">Our programs</h3>
+                        <h3 class="site-footer__heading">{{ \App\Support\SiteContent::text('footer.programs_heading') }}</h3>
                         <ul class="site-footer__nav site-footer__programs-list list-unstyled mb-0">
                             @forelse ($ourPrograms as $rs)
                                 <li><a href="{{ route('project', ['slug' => $rs->slug]) }}">{{ $rs->title }}</a></li>
@@ -297,10 +297,10 @@
                             <div class="site-footer__cta-group">
                                 <a href="{{ route('sponsorship.hub') }}" class="site-footer__btn site-footer__btn--order">
                                     <i class="fas fa-heart" aria-hidden="true"></i>
-                                    Sponsorship
+                                    {{ \App\Support\SiteContent::text('footer.btn_sponsorship') }}
                                 </a>
                                 <a href="{{ route('getInvolved') }}" class="site-footer__btn site-footer__btn--ghost">
-                                    Get Involved
+                                    {{ \App\Support\SiteContent::text('footer.btn_involved') }}
                                 </a>
                             </div>
                         </div>
@@ -313,14 +313,14 @@
             <div class="container py-3 py-md-4">
                 <div class="row align-items-center justify-content-between g-2">
                     <div class="col-12 col-md-auto text-center text-md-start">
-                        <span class="site-footer__copy">&copy; Mercy Tides <span id="footer-year"></span></span>
+                        <span class="site-footer__copy">&copy; {{ \App\Support\SiteContent::text('footer.copy_name') }} <span id="footer-year"></span></span>
                         <span class="site-footer__copy-sep d-none d-md-inline">·</span>
                         <span class="site-footer__credit">Site by <a href="https://iremetech.com" target="_blank" rel="noopener noreferrer">Ireme Technologies</a></span>
                     </div>
                     <div class="col-12 col-md-auto text-center text-md-end">
-                        <a href="{{ route('sponsorship.hub') }}" class="site-footer__mini-link">Sponsorship</a>
+                        <a href="{{ route('sponsorship.hub') }}" class="site-footer__mini-link">{{ \App\Support\SiteContent::text('footer.mini_sponsorship') }}</a>
                         <span class="site-footer__copy-sep">·</span>
-                        <a href="{{ route('getInvolved') }}" class="site-footer__mini-link">Get involved</a>
+                        <a href="{{ route('getInvolved') }}" class="site-footer__mini-link">{{ \App\Support\SiteContent::text('footer.mini_involved') }}</a>
                     </div>
                 </div>
             </div>

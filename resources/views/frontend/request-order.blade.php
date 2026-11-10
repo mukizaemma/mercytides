@@ -1,12 +1,12 @@
 @extends('layouts.frontbase')
 
-@section('title', 'Request an order')
+@section('title', \App\Support\SiteContent::text('order.page_title'))
 
 @section('content')
 
 @include('frontend.includes.page-header', [
-    'title' => 'Request an order',
-    'caption' => 'We produce to order for partners, retailers, and organisations. Share what you need and we will follow up with timelines and pricing.',
+    'title' => \App\Support\SiteContent::text('order.page_title'),
+    'caption' => \App\Support\SiteContent::text('order.page_caption'),
     'pageKey' => 'contact',
 ])
 

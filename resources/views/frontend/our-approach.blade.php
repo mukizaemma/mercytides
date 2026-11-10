@@ -1,6 +1,6 @@
 @extends('layouts.frontbase')
 
-@section('title', 'Programs & Core Values')
+@section('title', \App\Support\SiteContent::text('approach.page_title'))
 
 @section('content')
 
@@ -15,8 +15,8 @@
 @endphp
 
 @include('frontend.includes.page-header', [
-    'title' => 'Programs & Core Values',
-    'caption' => 'Vocational training, entrepreneurship, holistic leadership, and discipleship for mothers in Uganda.',
+    'title' => \App\Support\SiteContent::text('approach.page_title'),
+    'caption' => \App\Support\SiteContent::text('approach.page_caption'),
     'pageKey' => 'approach',
 ])
 
@@ -28,7 +28,7 @@
                     <header class="page-standalone-card__head">
                         <span class="page-standalone-card__icon"><i class="flaticon-mission"></i></span>
                         <div>
-                            <h2 class="page-standalone-card__title mb-0">Program offerings</h2>
+                            <h2 class="page-standalone-card__title mb-0">{{ \App\Support\SiteContent::text('approach.offerings_title') }}</h2>
                         </div>
                     </header>
                     <div class="page-standalone-card__body postbox__text">{!! $programsHtml !!}</div>
@@ -42,7 +42,7 @@
     <div class="container">
         <div class="row justify-content-center mb-5">
             <div class="col-12 text-center">
-                <h4 class="tp-section-title mb-0">Our core values</h4>
+                <h4 class="tp-section-title mb-0">{{ \App\Support\SiteContent::text('about.core_values_title') }}</h4>
             </div>
         </div>
         <div class="row g-4 justify-content-center">

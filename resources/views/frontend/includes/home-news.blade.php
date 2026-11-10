@@ -4,7 +4,7 @@
         <div class="row">
             <div class="col-xl-12">
                 <div class="tp-blog-2__section-title pb-50 text-center wow tpfadeUp reveal-on-scroll" data-wow-duration=".9s" data-wow-delay=".1s">
-                    <h4 class="tp-section-title">Recent updates</h4>
+                    <h4 class="tp-section-title">{{ \App\Support\SiteContent::text('home.news.title') }}</h4>
                 </div>
             </div>
         </div>
@@ -30,7 +30,7 @@
         </div>
         <div class="row pt-4">
             <div class="col-12 text-center">
-                <a href="{{ route('posts') }}" class="tp-btn">View all updates</a>
+                <a href="{{ route('posts') }}" class="tp-btn">{{ \App\Support\SiteContent::text('home.news.more') }}</a>
             </div>
         </div>
     </div>

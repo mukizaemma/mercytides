@@ -18,7 +18,7 @@
                     <span class="programs-dual-cta-card__icon" aria-hidden="true">
                         <i class="fas fa-bullseye"></i>
                     </span>
-                    <span class="programs-dual-cta-card__label">Mission</span>
+                    <span class="programs-dual-cta-card__label">{{ \App\Support\SiteContent::text('home.mission_label') }}</span>
                 </span>
                 <span class="programs-dual-cta-card__hint">{{ $missionText }}</span>
             </article>
@@ -32,7 +32,7 @@
                     <span class="programs-dual-cta-card__icon" aria-hidden="true">
                         <i class="fas fa-eye"></i>
                     </span>
-                    <span class="programs-dual-cta-card__label">Vision</span>
+                    <span class="programs-dual-cta-card__label">{{ \App\Support\SiteContent::text('home.vision_label') }}</span>
                 </span>
                 <span class="programs-dual-cta-card__hint">{{ $visionText }}</span>
             </article>

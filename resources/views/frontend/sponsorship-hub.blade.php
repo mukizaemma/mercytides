@@ -1,6 +1,6 @@
 @extends('layouts.frontbase')
 
-@section('title', 'Sponsorship')
+@section('title', \App\Support\SiteContent::text('sponsorship.hub_title_page'))
 
 @php
     use App\Support\MercyTidesContent;
@@ -11,8 +11,8 @@
 @section('content')
 
 @include('frontend.includes.page-header', [
-    'title' => 'Sponsorship',
-    'caption' => 'Choose how you would like to walk with mothers and children in Uganda — sponsor someone specific or explore other ways to get involved.',
+    'title' => \App\Support\SiteContent::text('sponsorship.hub_title_page'),
+    'caption' => \App\Support\SiteContent::text('sponsorship.hub_caption'),
     'pageKey' => 'sponsorship_hub',
 ])
 
@@ -20,8 +20,8 @@
     <div class="container">
         <div class="row justify-content-center mb-4 mb-lg-5">
             <div class="col-lg-9 text-center">
-                <h2 class="h3 mb-3">Start your sponsorship journey</h2>
-                <p class="text-muted mb-0">Each path opens a dedicated page where you can meet the people we serve, read their stories, and take the next step.</p>
+                <h2 class="h3 mb-3">{{ \App\Support\SiteContent::text('sponsorship.hub_title') }}</h2>
+                <p class="text-muted mb-0">{{ \App\Support\SiteContent::text('sponsorship.hub_lead') }}</p>
             </div>
         </div>
 

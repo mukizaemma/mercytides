@@ -3,8 +3,8 @@
             <div class="row">
                 <div class="col-xl-12 wow tpfadeUp reveal-on-scroll" data-wow-duration=".9s" data-wow-delay=".1s">
                     <div class="tp-blog-2__section-title pb-50 text-center">
-                        <h4 class="tp-section-title">Our programs in Uganda</h4>
-                        <p class="home-narrative-band__lead mt-3 mb-0 mx-auto">Vocational training, entrepreneurship, discipleship, and community care that turn barriers into sustainable livelihoods.</p>
+                        <h4 class="tp-section-title">{{ \App\Support\SiteContent::text('home.programs.title') }}</h4>
+                        <p class="home-narrative-band__lead mt-3 mb-0 mx-auto">{{ \App\Support\SiteContent::text('home.programs.lead') }}</p>
                     </div>
                 </div>
             </div>

@@ -1,6 +1,6 @@
 @extends('layouts.frontbase')
 
-@section('title', 'Contact')
+@section('title', \App\Support\SiteContent::text('contact.page_title'))
 
 @php
     $location = trim((string) ($contact->address ?? ''));
@@ -25,8 +25,8 @@
 @section('content')
 
 @include('frontend.includes.page-header', [
-    'title' => 'Contact',
-    'caption' => 'Reach our team in Uganda — and choose how you want to support young mothers.',
+    'title' => \App\Support\SiteContent::text('contact.page_title'),
+    'caption' => \App\Support\SiteContent::text('contact.page_caption'),
     'pageKey' => 'contact',
 ])
 
@@ -95,8 +95,8 @@
             <div class="{{ $showContactMap ? 'col-lg-6' : 'col-lg-10 col-xl-9' }}">
                 <div class="card border-0 shadow-sm site-form-card contact-page__form-card h-100">
                     <div class="card-body p-4 p-lg-5">
-                        <h2 class="h4 mb-2">Choose a way to support</h2>
-                        <p class="text-muted mb-4">Pick one of the five support paths below, share your details, then send via WhatsApp or email.</p>
+                        <h2 class="h4 mb-2">{{ \App\Support\SiteContent::text('contact.ways_title') }}</h2>
+                        <p class="text-muted mb-4">{{ \App\Support\SiteContent::text('contact.ways_lead') }}</p>
 
                         @if(session('success'))
                             <div class="alert alert-success">{{ session('success') }}</div>
@@ -127,8 +127,8 @@
                 <div class="col-lg-6">
                     <div class="contact-map-wrap h-100">
                         <div class="contact-map-wrap__header">
-                            <h2 class="h5 mb-1">Find us in Uganda</h2>
-                            <p class="text-muted small mb-0">Visit by appointment — message us to coordinate a time.</p>
+                            <h2 class="h5 mb-1">{{ \App\Support\SiteContent::text('contact.find_title') }}</h2>
+                            <p class="text-muted small mb-0">{{ \App\Support\SiteContent::text('contact.find_lead') }}</p>
                         </div>
 
                         @if($mapIframeHtml !== '')

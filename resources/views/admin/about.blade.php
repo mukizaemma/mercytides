@@ -19,7 +19,7 @@
             <div class="container-fluid px-4 py-4">
                 <div class="admin-page-header">
                     <h1>About</h1>
-                    <p class="text-muted mb-0">Manage mission, values, founder’s story, project background, and impact metrics.</p>
+                    <p class="text-muted mb-0">Manage mission, values, founder’s story, project background, and impact metrics. Section headings, daily objectives, and other fixed page text are edited under <a href="{{ route('siteCopy.index') }}">Page copy</a>.</p>
                 </div>
 
                 @if(session()->has('success'))

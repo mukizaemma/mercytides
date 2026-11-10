@@ -1,6 +1,6 @@
 @extends('layouts.frontbase')
 
-@section('title', 'Where We Work')
+@section('title', \App\Support\SiteContent::text('model.page_title'))
 
 @section('content')
 
@@ -10,8 +10,8 @@
 @endphp
 
 @include('frontend.includes.page-header', [
-    'title' => 'Where We Work',
-    'caption' => 'Serving unwed young mothers in Wakiso District and communities near Kampala, Uganda.',
+    'title' => \App\Support\SiteContent::text('model.page_title'),
+    'caption' => \App\Support\SiteContent::text('model.page_caption'),
     'pageKey' => 'model',
 ])
 
@@ -23,7 +23,7 @@
                     <header class="page-standalone-card__head">
                         <span class="page-standalone-card__icon"><i class="fas fa-map-marker-alt"></i></span>
                         <div>
-                            <h2 class="page-standalone-card__title mb-0">Our location &amp; focus</h2>
+                            <h2 class="page-standalone-card__title mb-0">{{ \App\Support\SiteContent::text('model.location_title') }}</h2>
                         </div>
                     </header>
                     <div class="page-standalone-card__body postbox__text flex-grow-1">{!! $locationHtml !!}</div>
@@ -43,8 +43,8 @@
                         <div class="page-standalone-media__placeholder d-flex align-items-center justify-content-center text-center p-4 h-100">
                             <div>
                                 <i class="fas fa-map-marked-alt d-block mb-3" style="font-size: 2.5rem; opacity: 0.35;"></i>
-                                <p class="mb-1 fw-semibold">Wakiso District, Uganda</p>
-                                <p class="small text-muted mb-0">Bunamwaya Parish · Makindye Sub County · Kyadondo County</p>
+                                <p class="mb-1 fw-semibold">{{ \App\Support\SiteContent::text('model.placeholder_title') }}</p>
+                                <p class="small text-muted mb-0">{{ \App\Support\SiteContent::text('model.placeholder_detail') }}</p>
                             </div>
                         </div>
                     @endif

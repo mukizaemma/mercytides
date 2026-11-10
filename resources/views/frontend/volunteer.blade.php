@@ -1,11 +1,11 @@
 @extends('layouts.frontbase')
 
-@section('title', 'Volunteer')
+@section('title', \App\Support\SiteContent::text('volunteer.page_title'))
 
 @section('content')
 @include('frontend.includes.page-header', [
-    'title' => 'Volunteer',
-    'caption' => 'Share your time, skills, and heart with mothers and families served by Mercy Tides Foundation in Uganda.',
+    'title' => \App\Support\SiteContent::text('volunteer.page_title'),
+    'caption' => \App\Support\SiteContent::text('volunteer.page_caption'),
     'pageKey' => 'get_involved',
 ])
 
@@ -17,24 +17,24 @@
                     <div class="col-md-4">
                         <div class="card border-0 shadow-sm h-100 get-involved-highlight">
                             <div class="card-body p-4">
-                                <h3 class="h5 mb-3">Mentoring &amp; training</h3>
-                                <p class="text-muted mb-0 small">Coach mothers in vocational skills, business basics, or life skills during workshops and site visits.</p>
+                                <h3 class="h5 mb-3">{{ \App\Support\SiteContent::text('volunteer.card1_title') }}</h3>
+                                <p class="text-muted mb-0 small">{{ \App\Support\SiteContent::text('volunteer.card1_text') }}</p>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="card border-0 shadow-sm h-100 get-involved-highlight">
                             <div class="card-body p-4">
-                                <h3 class="h5 mb-3">Programs &amp; events</h3>
-                                <p class="text-muted mb-0 small">Help with discipleship gatherings, conferences, outreach, and community activities.</p>
+                                <h3 class="h5 mb-3">{{ \App\Support\SiteContent::text('volunteer.card2_title') }}</h3>
+                                <p class="text-muted mb-0 small">{{ \App\Support\SiteContent::text('volunteer.card2_text') }}</p>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="card border-0 shadow-sm h-100 get-involved-highlight">
                             <div class="card-body p-4">
-                                <h3 class="h5 mb-3">Remote support</h3>
-                                <p class="text-muted mb-0 small">Communications, design, fundraising, prayer partnerships, and professional advice from anywhere.</p>
+                                <h3 class="h5 mb-3">{{ \App\Support\SiteContent::text('volunteer.card3_title') }}</h3>
+                                <p class="text-muted mb-0 small">{{ \App\Support\SiteContent::text('volunteer.card3_text') }}</p>
                             </div>
                         </div>
                     </div>
@@ -59,8 +59,8 @@
 
                 <div class="card border-0 shadow-sm site-form-card">
                     <div class="card-body p-4 p-lg-5">
-                        <h2 class="h4 mb-2">Volunteer application</h2>
-                        <p class="text-muted mb-4">Tell us about yourself and how you would like to serve. Our team will follow up by email or phone.</p>
+                        <h2 class="h4 mb-2">{{ \App\Support\SiteContent::text('volunteer.form_title') }}</h2>
+                        <p class="text-muted mb-4">{{ \App\Support\SiteContent::text('volunteer.form_lead') }}</p>
 
                         <form class="row g-3 site-partner-form js-public-form" data-form-type="volunteer" method="post" action="#" novalidate autocomplete="off" data-turbo="false">
 

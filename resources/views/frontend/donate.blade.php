@@ -14,10 +14,10 @@
 
 @section('content')
 @include('frontend.includes.page-header', [
-    'title' => 'Donate',
+    'title' => \App\Support\SiteContent::text('donate.page_title'),
     'caption' => $sponsorProfile
-        ? 'You are giving toward sponsorship for ' . $sponsorProfile->names . ' — thank you for walking alongside her.'
-        : 'Your gift equips mothers with skills, hope, and Christ-centered community support in Uganda.',
+        ? \App\Support\SiteContent::fill('donate.sponsor_caption', ['{name}' => $sponsorProfile->names])
+        : \App\Support\SiteContent::text('donate.page_caption'),
     'pageKey' => 'donate',
     'image' => $headerImage ?? null,
 ])
@@ -28,22 +28,25 @@
             <div class="col-lg-4 col-xl-3">
                 <div class="card border-0 shadow-sm site-form-card h-100 donate-page__aside">
                     <div class="card-body p-4">
-                        <h2 class="h5 mb-3">Your gift creates lasting change</h2>
+                        <h2 class="h5 mb-3">{{ \App\Support\SiteContent::text('donate.aside_title') }}</h2>
+                        @php
+                            $donateBenefitIcons = ['fa-graduation-cap', 'fa-hands-helping', 'fa-solar-panel', 'fa-heart'];
+                        @endphp
                         <ul class="donate-page__benefits list-unstyled mb-0">
-                            <li><i class="fas fa-graduation-cap" aria-hidden="true"></i> Vocational training &amp; mentorship</li>
-                            <li><i class="fas fa-hands-helping" aria-hidden="true"></i> Christ-centered care for mothers &amp; children</li>
-                            <li><i class="fas fa-solar-panel" aria-hidden="true"></i> Solar &amp; community support where needed</li>
+                            @foreach(\App\Support\SiteContent::lines('donate.benefits') as $benefitIndex => $benefit)
+                                <li><i class="fas {{ $donateBenefitIcons[$benefitIndex % count($donateBenefitIcons)] }}" aria-hidden="true"></i> {{ $benefit }}</li>
+                            @endforeach
                         </ul>
                         <hr class="my-4">
-                        <p class="small text-muted mb-0">Prefer to sponsor someone specific? <a href="{{ route('sponsorship.youngMother') }}">View sponsorship profiles</a>.</p>
+                        <p class="small text-muted mb-0">{{ \App\Support\SiteContent::text('donate.sponsor_note') }} <a href="{{ route('sponsorship.youngMother') }}">{{ \App\Support\SiteContent::text('donate.sponsor_link') }}</a>.</p>
                     </div>
                 </div>
             </div>
             <div class="col-lg-8 col-xl-7">
                 <div class="card border-0 shadow-sm site-form-card">
                     <div class="card-body p-4 p-lg-5">
-                        <h2 class="h4 mb-1">Make a gift</h2>
-                        <p class="text-muted mb-4">Choose how you would like to give, enter your details, then follow the steps for your selected option.</p>
+                        <h2 class="h4 mb-1">{{ \App\Support\SiteContent::text('donate.form_title') }}</h2>
+                        <p class="text-muted mb-4">{{ \App\Support\SiteContent::text('donate.form_lead') }}</p>
 
                         @if($sponsorProfile)
                             <div class="alert alert-info py-2 mb-4 d-flex align-items-center gap-3">

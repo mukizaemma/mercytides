@@ -1,10 +1,10 @@
 @extends('layouts.frontbase')
 
-@section('title', 'Mothers in our program')
+@section('title', \App\Support\SiteContent::text('mothers.page_title'))
 
 @section('content')
     @include('frontend.includes.page-header', [
-        'title' => 'Mothers in our program',
+        'title' => \App\Support\SiteContent::text('mothers.page_title'),
         'pageKey' => 'sponsor_young_mother',
     ])
 
@@ -15,8 +15,8 @@
                 'limit' => 1000,
                 'showSectionHeader' => true,
                 'embedded' => true,
-                'sectionTitle' => 'Mothers in our program',
-                'sectionLead' => 'Meet the young mothers Mercy Tides walks alongside — each portrait is a story of resilience, faith, and new beginnings.',
+                'sectionTitle' => \App\Support\SiteContent::text('mothers.page_title'),
+                'sectionLead' => \App\Support\SiteContent::text('mothers.page_lead'),
                 'showViewMore' => false,
             ])
 

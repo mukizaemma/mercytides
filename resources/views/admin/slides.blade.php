@@ -13,7 +13,7 @@
                 <div class="admin-page-header d-flex align-items-center justify-content-between flex-wrap gap-2">
                     <div>
                         <h1>Home slides</h1>
-                        <p class="text-muted mb-0">Hero images and headlines for the public homepage.</p>
+                        <p class="text-muted mb-0">Hero images and headlines for the public homepage. The default supporting line, when a slide leaves it blank, is edited under <a href="{{ route('siteCopy.index', ['tab' => 'homepage']) }}">Page copy</a>.</p>
                     </div>
                     <button class="btn btn-primary px-3" data-bs-toggle="modal" data-bs-target="#slideCreateModal">
                         <i class="fa fa-plus me-1"></i> Add slide
@@ -80,6 +80,10 @@
                         <input type="text" class="form-control" name="heading" placeholder="Breaking Barriers, Bridging A Better Future">
                     </div>
                     <div class="mb-3">
+                        <label class="form-label">Supporting line</label>
+                        <textarea class="form-control" name="subheading" rows="2" data-editor="plain" placeholder="Leave blank to use the default line from Page copy"></textarea>
+                    </div>
+                    <div class="mb-3">
                         <x-admin.image-field
                             label="Hero image"
                             name="image"
@@ -110,6 +114,16 @@
                     <div class="mb-3">
                         <label class="form-label">Headline</label>
                         <input type="text" class="form-control" name="heading" value="{{ $rs->heading }}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Supporting line</label>
+                        @php
+                            $slideSupport = trim((string) ($rs->subheading ?? ''));
+                            if (strcasecmp($slideSupport, 'Mercy Tides') === 0) {
+                                $slideSupport = '';
+                            }
+                        @endphp
+                        <textarea class="form-control" name="subheading" rows="2" data-editor="plain" placeholder="Leave blank to use the default line from Page copy">{{ $slideSupport }}</textarea>
                     </div>
                     <div class="mb-3">
                         <x-admin.image-field

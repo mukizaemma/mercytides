@@ -12,10 +12,9 @@
         <div class="container">
             <div class="row justify-content-center mb-4 mb-lg-5">
                 <div class="col-lg-9 text-center wow tpfadeUp reveal-on-scroll" data-wow-duration=".9s" data-wow-delay=".1s">
-                    <h2 id="home-gap-heading" class="tp-section-title mb-3">Barriers young mothers face — and how we respond</h2>
+                    <h2 id="home-gap-heading" class="tp-section-title mb-3">{{ \App\Support\SiteContent::text('home.gap.title') }}</h2>
                     <p class="home-narrative-band__lead mb-0">
-                        Across communities near Kampala, unwed and teenage mothers often lack skills, safety, and hope.
-                        Mercy Tides walks with them toward dignity, livelihood, and Christ-centered care.
+                        {{ \App\Support\SiteContent::text('home.gap.lead') }}
                     </p>
                 </div>
             </div>
@@ -25,7 +24,7 @@
                         <div class="about-home-pillar__head">
                             <span class="about-home-pillar__icon" aria-hidden="true"><i class="fas fa-triangle-exclamation"></i></span>
                             <div>
-                                <h3 class="about-home-pillar__title">Why mothers need support</h3>
+                                <h3 class="about-home-pillar__title">{{ \App\Support\SiteContent::text('home.gap.problem_title') }}</h3>
                             </div>
                         </div>
                         <p class="about-home-pillar__text mb-0">
@@ -38,7 +37,7 @@
                         <div class="about-home-pillar__head">
                             <span class="about-home-pillar__icon" aria-hidden="true"><i class="fas fa-hands-helping"></i></span>
                             <div>
-                                <h3 class="about-home-pillar__title">Skills, enterprise &amp; care</h3>
+                                <h3 class="about-home-pillar__title">{{ \App\Support\SiteContent::text('home.gap.solution_title') }}</h3>
                             </div>
                         </div>
                         <p class="about-home-pillar__text mb-0">
@@ -56,7 +55,7 @@
             <div class="row justify-content-center">
                 <div class="col-lg-10 text-center wow tpfadeUp reveal-on-scroll" data-wow-duration=".9s" data-wow-delay=".2s">
                     <div class="about-home-intro about-home-intro--centered">
-                        <h2 id="home-about-heading" class="tp-section-title about-home-title">About Mercy Tides Foundation</h2>
+                        <h2 id="home-about-heading" class="tp-section-title about-home-title">{{ \App\Support\SiteContent::text('home.about.title') }}</h2>
                         @php
                             $aboutDescRaw = $about->description ?? '';
                             $aboutDescPlain = strip_tags(html_entity_decode($aboutDescRaw));
@@ -65,10 +64,10 @@
                         <p class="about-home-lead mx-auto">{{ $words }}</p>
                         <div class="about-home-actions justify-content-center">
                             <a class="tp-btn about-home-cta" href="{{ route('backgroundDetails') }}">
-                                Our story <span class="about-home-cta-arrow" aria-hidden="true">→</span>
+                                {{ \App\Support\SiteContent::text('home.about.cta_story') }} <span class="about-home-cta-arrow" aria-hidden="true">→</span>
                             </a>
                             <a class="tp-btn tp-btn--outline about-home-cta-secondary" href="{{ route('ourModel') }}">
-                                Where we work
+                                {{ \App\Support\SiteContent::text('home.about.cta_where') }}
                             </a>
                         </div>
                     </div>
@@ -99,10 +98,10 @@
     @include('frontend.includes.mothers-gallery', [
         'mothers' => $mothers ?? collect(),
         'limit' => 4,
-        'sectionTitle' => 'Mothers in our program',
-        'sectionLead' => 'Meet some of the young mothers we walk with — toward independence, dignity, and a brighter future for their children.',
+        'sectionTitle' => \App\Support\SiteContent::text('home.mothers.title'),
+        'sectionLead' => \App\Support\SiteContent::text('home.mothers.lead'),
         'viewMoreRoute' => route('sponsorship.youngMother'),
-        'viewMoreLabel' => 'View more mothers',
+        'viewMoreLabel' => \App\Support\SiteContent::text('home.mothers.more'),
     ])
 
 @endsection

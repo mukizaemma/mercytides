@@ -2,7 +2,7 @@
 <section class="home-partners-section" aria-labelledby="our-partners-heading">
     <div class="container">
         <div class="home-partners-section__header">
-            <h2 id="our-partners-heading" class="home-partners-section__title">Our Partners</h2>
+            <h2 id="our-partners-heading" class="home-partners-section__title">{{ \App\Support\SiteContent::text('home.partners.title') }}</h2>
         </div>
 
         <div class="home-partners-section__grid" role="list">

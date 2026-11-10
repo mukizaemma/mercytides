@@ -7,8 +7,8 @@
 @php use App\Support\MercyTidesContent; @endphp
 
 @include('frontend.includes.page-header', [
-    'title' => 'Our Story',
-    'caption' => 'A Christian non-profit serving unwed young mothers in Uganda — the Pearl of Africa.',
+    'title' => \App\Support\SiteContent::text('about.page_title'),
+    'caption' => \App\Support\SiteContent::text('about.page_caption'),
     'pageKey' => 'about',
 ])
 
@@ -18,7 +18,7 @@
         <div class="row justify-content-center">
             <div class="col-12 col-xl-10 col-xxl-9">
                 <div class="tp-about-4__section-title mb-4">
-                    <h4 class="tp-section-title">Overview</h4>
+                    <h4 class="tp-section-title">{{ \App\Support\SiteContent::text('about.overview_title') }}</h4>
                 </div>
                 <div class="postbox__text about-page-body" style="font-size: 19px; line-height: 1.75; color: #333;">
                     {!! MercyTidesContent::field($about->description ?? null, MercyTidesContent::overview()) !!}
@@ -26,8 +26,8 @@
                 <a href="{{ route('foundingStory') }}" class="founder-story-link mt-4">
                     <span class="founder-story-link__icon" aria-hidden="true"><i class="fas fa-book-open"></i></span>
                     <span>
-                        <strong>Read the founder’s story</strong>
-                        <span class="d-block small text-muted">How a visit to Luwero-Ndeeba became Mercy Tides Foundation.</span>
+                        <strong>{{ \App\Support\SiteContent::text('about.founder_link_title') }}</strong>
+                        <span class="d-block small text-muted">{{ \App\Support\SiteContent::text('about.founder_link_text') }}</span>
                     </span>
                     <span class="founder-story-link__arrow" aria-hidden="true"><i class="far fa-arrow-right"></i></span>
                 </a>
@@ -41,7 +41,6 @@
 
 @include('frontend.includes.objectives-grid', [
     'sectionClass' => 'mt-objectives--on-grey pt-60 pb-20',
-    'caption' => 'How we serve unwed young mothers, their children, and partner communities in Uganda.',
 ])
 
 <!-- Core values on white background -->
@@ -55,7 +54,7 @@
     <div class="container">
         <div class="row justify-content-center mb-5">
             <div class="col-12 text-center">
-                <h4 class="tp-section-title mb-0">Our Core Values</h4>
+                <h4 class="tp-section-title mb-0">{{ \App\Support\SiteContent::text('about.core_values_title') }}</h4>
             </div>
         </div>
         @if(count($coreValueItems) > 0)
@@ -85,7 +84,7 @@
         <div class="row">
             <div class="col-12">
                 <div class="tp-team-2__section-title pb-40 text-center">
-                    <h4 class="tp-section-title">Foundation Leadership</h4>
+                    <h4 class="tp-section-title">{{ \App\Support\SiteContent::text('about.leadership_title') }}</h4>
                 </div>
             </div>
         </div>

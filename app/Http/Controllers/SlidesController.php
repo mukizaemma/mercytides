@@ -35,13 +35,14 @@ class SlidesController extends Controller
 
         $request->validate(array_merge([
             'heading' => ['nullable', 'string', 'max:255'],
+            'subheading' => ['nullable', 'string', 'max:500'],
         ], $this->imageInputRules('image', required: true)));
 
         $countBefore = Slide::query()->count();
 
         $data = new Slide();
         $data->heading = $request->input('heading', 'Default Heading');
-        $data->subheading = 'Mercy Tides';
+        $data->subheading = (string) $request->input('subheading', '');
 
         $image = $this->imageFromRequest($request, 'image', 'images/slides', ['preset' => 'hero']);
         if ($image) {
@@ -69,10 +70,14 @@ class SlidesController extends Controller
     {
         $request->validate(array_merge([
             'heading' => ['nullable', 'string', 'max:255'],
+            'subheading' => ['nullable', 'string', 'max:500'],
         ], $this->imageInputRules('image')));
         $data = $this->findAdminRecord(Slide::class, $id);
         $targetId = (int) $data->id;
         $data->heading = $request->input('heading');
+        if ($request->exists('subheading')) {
+            $data->subheading = (string) $request->input('subheading', '');
+        }
 
         $image = $this->imageFromRequest($request, 'image', 'images/slides', ['preset' => 'hero']);
         if ($image) {

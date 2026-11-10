@@ -6,7 +6,7 @@
 
 
         @include('frontend.includes.page-header', [
-            'title' => 'Our Programs',
+            'title' => \App\Support\SiteContent::text('programs.page_title'),
             'pageKey' => 'programs',
         ])
 

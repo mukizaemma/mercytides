@@ -27,13 +27,13 @@
 
     $relatedProfiles = $relatedProfiles ?? collect();
     $relatedTitle = match ($profile->type) {
-        'young_mother' => 'More mothers to support',
-        'child' => 'More children to support',
-        'family' => 'More families to support',
-        default => 'More profiles to support',
+        'young_mother' => \App\Support\SiteContent::text('profile.related_mothers'),
+        'child' => \App\Support\SiteContent::text('profile.related_children'),
+        'family' => \App\Support\SiteContent::text('profile.related_families'),
+        default => \App\Support\SiteContent::text('profile.related_default'),
     };
 
-    $sponsorCta = 'Sponsor ' . $firstName;
+    $sponsorCta = \App\Support\SiteContent::fill('profile.sponsor_cta', ['{name}' => $firstName]);
     $commitmentWhy = $storyExcerpt !== ''
         ? $storyExcerpt
         : ('Your support helps '.$profile->displayName().' move toward skills, dignity, and a steadier path for her family.');
@@ -86,7 +86,7 @@
             @if($hasVideo)
                 <div id="her-video" class="sp-profile__media-col sp-profile__media-col--video">
                     <div class="sp-profile__video-card">
-                        <p class="sp-profile__video-label">Hear from {{ $firstName }}</p>
+                        <p class="sp-profile__video-label">{{ \App\Support\SiteContent::fill('profile.video_label', ['{name}' => $firstName]) }}</p>
                         <div class="sp-profile__video-frame">
                             @if($uploadedVideoUrl)
                                 @php
@@ -126,19 +126,19 @@
             <section class="sp-profile__story" aria-label="Her full story">
                 @if($storyHtml)
                     <article class="sp-profile__story-block">
-                        <h2 class="sp-profile__section-title">Her story</h2>
+                        <h2 class="sp-profile__section-title">{{ \App\Support\SiteContent::text('profile.story_title') }}</h2>
                         <div class="sp-profile__prose postbox__text">{!! $storyHtml !!}</div>
                     </article>
                 @endif
                 @if($challengesHtml)
                     <article class="sp-profile__story-block">
-                        <h2 class="sp-profile__section-title">Challenges she faces</h2>
+                        <h2 class="sp-profile__section-title">{{ \App\Support\SiteContent::text('profile.challenges_title') }}</h2>
                         <div class="sp-profile__prose postbox__text">{!! $challengesHtml !!}</div>
                     </article>
                 @endif
                 @if($visionHtml)
                     <article class="sp-profile__story-block">
-                        <h2 class="sp-profile__section-title">Her vision</h2>
+                        <h2 class="sp-profile__section-title">{{ \App\Support\SiteContent::text('profile.vision_title') }}</h2>
                         <div class="sp-profile__prose postbox__text">{!! $visionHtml !!}</div>
                     </article>
                 @endif
@@ -148,9 +148,9 @@
         {{-- Ways to support cards --}}
         <section id="ways-to-support" class="sp-profile__support" aria-labelledby="ways-to-support-heading">
             <div class="sp-profile__section-head">
-                <h2 id="ways-to-support-heading" class="sp-profile__section-title">Ways to support {{ $firstName }}</h2>
+                <h2 id="ways-to-support-heading" class="sp-profile__section-title">{{ \App\Support\SiteContent::fill('profile.ways_title', ['{name}' => $firstName]) }}</h2>
                 <p class="sp-profile__section-lead">
-                    Choose a focus. We will follow up with secure giving options — nothing is charged on this page.
+                    {{ \App\Support\SiteContent::text('profile.ways_lead') }}
                 </p>
             </div>
 
@@ -174,7 +174,7 @@
                         <span class="sp-support-card__title">{{ $option['label'] }}</span>
                         <span class="sp-support-card__text">{{ $option['text'] }}</span>
                         <span class="sp-support-card__action">
-                            Choose this
+                            {{ \App\Support\SiteContent::text('profile.choose_action') }}
                             <i class="fas fa-arrow-right" aria-hidden="true"></i>
                         </span>
                     </button>
@@ -207,7 +207,7 @@
                 <div class="sp-profile__related-head">
                     <div>
                         <h2 id="related-heading" class="sp-profile__section-title">{{ $relatedTitle }}</h2>
-                        <p class="sp-profile__section-lead mb-0">Meet others seeking skills, care, and a path toward dignity.</p>
+                        <p class="sp-profile__section-lead mb-0">{{ \App\Support\SiteContent::text('profile.related_lead') }}</p>
                     </div>
                     <a href="{{ route($typeMeta['route']) }}" class="sp-profile__link sp-profile__link--standout">View all</a>
                 </div>

@@ -1,6 +1,6 @@
 @extends('layouts.frontbase')
 
-@section('title', 'Vision & Mission')
+@section('title', \App\Support\SiteContent::text('mission.page_title'))
 
 @section('content')
 
@@ -8,12 +8,11 @@
     use App\Support\MercyTidesContent;
     $missionHtml = MercyTidesContent::field($mission->mission ?? null, MercyTidesContent::mission());
     $visionHtml = MercyTidesContent::field($mission->vision ?? null, MercyTidesContent::vision());
-    $objectives = MercyTidesContent::objectives();
 @endphp
 
 @include('frontend.includes.page-header', [
-    'title' => 'Vision & Mission',
-    'caption' => 'Breaking Barriers, Bridging A Better Future — empowering unwed young mothers in Uganda.',
+    'title' => \App\Support\SiteContent::text('mission.page_title'),
+    'caption' => \App\Support\SiteContent::text('mission.page_caption'),
     'pageKey' => 'mission',
 ])
 
@@ -25,7 +24,7 @@
                     <header class="page-standalone-card__head">
                         <span class="page-standalone-card__icon"><i class="flaticon-mission"></i></span>
                         <div>
-                            <h2 class="page-standalone-card__title mb-0">Our mission</h2>
+                            <h2 class="page-standalone-card__title mb-0">{{ \App\Support\SiteContent::text('mission.card_mission') }}</h2>
                         </div>
                     </header>
                     <div class="page-standalone-card__body postbox__text">{!! $missionHtml !!}</div>
@@ -36,7 +35,7 @@
                     <header class="page-standalone-card__head">
                         <span class="page-standalone-card__icon"><i class="flaticon-vision"></i></span>
                         <div>
-                            <h2 class="page-standalone-card__title mb-0">Our vision</h2>
+                            <h2 class="page-standalone-card__title mb-0">{{ \App\Support\SiteContent::text('mission.card_vision') }}</h2>
                         </div>
                     </header>
                     <div class="page-standalone-card__body postbox__text">{!! $visionHtml !!}</div>
@@ -46,13 +45,10 @@
     </div>
 </section>
 
-@include('frontend.includes.objectives-grid', [
-    'objectives' => $objectives,
-    'caption' => 'How we serve unwed young mothers, their children, and partner communities in Uganda.',
-])
+@include('frontend.includes.objectives-grid')
 
 @include('frontend.includes.core-values-parallax', [
-    'coreValuesParallaxTitle' => 'Our core values',
+    'coreValuesParallaxTitle' => \App\Support\SiteContent::text('about.core_values_title'),
 ])
 
 @endsection

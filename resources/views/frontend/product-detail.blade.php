@@ -75,7 +75,7 @@
                             <span class="badge bg-danger">-{{ $disc }}%</span>
                         @endif
                     </div>
-                    <p class="small text-muted mb-3">Indicative guide pricing. We produce to order for partners, bulk buyers, and organisations — not retail shelf stock.</p>
+                    <p class="small text-muted mb-3">{{ \App\Support\SiteContent::text('products.pricing_note') }}</p>
                     @if($product->color)
                         <p class="mb-3"><span class="text-muted">Color:</span> <strong>{{ $product->color }}</strong></p>
                     @endif

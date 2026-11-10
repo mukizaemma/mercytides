@@ -3,14 +3,14 @@
 @section('content')
 
 @include('frontend.includes.page-header', [
-    'title' => 'Gallery',
+    'title' => \App\Support\SiteContent::text('gallery.page_title'),
     'pageKey' => 'gallery',
 ])
 
 <section class="site-gallery pt-90 pb-100">
     <div class="container">
         <div class="site-gallery__intro text-center mb-50">
-            <p class="mb-0">Moments from our programs, mothers, and community — photos and films that tell the story of hope in motion.</p>
+            <p class="mb-0">{{ \App\Support\SiteContent::text('gallery.intro') }}</p>
         </div>
 
         @if($gallery->count())

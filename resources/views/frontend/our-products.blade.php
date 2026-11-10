@@ -1,19 +1,19 @@
 @extends('layouts.frontbase')
 
-@section('title', 'Our Products — Made in Rwanda')
+@section('title', \App\Support\SiteContent::text('products.page_title'))
 
 @section('content')
 
     @include('frontend.includes.page-header', [
-        'title' => 'Our Products',
-        'caption' => 'Abahizi Manufacturing - bags, accessories and apparel crafted in Rwanda. We produce to order for partners, retailers, and organisations.',
+        'title' => \App\Support\SiteContent::text('products.page_title'),
+        'caption' => \App\Support\SiteContent::text('products.page_caption'),
         'pageKey' => 'default',
     ])
 
     @php
         $productsIntroHtml = trim((string) ($about->products_intro ?? ''));
         if ($productsIntroHtml === '') {
-            $productsIntroHtml = '<h4>Our Products (Confidential &amp; Custom)</h4><p>We develop a wide range of handbags and accessories tailored to client needs, including totes, crossbody bags, pouches, and embellished pieces.</p><p>To respect client confidentiality, we do not publicly showcase final branded products. Instead, we focus on delivering custom, high-quality solutions aligned with each partner\'s vision.</p>';
+            $productsIntroHtml = \App\Support\SiteContent::html('products.fallback_intro');
         }
     @endphp
     <section class="products-page-intro grey-bg pt-70 pb-40">

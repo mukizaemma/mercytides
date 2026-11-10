@@ -75,8 +75,8 @@
         @if($isYoungMother && $supportOptions !== [])
             <section class="sponsorship-type-page__ways mt-5 pt-4" aria-labelledby="ways-to-support-mothers-heading">
                 <div class="sponsorship-type-page__grid-header mb-4">
-                    <h2 id="ways-to-support-mothers-heading">Ways to support our mothers</h2>
-                    <p>Practical paths you can choose when you walk with a mother — the same options shown on each mother’s profile.</p>
+                    <h2 id="ways-to-support-mothers-heading">{{ \App\Support\SiteContent::text('sponsorship.ways_title') }}</h2>
+                    <p>{{ \App\Support\SiteContent::text('sponsorship.ways_lead') }}</p>
                 </div>
 
                 <div class="sp-support-grid sp-support-grid--info" role="list">

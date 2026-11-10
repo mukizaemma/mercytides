@@ -3,7 +3,7 @@
                 <div class="row">
                     <div class="col-xl-12">
                         <div class="tp-event__section-title text-center">
-                            <h4 class="tp-section-title">Upcoming Events </h4>
+                            <h4 class="tp-section-title">{{ \App\Support\SiteContent::text('events.section_title') }}</h4>
                         </div>
                     </div>
                 </div>

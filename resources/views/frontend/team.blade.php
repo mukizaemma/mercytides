@@ -1,12 +1,12 @@
 @extends('layouts.frontbase')
 
-@section('title', 'Leadership Team')
+@section('title', \App\Support\SiteContent::text('team.page_title'))
 
 @section('content')
 
 @include('frontend.includes.page-header', [
-    'title' => 'Foundation Leadership',
-    'caption' => 'Mercy Tides Foundation is led by a committed team serving mothers and families in Uganda.',
+    'title' => \App\Support\SiteContent::text('team.page_title'),
+    'caption' => \App\Support\SiteContent::text('team.page_caption'),
     'pageKey' => 'team',
 ])
 

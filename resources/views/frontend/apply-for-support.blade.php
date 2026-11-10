@@ -1,11 +1,11 @@
 @extends('layouts.frontbase')
 
-@section('title', 'Apply for Support')
+@section('title', \App\Support\SiteContent::text('apply.page_title'))
 
 @section('content')
 @include('frontend.includes.page-header', [
-    'title' => 'Apply for Support',
-    'caption' => 'Mothers in Uganda can request training, mentorship, and holistic care through Mercy Tides Foundation.',
+    'title' => \App\Support\SiteContent::text('apply.page_title'),
+    'caption' => \App\Support\SiteContent::text('apply.page_caption'),
     'pageKey' => 'apply_for_support',
 ])
 
@@ -15,8 +15,8 @@
             <div class="col-lg-9">
                 <div class="card border-0 shadow-sm site-form-card">
                     <div class="card-body p-4 p-lg-5">
-                        <h2 class="h4 mb-2">Support application</h2>
-                        <p class="text-muted mb-4">Tell us about yourself and your situation. When you are ready, send your application to our team via WhatsApp or Email.</p>
+                        <h2 class="h4 mb-2">{{ \App\Support\SiteContent::text('apply.form_title') }}</h2>
+                        <p class="text-muted mb-4">{{ \App\Support\SiteContent::text('apply.form_lead') }}</p>
 
                         <form class="row g-3 site-partner-form js-public-form" data-form-type="support_application" method="post" action="#" novalidate autocomplete="off">
                             <div class="col-md-6">

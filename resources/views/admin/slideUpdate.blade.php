@@ -68,6 +68,12 @@
                                     value="{{$data->heading}}" name="heading">
                             </div>
                             </div>
+                            <div class="row mt-3">
+                                <div class="col-12">
+                                    <label>Supporting line</label>
+                                    <textarea class="form-control" name="subheading" rows="2" data-editor="plain" placeholder="Leave blank to use the default line from Page copy">{{ strcasecmp(trim((string) ($data->subheading ?? '')), 'Mercy Tides') === 0 ? '' : $data->subheading }}</textarea>
+                                </div>
+                            </div>
 
                         </div>
 

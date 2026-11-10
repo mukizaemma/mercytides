@@ -5,7 +5,7 @@
 @section('content')
 
     @include('frontend.includes.page-header', [
-        'title' => 'Our Impact',
+        'title' => \App\Support\SiteContent::text('impact.page_title'),
         'pageKey' => 'impact',
     ])
 
@@ -132,8 +132,8 @@
 
             <div class="row mt-2 mb-4">
                 <div class="col-12 text-center">
-                    <h3 class="tp-section-title mb-2">Young Mothers We Support</h3>
-                    <p class="mothers-gallery-section__lead mx-auto mb-0">Real women. Real courage. Each portrait is part of a larger story of transformation.</p>
+                    <h3 class="tp-section-title mb-2">{{ \App\Support\SiteContent::text('impact.mothers_title') }}</h3>
+                    <p class="mothers-gallery-section__lead mx-auto mb-0">{{ \App\Support\SiteContent::text('impact.mothers_lead') }}</p>
                 </div>
             </div>
 
@@ -143,7 +143,7 @@
                 'showSectionHeader' => false,
                 'embedded' => true,
                 'viewMoreRoute' => route('sponsorship.youngMother'),
-                'viewMoreLabel' => 'View more mothers',
+                'viewMoreLabel' => \App\Support\SiteContent::text('home.mothers.more'),
             ])
 
             @if(($mothers ?? collect())->isEmpty())
@@ -157,7 +157,7 @@
             @if(($testimonials ?? collect())->isNotEmpty())
             <div class="row mt-5 mb-4">
                 <div class="col-12 text-center">
-                    <h3 class="tp-section-title mb-0">Testimonials</h3>
+                    <h3 class="tp-section-title mb-0">{{ \App\Support\SiteContent::text('impact.testimonials_title') }}</h3>
                 </div>
             </div>
 

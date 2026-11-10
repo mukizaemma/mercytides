@@ -97,6 +97,8 @@ Route::middleware(['auth', 'admin.role'
     Route::get('/about',[App\Http\Controllers\HomeController::class,'about'])->name('about');
     Route::POST('/saveAbout/{id}',[App\Http\Controllers\HomeController::class,'saveAbout'])->name('saveAbout');
     Route::post('/founder-story', [App\Http\Controllers\FounderStoryController::class, 'update'])->name('founderStory.update');
+    Route::get('/admin/page-copy', [App\Http\Controllers\SiteCopyController::class, 'index'])->name('siteCopy.index');
+    Route::post('/admin/page-copy', [App\Http\Controllers\SiteCopyController::class, 'update'])->name('siteCopy.update');
 
     Route::get('/factory', [App\Http\Controllers\FactoryAdminController::class, 'overview'])->name('factory.admin.overview');
     Route::get('/factory/services', [App\Http\Controllers\FactoryAdminController::class, 'services'])->name('factory.admin.services');

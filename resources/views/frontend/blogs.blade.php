@@ -5,7 +5,7 @@
 @section('content')
 
         @include('frontend.includes.page-header', [
-            'title' => 'Recent Updates',
+            'title' => \App\Support\SiteContent::text('updates.page_title'),
             'pageKey' => 'blog',
         ])
 

@@ -16,6 +16,9 @@
             <x-admin.nav-link :href="route('about')" icon="fa-bullseye" :active="request()->routeIs(['about', 'background', 'homePage', 'founderStory.update'])">
                 About &amp; homepage
             </x-admin.nav-link>
+            <x-admin.nav-link :href="route('siteCopy.index')" icon="fa-pen" :active="request()->routeIs('siteCopy.*')">
+                Page copy
+            </x-admin.nav-link>
             <x-admin.nav-link :href="route('programs')" icon="fa-list-alt" :active="request()->routeIs(['programs', 'editProgram', 'saveProgram', 'updateProgram', 'destroyProgram'])">
                 Programs
             </x-admin.nav-link>
